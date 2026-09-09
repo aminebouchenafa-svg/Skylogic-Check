@@ -1,10 +1,9 @@
 /**
  * Schéma déclaratif des formulaires SKYLOGIC CHECK.
  *
- * Chaque formulaire officiel (Line Check, LPC/OPC, Skill Test, Remedial...) est
- * décrit ici sous forme de données. L'interface de saisie, le code couleur,
- * la validation et l'export PDF sont générés automatiquement à partir de cette
- * description : ajouter un formulaire = ajouter un fichier dans src/forms/.
+ * Chaque formulaire officiel est décrit ici sous forme de données : l'écran de
+ * saisie, le code couleur, la validation et l'export PDF en sont déduits.
+ * Intégrer un nouveau formulaire = ajouter un fichier dans src/forms/.
  */
 
 export type FieldType =
@@ -28,27 +27,42 @@ export interface FieldDef {
   placeholder?: string
   hint?: string
   required?: boolean
-  /** Valeur pré-remplie à l'ouverture du formulaire. */
-  defaultValue?: string | number | boolean
+  /** Préfixe non modifiable affiché devant la saisie (ex. « AH » pour un n° de vol). */
+  prefix?: string
 }
 
 /** Un item noté dans une grille d'évaluation. */
 export interface GradedItemDef {
   id: string
-  /** Référence officielle de l'item (ex. « 2.1 », « COM »). */
+  /** Numérotation officielle de l'item (ex. « 1 », « 12 »). */
   code?: string
   label: string
   /** Indicateurs de performance affichés en aide à la notation. */
   description?: string
-  /** Autorise « N/A » sur cet item (par défaut : oui). */
+  /** Autorise « / » (non applicable) sur cet item. Par défaut : oui. */
   allowNA?: boolean
+  /** Certaines lignes ne portent pas une note mais une date (ex. date d'approche sur avion). */
+  input?: 'grade' | 'date' | 'text'
+  /** Item mis en évidence sur le formulaire officiel. */
+  emphasis?: boolean
+}
+
+/** Tableau à cellules libres (étapes, secteurs, temps de vol…). */
+export interface MatrixDef {
+  /** En-têtes groupés affichés au-dessus des colonnes. */
+  groups?: { label: string; span: number }[]
+  columns: { id: string; label: string; type?: FieldType; options?: string[]; prefix?: string }[]
+  rows: { id: string; label: string }[]
+  /** Note affichée sous le tableau. */
+  note?: string
 }
 
 export type SectionKind =
   | 'identification'
   | 'grading'
+  | 'matrix'
   | 'notes'
-  | 'checklist'
+  | 'result'
   | 'signature'
 
 export interface SectionDef {
@@ -60,46 +74,62 @@ export interface SectionDef {
   fields?: FieldDef[]
   /** Items notés (sections d'évaluation). */
   items?: GradedItemDef[]
-  /** Échelle de notation utilisée par la section (défaut : celle du formulaire). */
+  /** Tableau de saisie (sections « matrix »). */
+  matrix?: MatrixDef
+  /** Choix unique mis en avant (sections « result »). */
+  choices?: { value: string; label: string; color: string }[]
+  /** Échelle de notation de la section (défaut : celle du formulaire). */
   scaleId?: string
   /** Commentaire libre attaché à la grille. */
   commentField?: { id: string; label: string; placeholder?: string }
+  /**
+   * Mise en page du PDF : les sections partageant le même « spread » sont
+   * imprimées côte à côte, comme sur le formulaire papier.
+   */
+  spread?: string
+  column?: 'left' | 'right'
 }
 
 export interface GradeLevel {
-  /** Valeur stockée et imprimée (1..5, S/U, etc.). */
+  /** Valeur stockée et imprimée. */
   value: string
-  /** Libellé court affiché dans le bouton. */
+  /** Libellé court affiché dans le bouton et dans la case du PDF. */
   short: string
   label: string
   description?: string
-  /** Couleur du code couleur (hex). */
   color: string
-  /** Considéré comme non satisfaisant → déclenche l'alerte du formulaire. */
+  /** Note non satisfaisante → déclenche l'alerte et l'obligation de remarque. */
   failing?: boolean
 }
 
 export interface GradeScale {
   id: string
   name: string
+  /** Rappel imprimé en tête de formulaire. */
+  legend?: string
   levels: GradeLevel[]
-  allowNA?: boolean
+  /** Niveau « non applicable », proposé en plus des notes. */
+  na?: GradeLevel
 }
 
 export type FormStatus = 'draft' | 'completed'
 
 export interface FormDef {
   id: string
-  /** Référence document (ex. « FTM-LC-01 »). */
+  /** Référence document. */
   code: string
   title: string
   subtitle?: string
   category: 'Ligne' | 'Simulateur' | 'Examen' | 'Remédiation'
   revision: string
-  /** Couleur d'accent du formulaire (code couleur de l'app). */
+  /** Couleur du formulaire : segment de l'accueil, écran et PDF. */
   accent: string
+  /** Clé du pictogramme affiché sur l'accueil. */
+  icon: string
   scaleId: string
   sections: SectionDef[]
+  /** Mention réglementaire imprimée en bas du PDF. */
+  reminder?: string
   /** Indisponible tant que le modèle officiel n'a pas été intégré. */
   pending?: boolean
 }
@@ -111,7 +141,7 @@ export interface FormRecord {
   formId: string
   formCode: string
   formTitle: string
-  /** Nom du stagiaire / commandant évalué, pour l'archive. */
+  /** Nom du candidat évalué, pour l'archive. */
   subject: string
   status: FormStatus
   values: FormValues

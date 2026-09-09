@@ -61,8 +61,8 @@ export function Field({ field, values, onChange }: Props) {
           <SignaturePad value={text} onChange={(data) => onChange(field.id, data)} />
         </div>
       )
-    default:
-      control = (
+    default: {
+      const input = (
         <input
           id={field.id}
           className="input"
@@ -72,6 +72,15 @@ export function Field({ field, values, onChange }: Props) {
           onChange={(e) => onChange(field.id, e.target.value)}
         />
       )
+      control = field.prefix ? (
+        <div className="prefix-input">
+          <span className="prefix">{field.prefix}</span>
+          {input}
+        </div>
+      ) : (
+        input
+      )
+    }
   }
 
   return (

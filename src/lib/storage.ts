@@ -11,6 +11,8 @@ export interface AppSettings {
   defaultEmail: string
   /** Numéro WhatsApp par défaut, format international sans « + ». */
   defaultWhatsapp: string
+  /** Logo de la compagnie (image en data URL), imprimé en tête du PDF. */
+  logo: string
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -19,6 +21,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   managerName: '',
   defaultEmail: '',
   defaultWhatsapp: '',
+  logo: '',
 }
 
 function read<T>(key: string, fallback: T): T {

@@ -1,0 +1,12 @@
+import type { ReactElement } from 'react'
+import { IconLineCheck, IconRemedial, IconReport, IconSimulator, IconSkill, IconTraining } from './Icons'
+
+/** Association entre la clé d'un formulaire et son pictogramme sur l'accueil. */
+export const FORM_ICONS: Record<string, (props: { size?: number }) => ReactElement> = {
+  'line-check': IconLineCheck,
+  training: IconTraining,
+  simulator: IconSimulator,
+  report: IconReport,
+  skill: IconSkill,
+  remedial: IconRemedial,
+}

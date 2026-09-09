@@ -109,3 +109,52 @@ export const IconWing = ({ size = 22 }: Props) => (
     <path d="M2.5 13.8 21 4.2c.6-.3 1.2.4.8.9l-5.5 7.3 4 6.6c.3.5-.2 1.1-.8.9l-6.6-2.6-3.2 3.9c-.4.5-1.2.2-1.2-.4l-.1-4.6-5.8-1.4c-.6-.2-.6-1 .1-1z" />
   </svg>
 )
+
+/* ------------------------------------------------- Pictogrammes des formes */
+
+export const IconLineCheck = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1z" />
+    <path d="M16 5h2a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2" />
+    <path d="m8.5 13.5 2.2 2.2 4.8-5" />
+  </svg>
+)
+
+export const IconTraining = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="m12 4 9 4.5-9 4.5-9-4.5z" />
+    <path d="M7 10.6V16c0 1.4 2.2 2.6 5 2.6s5-1.2 5-2.6v-5.4" />
+    <path d="M21 8.5V14" />
+  </svg>
+)
+
+export const IconSimulator = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <rect x="2.5" y="4" width="19" height="12.5" rx="2" />
+    <path d="M9 20h6M12 16.5V20" />
+    <path d="m7 12 4-1.4V8.2c0-.7.4-1.2 1-1.2s1 .5 1 1.2v2.4L17 12v1l-4-.8v1.6l1.2 1v.7L12 15l-2.2.5v-.7l1.2-1v-1.6L7 13z" />
+  </svg>
+)
+
+export const IconReport = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+    <path d="M14 3v5h5M8.5 12.5h7M8.5 16h4.5" />
+  </svg>
+)
+
+export const IconSkill = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <circle cx="12" cy="9" r="5.2" />
+    <path d="m8.6 13.4-1.4 7 4.8-2.4 4.8 2.4-1.4-7" />
+    <path d="m10.2 9 1.3 1.3 2.4-2.5" />
+  </svg>
+)
+
+export const IconRemedial = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1" />
+    <path d="M20.7 4.4v4.8h-4.8" />
+    <path d="m9.4 12.2 1.9 1.9 3.6-3.8" />
+  </svg>
+)

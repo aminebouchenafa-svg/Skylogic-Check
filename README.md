@@ -28,7 +28,10 @@ src/
   forms/
     scales.ts        Échelles de notation et code couleur
     common.ts        Blocs partagés : identification, synthèse, signatures
-    line-check.ts    Un formulaire = un fichier
+    shared.ts        Blocs communs : remarques, résultat, signatures
+    line-control.ts  Un formulaire = un fichier
+    line-training.ts
+    proficiency-check.ts
     index.ts         Catalogue
   components/        Moteur de saisie (FormRunner), champs, notation, signature
   lib/pdf.ts         Rendu PDF vectoriel (jsPDF)
@@ -40,7 +43,9 @@ src/
 ### Ajouter un formulaire
 
 1. Créer `src/forms/mon-formulaire.ts` exportant un objet `FormDef`.
-2. Déclarer ses sections : `identification`, `grading`, `notes`, `signature`.
+2. Déclarer ses sections : `identification`, `grading`, `matrix`, `notes`,
+   `result`, `signature`. Deux sections partageant le même `spread` sont
+   imprimées côte à côte, comme sur le papier.
 3. L'ajouter au tableau `FORMS` dans `src/forms/index.ts`.
 
 L'écran de saisie, la moyenne, l'alerte « sous le standard », le PDF et le partage
@@ -48,18 +53,25 @@ sont générés automatiquement.
 
 ## Code couleur
 
-Identique à l'écran, dans les indicateurs et dans le PDF :
+Échelle officielle du Training Department, identique à l'écran et dans le PDF :
 
 | Note | Signification | Couleur |
 |------|---------------|---------|
-| 1 | Non satisfaisant | rouge |
-| 2 | Sous le standard | orange |
-| 3 | Standard | cyan |
-| 4 | Au-dessus du standard | vert |
-| 5 | Exemplaire | or |
-| N/A | Non applicable | gris |
+| 5 | Very Good | or |
+| 4 | Good | vert |
+| 3 | Required Standard | cyan |
+| 2 | Poor | orange |
+| 1 | Unsatisfactory | rouge |
+| / | Not Applicable | gris |
 
-Une note 1 ou 2 déclenche une alerte demandant de renseigner l'action de remédiation.
+Une note 1 ou 2 rend la rubrique *Remarks* obligatoire : le formulaire ne peut pas
+être marqué terminé tant qu'elle n'est pas renseignée.
+
+## Accueil radial
+
+L'écran d'accueil est une roue : un secteur coloré par formulaire, son pictogramme
+et son titre. Le centre affiche le formulaire survolé. Les formulaires dont le modèle
+officiel n'est pas encore intégré apparaissent en veille.
 
 ## Transmission du rapport
 
@@ -72,11 +84,16 @@ Une note 1 ou 2 déclenche une alerte demandant de renseigner l'action de reméd
 
 ## État des formulaires
 
-| Formulaire | Référence | État |
-|------------|-----------|------|
-| Line Check | FTM-LC-01 | Modèle de référence (compétences OACI/AESA) — à remplacer par le modèle officiel |
-| Line Form | FTM-LF-01 | En attente du modèle |
-| Line Training | FTM-LT-01 | En attente du modèle |
-| Proficiency Check (OPC/LPC) | FTM-OPC-01 | En attente du modèle |
-| Skill Test | FTM-ST-01 | En attente du modèle |
-| Remedial Training | FTM-RT-01 | En attente du modèle |
+| Formulaire | État | PDF |
+|------------|------|-----|
+| Line Control | Intégré d'après le formulaire officiel D.O.A | 1 page |
+| Line Training | Intégré d'après le formulaire officiel D.O.A | 2 pages |
+| Proficiency Check | Intégré d'après le formulaire officiel D.O.A | 1 page |
+| Line Form | En attente du modèle | — |
+| Skill Test | En attente du modèle | — |
+| Remedial Training | En attente du modèle | — |
+
+Le PDF reprend la mise en page du document papier : bandeau de titre, bloc
+compagnie, tableaux à deux colonnes, *Remarks*, résultat, signatures, mention
+*Reminder* et pied de page `REF. D.O.A – TRAINING DEPARTMENT`. Le logo de la
+compagnie se charge dans **Réglages** et remplace le bloc texte en haut à droite.

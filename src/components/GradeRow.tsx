@@ -1,5 +1,5 @@
 import type { GradeScale, GradedItemDef } from '../types/form'
-import { NA_COLOR } from '../forms/scales'
+import { selectableLevels } from '../forms/scales'
 
 interface Props {
   item: GradedItemDef
@@ -8,42 +8,45 @@ interface Props {
   onChange: (value: string) => void
 }
 
-/** Une ligne de notation : l'item, ses indicateurs, et les boutons du code couleur. */
+/** Une ligne de notation : l'item et les boutons du code couleur. */
 export function GradeRow({ item, scale, value, onChange }: Props) {
   const toggle = (next: string) => onChange(value === next ? '' : next)
+  const levels = selectableLevels(scale).filter(
+    (level) => level.value !== 'NA' || item.allowNA !== false,
+  )
 
   return (
-    <div className="grade-row">
-      <div className="grade-code">{item.code ?? ''}</div>
+    <div className={`grade-row${item.code ? '' : ' nocode'}`}>
+      {item.code && <div className="grade-code">{item.code}</div>}
       <div>
-        <div className="grade-label">{item.label}</div>
+        <div className={`grade-label${item.emphasis ? ' emphasis' : ''}`}>{item.label}</div>
         {item.description && <div className="grade-desc">{item.description}</div>}
       </div>
-      <div className="grade-buttons">
-        {scale.levels.map((level) => (
-          <button
-            key={level.value}
-            type="button"
-            title={`${level.label} — ${level.description ?? ''}`}
-            className={`grade-btn${value === level.value ? ' on' : ''}`}
-            style={{ ['--btn-color' as string]: level.color }}
-            onClick={() => toggle(level.value)}
-          >
-            {level.short}
-          </button>
-        ))}
-        {scale.allowNA && item.allowNA !== false && (
-          <button
-            type="button"
-            title="Non applicable"
-            className={`grade-btn na${value === 'NA' ? ' on' : ''}`}
-            style={{ ['--btn-color' as string]: NA_COLOR }}
-            onClick={() => toggle('NA')}
-          >
-            N/A
-          </button>
-        )}
-      </div>
+
+      {item.input === 'date' ? (
+        <input
+          type="date"
+          className="input"
+          style={{ maxWidth: 190 }}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      ) : (
+        <div className="grade-buttons">
+          {levels.map((level) => (
+            <button
+              key={level.value}
+              type="button"
+              title={`${level.short} — ${level.label}${level.description ? ` : ${level.description}` : ''}`}
+              className={`grade-btn${value === level.value ? ' on' : ''}`}
+              style={{ ['--btn-color' as string]: level.color }}
+              onClick={() => toggle(level.value)}
+            >
+              {level.short}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

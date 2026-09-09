@@ -1,72 +1,62 @@
-import type { GradeScale } from '../types/form'
+import type { GradeLevel, GradeScale } from '../types/form'
 
 /**
- * Échelles de notation. Le code couleur est unique dans toute l'application :
- * il est utilisé à l'écran, dans les statistiques et dans le PDF.
+ * Échelle de notation officielle Air Algérie, reprise telle quelle des
+ * formulaires du Training Department :
+ * 5 = Very Good, 4 = Good, 3 = Required Standard, 2 = Poor,
+ * 1 = Unsatisfactory, / = Not Applicable.
+ *
+ * Le code couleur est unique dans toute l'application : écran, indicateurs et PDF.
  */
 
-export const SCALE_1_5: GradeScale = {
-  id: 'scale-1-5',
-  name: 'Échelle 1 à 5 (compétences)',
-  allowNA: true,
+export const NA_LEVEL: GradeLevel = {
+  value: 'NA',
+  short: '/',
+  label: 'Not Applicable',
+  description: 'Item non applicable à cette séance.',
+  color: '#5B6B85',
+}
+
+export const SCALE_AH: GradeScale = {
+  id: 'ah-5-1',
+  name: 'Grading Air Algérie (5 → 1)',
+  legend: '5 = Very Good · 4 = Good · 3 = Required Standard · 2 = Poor · 1 = Unsatisfactory · / = Not Applicable',
+  na: NA_LEVEL,
   levels: [
     {
-      value: '1',
-      short: '1',
-      label: 'Non satisfaisant',
-      description: "Performance en dessous du standard, intervention nécessaire. Répétition requise.",
-      color: '#E5383B',
-      failing: true,
-    },
-    {
-      value: '2',
-      short: '2',
-      label: 'Sous le standard',
-      description: "Écarts constatés, corrigés après intervention. Entraînement complémentaire souhaitable.",
-      color: '#F58A20',
-      failing: true,
-    },
-    {
-      value: '3',
-      short: '3',
-      label: 'Standard',
-      description: 'Performance conforme au standard compagnie. Écarts mineurs détectés et corrigés.',
-      color: '#22C1D6',
+      value: '5',
+      short: '5',
+      label: 'Very Good',
+      description: 'Performance remarquable, pouvant servir de référence.',
+      color: '#E3B23C',
     },
     {
       value: '4',
       short: '4',
-      label: 'Au-dessus du standard',
-      description: 'Performance sûre et efficace, marge confortable, anticipation démontrée.',
+      label: 'Good',
+      description: 'Performance sûre et efficace, marge confortable.',
       color: '#2FBF71',
     },
     {
-      value: '5',
-      short: '5',
-      label: 'Exemplaire',
-      description: 'Performance remarquable, pouvant servir de référence pédagogique.',
-      color: '#E3B23C',
-    },
-  ],
-}
-
-export const SCALE_SU: GradeScale = {
-  id: 'scale-su',
-  name: 'Satisfaisant / Non satisfaisant',
-  allowNA: true,
-  levels: [
-    {
-      value: 'S',
-      short: 'S',
-      label: 'Satisfaisant',
-      description: 'Exigence atteinte.',
-      color: '#2FBF71',
+      value: '3',
+      short: '3',
+      label: 'Required Standard',
+      description: 'Standard exigé atteint.',
+      color: '#22C1D6',
     },
     {
-      value: 'U',
-      short: 'U',
-      label: 'Non satisfaisant',
-      description: 'Exigence non atteinte.',
+      value: '2',
+      short: '2',
+      label: 'Poor',
+      description: 'En dessous du standard exigé. Remarque obligatoire.',
+      color: '#F58A20',
+      failing: true,
+    },
+    {
+      value: '1',
+      short: '1',
+      label: 'Unsatisfactory',
+      description: 'Non satisfaisant. Remarque obligatoire et suite à donner.',
       color: '#E5383B',
       failing: true,
     },
@@ -74,12 +64,29 @@ export const SCALE_SU: GradeScale = {
 }
 
 export const SCALES: Record<string, GradeScale> = {
-  [SCALE_1_5.id]: SCALE_1_5,
-  [SCALE_SU.id]: SCALE_SU,
+  [SCALE_AH.id]: SCALE_AH,
 }
 
 export function getScale(id: string): GradeScale {
-  return SCALES[id] ?? SCALE_1_5
+  return SCALES[id] ?? SCALE_AH
 }
 
-export const NA_COLOR = '#5B6B85'
+/** Tous les niveaux sélectionnables, « / » compris. */
+export function selectableLevels(scale: GradeScale): GradeLevel[] {
+  return scale.na ? [...scale.levels, scale.na] : scale.levels
+}
+
+export function findLevel(scale: GradeScale, value: string): GradeLevel | undefined {
+  return selectableLevels(scale).find((l) => l.value === value)
+}
+
+export const RESULT_CHOICES = [
+  { value: 'Satisfactory', label: 'Satisfactory', color: '#2FBF71' },
+  { value: 'Unsatisfactory', label: 'Unsatisfactory', color: '#E5383B' },
+]
+
+export const REMINDER_LINE =
+  'Emergency simulations and non-normal situations (system/engine failures, pilot incapacitation, ' +
+  'maneuvers) are strictly prohibited on revenue flights. Emergency and Abnormal will be addressed on ' +
+  'the ground via briefing and questions only. Violation is considered a serious safety breach and may ' +
+  'result in removal from training and disciplinary action.'

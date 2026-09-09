@@ -2,6 +2,16 @@ import { useState } from 'react'
 import type { AppSettings } from '../lib/storage'
 import { IconSave } from '../components/Icons'
 
+/** Le logo est stocké en data URL et imprimé en tête de chaque PDF. */
+function readLogo(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(String(reader.result))
+    reader.onerror = () => reject(reader.error)
+    reader.readAsDataURL(file)
+  })
+}
+
 interface Props {
   settings: AppSettings
   onSave: (settings: AppSettings) => void
@@ -40,6 +50,36 @@ export function Settings({ settings, onSave }: Props) {
             <div className="field field-half">
               <label className="field-label" htmlFor="manager">Responsable</label>
               <input id="manager" className="input" value={draft.managerName} onChange={(e) => set('managerName', e.target.value)} placeholder="Fleet Training Manager" />
+            </div>
+            <div className="field field-full">
+              <span className="field-label">Logo de la compagnie</span>
+              <div className="logo-slot">
+                {draft.logo ? (
+                  <span className="logo-preview">
+                    <img src={draft.logo} alt="Logo" />
+                  </span>
+                ) : (
+                  <span className="field-hint">Aucun logo : le nom de la compagnie est imprimé à la place.</span>
+                )}
+                <label className="btn btn-sm">
+                  {draft.logo ? 'Remplacer' : 'Choisir un fichier'}
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg"
+                    hidden
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0]
+                      if (file) set('logo', await readLogo(file))
+                    }}
+                  />
+                </label>
+                {draft.logo && (
+                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => set('logo', '')}>
+                    Retirer
+                  </button>
+                )}
+              </div>
+              <span className="field-hint">PNG ou JPEG, fond blanc de préférence. Il apparaît en haut à droite du PDF.</span>
             </div>
           </div>
         </div>

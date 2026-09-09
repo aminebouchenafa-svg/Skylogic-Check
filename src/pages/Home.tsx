@@ -1,7 +1,7 @@
 import type { FormDef, FormRecord } from '../types/form'
 import { FORMS, getForm } from '../forms'
-import { SCALE_1_5 } from '../forms/scales'
-import { IconPlus } from '../components/Icons'
+import { SCALE_AH, selectableLevels } from '../forms/scales'
+import { RadialHub } from '../components/RadialHub'
 
 interface Props {
   records: FormRecord[]
@@ -12,7 +12,7 @@ interface Props {
 
 const monthKey = (iso: string) => iso.slice(0, 7)
 
-export function Dashboard({ records, onOpenForm, onOpenRecord, onGoArchive }: Props) {
+export function Home({ records, onOpenForm, onOpenRecord, onGoArchive }: Props) {
   const thisMonth = new Date().toISOString().slice(0, 7)
   const drafts = records.filter((r) => r.status === 'draft')
   const completedThisMonth = records.filter(
@@ -27,22 +27,18 @@ export function Dashboard({ records, onOpenForm, onOpenRecord, onGoArchive }: Pr
         <div>
           <h1 className="page-title">Poste de commande</h1>
           <p className="page-sub">
-            Notation en vol et au simulateur, code couleur unique, export PDF prêt à être transmis par
-            e-mail ou WhatsApp. Les données restent sur cet appareil.
+            Choisissez un formulaire sur la roue. Notation au doigt, signatures électroniques,
+            export PDF prêt à transmettre par e-mail ou WhatsApp.
           </p>
         </div>
-        <div className="row">
-          {active.slice(0, 2).map((form) => (
-            <button
-              key={form.id}
-              className="btn btn-primary"
-              onClick={() => onOpenForm(form)}
-            >
-              <IconPlus size={16} /> {form.title}
-            </button>
-          ))}
-        </div>
       </div>
+
+      <RadialHub
+        forms={FORMS}
+        onSelect={onOpenForm}
+        centerLabel="Skylogic"
+        centerSub={`${active.length} formulaires actifs`}
+      />
 
       <div className="grid grid-kpi">
         <div className="panel kpi">
@@ -76,13 +72,13 @@ export function Dashboard({ records, onOpenForm, onOpenRecord, onGoArchive }: Pr
       <section className="panel">
         <div className="panel-head">
           <div>
-            <div className="panel-title">Code couleur de notation</div>
-            <div className="panel-sub">Identique à l’écran, dans les statistiques et dans le PDF</div>
+            <div className="panel-title">Grading</div>
+            <div className="panel-sub">Échelle officielle — identique à l’écran et dans le PDF</div>
           </div>
         </div>
         <div className="panel-body">
-          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
-            {SCALE_1_5.levels.map((level) => (
+          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(165px, 1fr))' }}>
+            {selectableLevels(SCALE_AH).map((level) => (
               <div
                 key={level.value}
                 style={{
@@ -118,7 +114,7 @@ export function Dashboard({ records, onOpenForm, onOpenRecord, onGoArchive }: Pr
           <table className="table">
             <thead>
               <tr>
-                <th>Candidat</th>
+                <th>Name</th>
                 <th>Formulaire</th>
                 <th>Date</th>
                 <th>Statut</th>
@@ -130,9 +126,7 @@ export function Dashboard({ records, onOpenForm, onOpenRecord, onGoArchive }: Pr
                 return (
                   <tr key={record.id} style={{ cursor: 'pointer' }} onClick={() => onOpenRecord(record)}>
                     <td>{record.subject || <span style={{ color: 'var(--text-faint)' }}>Sans nom</span>}</td>
-                    <td>
-                      <span style={{ color: form?.accent }}>{record.formCode}</span> · {record.formTitle}
-                    </td>
+                    <td style={{ color: form?.accent }}>{record.formTitle}</td>
                     <td>{String(record.values.date ?? record.createdAt.slice(0, 10))}</td>
                     <td>
                       <span className={`status-dot status-${record.status}`} />

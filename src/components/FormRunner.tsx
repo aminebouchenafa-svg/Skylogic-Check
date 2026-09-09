@@ -1,21 +1,14 @@
 import { useMemo, useState } from 'react'
 import type { FormDef, FormRecord, FormValues, SectionDef } from '../types/form'
-import { getScale } from '../forms/scales'
+import { findLevel, getScale, selectableLevels } from '../forms/scales'
 import { buildPdfFile } from '../lib/pdf'
 import { downloadBlob, canShareFiles, mailtoLink, shareFile, whatsappLink } from '../lib/share'
 import { upsertRecord } from '../lib/storage'
 import type { AppSettings } from '../lib/storage'
 import { Field } from './Field'
 import { GradeRow } from './GradeRow'
-import {
-  IconAlert,
-  IconBack,
-  IconMail,
-  IconPdf,
-  IconSave,
-  IconShare,
-  IconWhatsapp,
-} from './Icons'
+import { Matrix } from './Matrix'
+import { IconAlert, IconBack, IconMail, IconPdf, IconSave, IconShare, IconWhatsapp } from './Icons'
 
 interface Props {
   form: FormDef
@@ -38,7 +31,11 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
     () =>
       form.sections
         .filter((s) => s.kind === 'grading')
-        .flatMap((s) => (s.items ?? []).map((item) => ({ item, scaleId: s.scaleId ?? form.scaleId }))),
+        .flatMap((s) =>
+          (s.items ?? [])
+            .filter((item) => item.input !== 'date' && item.input !== 'text')
+            .map((item) => ({ item, scaleId: s.scaleId ?? form.scaleId })),
+        ),
     [form],
   )
 
@@ -47,21 +44,15 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
     let total = 0
     const failing: string[] = []
     for (const { item, scaleId } of gradedItems) {
-      const value = values[item.id]
-      if (value === undefined || value === null || value === '' || value === 'NA') continue
-      const level = getScale(scaleId).levels.find((l) => l.value === String(value))
+      const raw = values[item.id]
+      if (raw === undefined || raw === null || raw === '' || raw === 'NA') continue
+      const level = findLevel(getScale(scaleId), String(raw))
       if (!level) continue
       scored += 1
-      const numeric = Number(level.value)
-      if (!Number.isNaN(numeric)) total += numeric
-      if (level.failing) failing.push(`${item.code ? `${item.code} — ` : ''}${item.label}`)
+      total += Number(level.value)
+      if (level.failing) failing.push(item.label)
     }
-    return {
-      scored,
-      count: gradedItems.length,
-      average: scored > 0 && total > 0 ? total / scored : null,
-      failing,
-    }
+    return { scored, count: gradedItems.length, average: scored ? total / scored : null, failing }
   }, [gradedItems, values])
 
   const missing = useMemo(() => {
@@ -72,7 +63,11 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
     })
   }, [form, values])
 
-  const subject = String(values.trainee_name ?? '').trim()
+  const remarksMissing =
+    summary.failing.length > 0 && !String(values.remarks ?? '').trim() &&
+    form.sections.some((s) => s.id === 'remarks')
+
+  const subject = String(values.name ?? '').trim()
 
   const persist = (nextStatus: FormRecord['status']) => {
     const saved = upsertRecord({ ...record, values, status: nextStatus, subject })
@@ -86,19 +81,18 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
   }
 
   const complete = () => {
-    if (missing.length > 0) {
+    if (missing.length > 0 || remarksMissing) {
       setShowErrors(true)
-      onToast(`${missing.length} champ(s) obligatoire(s) à renseigner`)
+      onToast(remarksMissing && missing.length === 0
+        ? 'Remarque obligatoire pour les items notés 1 ou 2'
+        : `${missing.length} champ(s) obligatoire(s) à renseigner`)
       return
     }
     persist('completed')
     onToast('Formulaire marqué comme terminé')
   }
 
-  const makeFile = () => {
-    const saved = persist(status)
-    return buildPdfFile(form, saved, settings)
-  }
+  const makeFile = () => buildPdfFile(form, persist(status), settings)
 
   const exportPdf = () => {
     const file = makeFile()
@@ -108,7 +102,7 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
 
   const message = () =>
     `${form.title} — ${subject || 'candidat'} — ${String(values.date ?? '')}\n` +
-    `${settings.operator} · ${settings.department}\nRéférence ${form.code}`
+    `${settings.operator} · ${settings.department}\n${form.code}`
 
   const share = async () => {
     const file = makeFile()
@@ -120,7 +114,7 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
   const sendMail = () => {
     const file = makeFile()
     downloadBlob(file, file.name)
-    window.location.href = mailtoLink(settings, `${form.code} — ${subject || 'Rapport'}`, message())
+    window.location.href = mailtoLink(settings, `${form.title} — ${subject || 'Rapport'}`, message())
   }
 
   const sendWhatsapp = () => {
@@ -131,6 +125,8 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
 
   const renderSection = (section: SectionDef) => {
     const scale = getScale(section.scaleId ?? form.scaleId)
+    const graded = (section.items ?? []).filter((i) => i.input !== 'date')
+
     return (
       <section key={section.id} className="panel">
         <div className="panel-head">
@@ -138,14 +134,14 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
             <div className="panel-title">{section.title}</div>
             {section.subtitle && <div className="panel-sub">{section.subtitle}</div>}
           </div>
-          {section.kind === 'grading' && (
+          {section.kind === 'grading' && graded.length > 1 && (
             <span className="chip">
-              {(section.items ?? []).filter((i) => values[i.id]).length}/{(section.items ?? []).length} noté
+              {graded.filter((i) => values[i.id]).length}/{graded.length}
             </span>
           )}
         </div>
 
-        {section.kind === 'grading' ? (
+        {section.kind === 'grading' && (
           <>
             <div>
               {(section.items ?? []).map((item) => (
@@ -156,14 +152,6 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
                   value={String(values[item.id] ?? '')}
                   onChange={(value) => setValue(item.id, value)}
                 />
-              ))}
-            </div>
-            <div className="legend">
-              {scale.levels.map((level) => (
-                <span className="legend-item" key={level.value}>
-                  <span className="legend-dot" style={{ ['--dot' as string]: level.color }} />
-                  {level.short} · {level.label}
-                </span>
               ))}
             </div>
             {section.commentField && (
@@ -182,7 +170,33 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
               </div>
             )}
           </>
-        ) : (
+        )}
+
+        {section.kind === 'matrix' && section.matrix && (
+          <div className="panel-body">
+            <Matrix id={section.id} matrix={section.matrix} values={values} onChange={setValue} />
+          </div>
+        )}
+
+        {section.kind === 'result' && (
+          <div className="panel-body">
+            <div className="result-choice">
+              {(section.choices ?? []).map((choice) => (
+                <button
+                  key={choice.value}
+                  type="button"
+                  className={`result-btn${values.result === choice.value ? ' on' : ''}`}
+                  style={{ ['--choice' as string]: choice.color }}
+                  onClick={() => setValue('result', choice.value)}
+                >
+                  {choice.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {(section.kind === 'identification' || section.kind === 'notes' || section.kind === 'signature') && (
           <div className="panel-body">
             <div className="field-grid">
               {(section.fields ?? []).map((field) => (
@@ -195,6 +209,29 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
     )
   }
 
+  /** Les sections d'un même « spread » sont présentées côte à côte, comme sur le papier. */
+  const blocks: React.ReactNode[] = []
+  for (let i = 0; i < form.sections.length; i += 1) {
+    const section = form.sections[i]
+    if (!section.spread) {
+      blocks.push(renderSection(section))
+      continue
+    }
+    const spread = section.spread
+    const group: SectionDef[] = []
+    while (i < form.sections.length && form.sections[i].spread === spread) {
+      group.push(form.sections[i])
+      i += 1
+    }
+    i -= 1
+    blocks.push(
+      <div className="spread" key={`spread-${spread}`}>
+        <div className="stack">{group.filter((s) => s.column !== 'right').map(renderSection)}</div>
+        <div className="stack">{group.filter((s) => s.column === 'right').map(renderSection)}</div>
+      </div>,
+    )
+  }
+
   return (
     <div className="stack">
       <div className="page-head">
@@ -204,9 +241,9 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
           </button>
           <div className="row">
             <span className="chip solid" style={{ ['--accent' as string]: form.accent }}>
-              {form.code}
+              {form.category}
             </span>
-            <span className="chip">{form.category}</span>
+            <span className="chip">{form.revision}</span>
             <span className="chip">
               <span className={`status-dot status-${status}`} />
               {status === 'draft' ? 'Brouillon' : 'Terminé'}
@@ -215,9 +252,7 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
           <h1 className="page-title" style={{ marginTop: 12 }}>
             {form.title}
           </h1>
-          <p className="page-sub">
-            {form.subtitle} · {form.revision}
-          </p>
+          <p className="page-sub">{form.subtitle}</p>
         </div>
 
         <div className="panel kpi" style={{ minWidth: 200 }}>
@@ -235,23 +270,40 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
         <div className="alert">
           <IconAlert size={17} />
           <div>
-            <strong>{summary.failing.length} item(s) sous le standard.</strong> Une action de remédiation
-            doit être renseignée dans la synthèse : {summary.failing.slice(0, 3).join(' · ')}
+            <strong>{summary.failing.length} item(s) noté(s) 1 ou 2.</strong> La rubrique Remarks est
+            obligatoire : {summary.failing.slice(0, 3).join(' · ')}
             {summary.failing.length > 3 && ' …'}
           </div>
         </div>
       )}
 
-      {showErrors && missing.length > 0 && (
+      {showErrors && (missing.length > 0 || remarksMissing) && (
         <div className="alert">
           <IconAlert size={17} />
           <div>
-            Champs obligatoires manquants : {missing.map((f) => f.label).join(', ')}
+            {missing.length > 0 && <>Champs obligatoires : {missing.map((f) => f.label).join(', ')}. </>}
+            {remarksMissing && <>La rubrique Remarks doit être renseignée.</>}
           </div>
         </div>
       )}
 
-      {form.sections.map(renderSection)}
+      <div className="panel legend-bar">
+        {selectableLevels(getScale(form.scaleId)).map((level) => (
+          <span className="legend-item" key={level.value}>
+            <span className="legend-dot" style={{ ['--dot' as string]: level.color }} />
+            <strong>{level.short}</strong> {level.label}
+          </span>
+        ))}
+      </div>
+
+      {blocks}
+
+      {form.reminder && (
+        <div className="reminder">
+          <strong>Reminder : </strong>
+          {form.reminder}
+        </div>
+      )}
 
       <div className="actionbar">
         <button className="btn" onClick={save}>
@@ -271,7 +323,7 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
           <IconWhatsapp size={16} /> WhatsApp
         </button>
         <button className="btn btn-primary" onClick={share}>
-          <IconShare size={16} /> {canShareFilesHint()}
+          <IconShare size={16} /> {shareLabel()}
         </button>
       </div>
     </div>
@@ -279,7 +331,7 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
 }
 
 /** Sur mobile le partage joint directement le PDF ; sur poste fixe il est téléchargé. */
-function canShareFilesHint(): string {
+function shareLabel(): string {
   const probe = new File([new Blob()], 'probe.pdf', { type: 'application/pdf' })
   return canShareFiles(probe) ? 'Partager le PDF' : 'Envoyer'
 }

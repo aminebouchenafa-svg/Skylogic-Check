@@ -3,16 +3,9 @@ import type { FormDef, FormRecord } from './types/form'
 import { getForm } from './forms'
 import { FormRunner } from './components/FormRunner'
 import { Archive } from './pages/Archive'
-import { Catalogue } from './pages/Catalogue'
-import { Dashboard } from './pages/Dashboard'
+import { Home } from './pages/Home'
 import { Settings } from './pages/Settings'
-import {
-  IconArchive,
-  IconForms,
-  IconGauge,
-  IconSettings,
-  IconWing,
-} from './components/Icons'
+import { IconArchive, IconGauge, IconSettings, IconWing } from './components/Icons'
 import {
   deleteRecord,
   loadRecords,
@@ -22,17 +15,16 @@ import {
   upsertRecord,
 } from './lib/storage'
 
-type View = 'dashboard' | 'forms' | 'archive' | 'settings' | 'runner'
+type View = 'home' | 'archive' | 'settings' | 'runner'
 
 const NAV: { id: View; label: string; icon: React.ReactNode }[] = [
-  { id: 'dashboard', label: 'Poste de commande', icon: <IconGauge /> },
-  { id: 'forms', label: 'Formulaires', icon: <IconForms /> },
+  { id: 'home', label: 'Poste de commande', icon: <IconGauge /> },
   { id: 'archive', label: 'Archive', icon: <IconArchive /> },
   { id: 'settings', label: 'Réglages', icon: <IconSettings /> },
 ]
 
 export default function App() {
-  const [view, setView] = useState<View>('dashboard')
+  const [view, setView] = useState<View>('home')
   // Lecture directe du stockage local : l'application est entièrement côté client.
   const [records, setRecords] = useState<FormRecord[]>(() => loadRecords())
   const [settings, setSettings] = useState(() => loadSettings())
@@ -116,15 +108,14 @@ export default function App() {
       </aside>
 
       <main className="main">
-        {view === 'dashboard' && (
-          <Dashboard
+        {view === 'home' && (
+          <Home
             records={records}
             onOpenForm={openNew}
             onOpenRecord={openExisting}
             onGoArchive={() => navigate('archive')}
           />
         )}
-        {view === 'forms' && <Catalogue records={records} onOpen={openNew} />}
         {view === 'archive' && (
           <Archive
             records={records}
