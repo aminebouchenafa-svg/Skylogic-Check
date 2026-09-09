@@ -36,9 +36,9 @@ export const FORMS: FormDef[] = [
   lineControlForm,
   lineTrainingForm,
   proficiencyCheckForm,
-  placeholder('line-form', 'D.O.A — LINE FORM', 'Line Form', 'Suivi de vol en ligne', 'Ligne', '#7B61FF', 'report'),
-  placeholder('skill-test', 'D.O.A — SKILL TEST', 'Skill Test', 'Épreuve pratique de qualification de type', 'Examen', '#E5383B', 'skill'),
-  placeholder('remedial', 'D.O.A — REMEDIAL', 'Remedial Training', 'Entraînement de remédiation', 'Remédiation', '#E3B23C', 'remedial'),
+  placeholder('line-form', 'D.O.A — LINE FORM', 'Line Form', 'Suivi de vol en ligne', 'Ligne', '#17AE96', 'report'),
+  placeholder('skill-test', 'D.O.A — SKILL TEST', 'Skill Test', 'Épreuve pratique de qualification de type', 'Examen', '#2F63D8', 'skill'),
+  placeholder('remedial', 'D.O.A — REMEDIAL', 'Remedial Training', 'Entraînement de remédiation', 'Remédiation', '#C93FAE', 'remedial'),
 ]
 
 export const CATEGORIES: FormDef['category'][] = ['Ligne', 'Simulateur', 'Examen', 'Remédiation']

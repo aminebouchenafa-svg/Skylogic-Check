@@ -23,8 +23,8 @@ export const resultSection = (title: string): SectionDef => ({
   title,
   kind: 'result',
   choices: [
-    { value: 'Satisfactory', label: 'Satisfactory', color: '#2FBF71' },
-    { value: 'Unsatisfactory', label: 'Unsatisfactory', color: '#E5383B' },
+    { value: 'Satisfactory', label: 'Satisfactory', color: '#17AE96' },
+    { value: 'Unsatisfactory', label: 'Unsatisfactory', color: '#E23A5B' },
   ],
   fields: [{ id: 'result', label: title, type: 'text', required: true }],
 })

@@ -14,7 +14,7 @@ export const lineTrainingForm: FormDef = {
   subtitle: 'Adaptation en ligne sous supervision',
   category: 'Ligne',
   revision: 'REF. D.O.A – Training Department',
-  accent: '#2FBF71',
+  accent: '#E8792B',
   icon: 'training',
   scaleId: 'ah-5-1',
   reminder: REMINDER_LINE,

@@ -12,7 +12,7 @@ export const proficiencyCheckForm: FormDef = {
   subtitle: 'Contrôle de compétence au simulateur',
   category: 'Simulateur',
   revision: 'REF. D.O.A – Training Department',
-  accent: '#F58A20',
+  accent: '#E8B93B',
   icon: 'simulator',
   scaleId: 'ah-5-1',
   sections: [

@@ -13,7 +13,7 @@ export const lineControlForm: FormDef = {
   subtitle: 'Contrôle en ligne',
   category: 'Ligne',
   revision: 'REF. D.O.A – Training Department',
-  accent: '#22C1D6',
+  accent: '#0E9BF0',
   icon: 'line-check',
   scaleId: 'ah-5-1',
   reminder: REMINDER_LINE,

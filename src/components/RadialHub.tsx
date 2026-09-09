@@ -52,7 +52,7 @@ const lighten = (hex: string, ratio: number) => mix(hex, 255, ratio)
 const darken = (hex: string, ratio: number) => mix(hex, 0, ratio)
 
 /** Un formulaire en attente garde sa couleur, mais éteinte. */
-const segColor = (form: FormDef) => (form.pending ? mix(form.accent, 58, 0.62) : form.accent)
+const segColor = (form: FormDef) => (form.pending ? mix(form.accent, 72, 0.42) : form.accent)
 
 /**
  * Accueil radial : un secteur coloré par formulaire, pictogramme et titre.
@@ -122,8 +122,8 @@ export function RadialHub({ forms, onSelect, centerLabel, centerSub }: Props) {
                     x2={to.x}
                     y2={to.y}
                   >
-                    <stop offset="0%" stopColor={base} stopOpacity={form.pending ? 0.22 : 0.46} />
-                    <stop offset="55%" stopColor={base} stopOpacity={form.pending ? 0.12 : 0.24} />
+                    <stop offset="0%" stopColor={base} stopOpacity={form.pending ? 0.3 : 0.46} />
+                    <stop offset="55%" stopColor={base} stopOpacity={form.pending ? 0.16 : 0.24} />
                     <stop offset="100%" stopColor={base} stopOpacity="0" />
                   </linearGradient>
                 </g>

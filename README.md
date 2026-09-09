@@ -57,12 +57,12 @@ sont générés automatiquement.
 
 | Note | Signification | Couleur |
 |------|---------------|---------|
-| 5 | Very Good | or |
-| 4 | Good | vert |
-| 3 | Required Standard | cyan |
-| 2 | Poor | orange |
-| 1 | Unsatisfactory | rouge |
-| / | Not Applicable | gris |
+| 5 | Very Good | or `#E8B93B` |
+| 4 | Good | émeraude `#17AE96` |
+| 3 | Required Standard | azur `#0E9BF0` |
+| 2 | Poor | orange `#E8792B` |
+| 1 | Unsatisfactory | rouge `#E23A5B` |
+| / | Not Applicable | ardoise `#5B6B85` |
 
 Une note 1 ou 2 rend la rubrique *Remarks* obligatoire : le formulaire ne peut pas
 être marqué terminé tant qu'elle n'est pas renseignée.
@@ -72,6 +72,10 @@ Une note 1 ou 2 rend la rubrique *Remarks* obligatoire : le formulaire ne peut p
 L'écran d'accueil est une roue : un secteur coloré par formulaire, son pictogramme
 et son titre. Le centre affiche le formulaire survolé. Les formulaires dont le modèle
 officiel n'est pas encore intégré apparaissent en veille.
+
+Les six couleurs de la roue — azur, orange, or, émeraude, bleu roi, magenta — et le
+code couleur de notation partagent la même palette, définie une seule fois dans
+`src/index.css` (jetons `--grade-*`) et `src/forms/scales.ts`.
 
 ## Transmission du rapport
 

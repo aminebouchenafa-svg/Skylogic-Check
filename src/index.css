@@ -22,16 +22,16 @@
   /* Marque et accents */
   --brand: #d81e33;
   --brand-soft: rgba(216, 30, 51, 0.16);
-  --hud: #22c1d6;
-  --hud-soft: rgba(34, 193, 214, 0.14);
-  --gold: #e3b23c;
+  --hud: #0e9bf0;
+  --hud-soft: rgba(14, 155, 240, 0.16);
+  --gold: #e8b93b;
 
   /* Code couleur des notes */
-  --grade-1: #e5383b;
-  --grade-2: #f58a20;
-  --grade-3: #22c1d6;
-  --grade-4: #2fbf71;
-  --grade-5: #e3b23c;
+  --grade-1: #e23a5b;
+  --grade-2: #e8792b;
+  --grade-3: #0e9bf0;
+  --grade-4: #17ae96;
+  --grade-5: #e8b93b;
   --grade-na: #5b6b85;
 
   --radius: 14px;
@@ -50,7 +50,7 @@ body {
   font-family: var(--font-body);
   color: var(--text);
   background:
-    radial-gradient(1100px 620px at 12% -10%, rgba(34, 193, 214, 0.13), transparent 60%),
+    radial-gradient(1100px 620px at 12% -10%, rgba(14, 155, 240, 0.14), transparent 60%),
     radial-gradient(900px 520px at 100% 0%, rgba(216, 30, 51, 0.12), transparent 55%),
     linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
   background-attachment: fixed;
@@ -245,7 +245,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .btn-primary { background: linear-gradient(135deg, var(--brand), #a3162a); border-color: transparent; box-shadow: 0 8px 20px rgba(216, 30, 51, 0.3); }
 .btn-primary:hover { filter: brightness(1.1); background: linear-gradient(135deg, var(--brand), #a3162a); }
-.btn-hud { background: linear-gradient(135deg, rgba(34, 193, 214, 0.9), rgba(20, 130, 160, 0.9)); border-color: transparent; color: #04121a; }
+.btn-hud { background: linear-gradient(135deg, rgba(14, 155, 240, 0.95), rgba(20, 90, 165, 0.95)); border-color: transparent; color: #f2f8ff; }
 .btn-hud:hover { filter: brightness(1.1); }
 .btn-ghost { background: transparent; border-color: var(--stroke); color: var(--text-dim); }
 .btn-sm { padding: 7px 12px; font-size: 12px; }
@@ -479,7 +479,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 .hub-badge.lit { transform: translate(-50%, -50%) scale(1.12); }
 .hub-badge.lit:not(.pending) { box-shadow: 0 10px 26px rgba(0, 0, 0, 0.6), 0 0 0 5px rgba(6, 12, 23, 0.85), 0 0 26px var(--seg); }
-.hub-badge.pending { cursor: default; filter: grayscale(0.65) brightness(0.7); }
+.hub-badge.pending { cursor: default; filter: grayscale(0.42) brightness(0.78); }
 
 .hub-label {
   position: absolute;
