@@ -28,28 +28,28 @@ export const SCALE_AH: GradeScale = {
       short: '5',
       label: 'Very Good',
       description: 'Performance remarquable, pouvant servir de référence.',
-      color: '#E8B93B',
+      color: '#4E80ED',
     },
     {
       value: '4',
       short: '4',
       label: 'Good',
       description: 'Performance sûre et efficace, marge confortable.',
-      color: '#17AE96',
+      color: '#52B685',
     },
     {
       value: '3',
       short: '3',
       label: 'Required Standard',
       description: 'Standard exigé atteint.',
-      color: '#0E9BF0',
+      color: '#E9A03D',
     },
     {
       value: '2',
       short: '2',
       label: 'Poor',
       description: 'En dessous du standard exigé. Remarque obligatoire.',
-      color: '#E8792B',
+      color: '#E87B36',
       failing: true,
     },
     {
@@ -57,7 +57,7 @@ export const SCALE_AH: GradeScale = {
       short: '1',
       label: 'Unsatisfactory',
       description: 'Non satisfaisant. Remarque obligatoire et suite à donner.',
-      color: '#E23A5B',
+      color: '#DB524C',
       failing: true,
     },
   ],
@@ -81,8 +81,8 @@ export function findLevel(scale: GradeScale, value: string): GradeLevel | undefi
 }
 
 export const RESULT_CHOICES = [
-  { value: 'Satisfactory', label: 'Satisfactory', color: '#17AE96' },
-  { value: 'Unsatisfactory', label: 'Unsatisfactory', color: '#E23A5B' },
+  { value: 'Satisfactory', label: 'Satisfactory', color: '#52B685' },
+  { value: 'Unsatisfactory', label: 'Unsatisfactory', color: '#DB524C' },
 ]
 
 export const REMINDER_LINE =

@@ -27,11 +27,11 @@
   --gold: #e8b93b;
 
   /* Code couleur des notes */
-  --grade-1: #e23a5b;
-  --grade-2: #e8792b;
-  --grade-3: #0e9bf0;
-  --grade-4: #17ae96;
-  --grade-5: #e8b93b;
+  --grade-1: #db524c;
+  --grade-2: #e87b36;
+  --grade-3: #e9a03d;
+  --grade-4: #52b685;
+  --grade-5: #4e80ed;
   --grade-na: #5b6b85;
 
   --radius: 14px;
@@ -307,25 +307,46 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .grade-buttons { display: flex; gap: 6px; }
 
 .grade-btn {
-  width: 40px; height: 36px;
-  border-radius: 8px;
-  border: 1px solid var(--stroke);
-  background: rgba(6, 12, 23, 0.6);
-  color: var(--text-dim);
+  width: 44px; height: 40px;
+  border-radius: 11px;
+  border: 2px solid rgba(120, 165, 220, 0.2);
+  background: rgba(8, 14, 26, 0.7);
+  color: var(--text-faint);
   cursor: pointer;
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 700;
   transition: all 0.14s ease;
 }
 
-.grade-btn:hover { border-color: var(--btn-color); color: var(--btn-color); }
-.grade-btn.on { background: var(--btn-color); border-color: var(--btn-color); color: #04070f; box-shadow: 0 0 16px color-mix(in srgb, var(--btn-color) 45%, transparent); }
-.grade-btn.na { width: 44px; font-size: 12px; }
+.grade-btn:hover {
+  border-color: color-mix(in srgb, var(--btn-color) 60%, transparent);
+  color: var(--btn-color);
+}
+
+.grade-btn.on {
+  border-color: var(--btn-color);
+  color: var(--btn-color);
+  background: color-mix(in srgb, var(--btn-color) 15%, rgba(8, 14, 26, 0.9));
+  box-shadow: 0 0 18px color-mix(in srgb, var(--btn-color) 32%, transparent);
+}
+
+.grade-btn.na { font-size: 15px; }
 
 .legend { display: flex; flex-wrap: wrap; gap: 14px; padding: 12px 18px; border-top: 1px solid var(--stroke); }
 .legend-item { display: flex; align-items: center; gap: 7px; font-size: 11.5px; color: var(--text-dim); }
-.legend-dot { width: 10px; height: 10px; border-radius: 3px; background: var(--dot); }
+.legend-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 27px; height: 25px;
+  border-radius: 8px;
+  border: 2px solid var(--dot);
+  color: var(--dot);
+  background: rgba(8, 14, 26, 0.6);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+}
 
 /* --------------------------------------------------------------- Divers */
 
@@ -591,4 +612,4 @@ button, input, select, textarea { font: inherit; color: inherit; }
   z-index: 5;
 }
 
-.legend-bar .legend-item strong { font-family: var(--font-display); font-size: 14px; color: var(--text); }
+

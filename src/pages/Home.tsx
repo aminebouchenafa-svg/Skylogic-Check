@@ -82,16 +82,16 @@ export function Home({ records, onOpenForm, onOpenRecord, onGoArchive }: Props) 
               <div
                 key={level.value}
                 style={{
-                  borderLeft: `3px solid ${level.color}`,
+                  border: '1px solid var(--stroke)',
                   background: 'rgba(6,12,23,0.5)',
-                  borderRadius: 9,
-                  padding: '12px 14px',
+                  borderRadius: 11,
+                  padding: '14px 16px',
                 }}
               >
-                <div style={{ color: level.color, fontWeight: 700, fontSize: 20, fontFamily: 'var(--font-display)' }}>
+                <span className="legend-badge" style={{ ['--dot' as string]: level.color }}>
                   {level.short}
-                </div>
-                <div style={{ fontSize: 13, marginTop: 3 }}>{level.label}</div>
+                </span>
+                <div style={{ fontSize: 13, marginTop: 10, fontWeight: 600 }}>{level.label}</div>
                 <div style={{ fontSize: 11.5, color: 'var(--text-faint)', marginTop: 6, lineHeight: 1.5 }}>
                   {level.description}
                 </div>

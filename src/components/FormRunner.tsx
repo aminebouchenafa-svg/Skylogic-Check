@@ -290,8 +290,10 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
       <div className="panel legend-bar">
         {selectableLevels(getScale(form.scaleId)).map((level) => (
           <span className="legend-item" key={level.value}>
-            <span className="legend-dot" style={{ ['--dot' as string]: level.color }} />
-            <strong>{level.short}</strong> {level.label}
+            <span className="legend-badge" style={{ ['--dot' as string]: level.color }}>
+              {level.short}
+            </span>
+            {level.label}
           </span>
         ))}
       </div>

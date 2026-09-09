@@ -57,12 +57,16 @@ sont générés automatiquement.
 
 | Note | Signification | Couleur |
 |------|---------------|---------|
-| 5 | Very Good | or `#E8B93B` |
-| 4 | Good | émeraude `#17AE96` |
-| 3 | Required Standard | azur `#0E9BF0` |
-| 2 | Poor | orange `#E8792B` |
-| 1 | Unsatisfactory | rouge `#E23A5B` |
+| 5 | Very Good | bleu `#4E80ED` |
+| 4 | Good | vert `#52B685` |
+| 3 | Required Standard | ambre `#E9A03D` |
+| 2 | Poor | orange `#E87B36` |
+| 1 | Unsatisfactory | rouge `#DB524C` |
 | / | Not Applicable | ardoise `#5B6B85` |
+
+À l'écran, la note est une pastille cerclée : bordure et chiffre à la couleur du
+niveau, fond sombre. Dans le PDF, la case *Grading* est remplie de la même
+couleur, pour qu'un formulaire rempli se lise d'un coup d'œil à l'impression.
 
 Une note 1 ou 2 rend la rubrique *Remarks* obligatoire : le formulaire ne peut pas
 être marqué terminé tant qu'elle n'est pas renseignée.
