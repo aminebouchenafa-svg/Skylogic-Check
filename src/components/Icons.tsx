@@ -1,0 +1,111 @@
+/** Pictogrammes vectoriels, taille et couleur héritées du texte. */
+type Props = { size?: number }
+
+const base = (size: number) => ({
+  width: size,
+  height: size,
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.7,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+})
+
+export const IconGauge = ({ size = 18 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M12 21a9 9 0 1 0-9-9" />
+    <path d="M3 12h3M12 3v3M19.1 5 17 7.1" />
+    <path d="m12 12 4.5-2.5" />
+  </svg>
+)
+
+export const IconForms = ({ size = 18 }: Props) => (
+  <svg {...base(size)}>
+    <rect x="4" y="3" width="16" height="18" rx="2" />
+    <path d="M8 8h8M8 12h8M8 16h5" />
+  </svg>
+)
+
+export const IconArchive = ({ size = 18 }: Props) => (
+  <svg {...base(size)}>
+    <rect x="3" y="4" width="18" height="4" rx="1" />
+    <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8M10 13h4" />
+  </svg>
+)
+
+export const IconSettings = ({ size = 18 }: Props) => (
+  <svg {...base(size)}>
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 7 19.4a1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0-1.2-2.9H1a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 2.6 7a1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 7 2.6h.1A1.7 1.7 0 0 0 9 1.1V1a2 2 0 1 1 4 0v.1A1.7 1.7 0 0 0 15 2.6" />
+  </svg>
+)
+
+export const IconPdf = ({ size = 18 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+    <path d="M14 3v5h5M9 15h1.5a1.5 1.5 0 0 0 0-3H9v6M14.5 18v-6h1.7" />
+  </svg>
+)
+
+export const IconShare = ({ size = 18 }: Props) => (
+  <svg {...base(size)}>
+    <circle cx="18" cy="5" r="3" />
+    <circle cx="6" cy="12" r="3" />
+    <circle cx="18" cy="19" r="3" />
+    <path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4" />
+  </svg>
+)
+
+export const IconMail = ({ size = 18 }: Props) => (
+  <svg {...base(size)}>
+    <rect x="3" y="5" width="18" height="14" rx="2" />
+    <path d="m3 7 9 6 9-6" />
+  </svg>
+)
+
+export const IconWhatsapp = ({ size = 18 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M21 11.5a8.4 8.4 0 0 1-12.6 7.3L3 20.5l1.8-5.2A8.5 8.5 0 1 1 21 11.5z" />
+    <path d="M8.8 8.2c.3-.6.6-.5.9-.5h.6c.2 0 .5 0 .7.5l.8 1.8c.1.3 0 .5-.2.7l-.4.5c-.2.2-.3.4-.1.7a6.3 6.3 0 0 0 2.9 2.5c.3.1.5.1.7-.1l.6-.7c.2-.2.4-.2.6-.1l1.7.9c.3.2.4.3.4.6a2 2 0 0 1-1.9 1.7c-1 0-2.8-.5-4.6-2.2a9.4 9.4 0 0 1-2.6-4c-.3-1 .1-1.9.4-2.3z" />
+  </svg>
+)
+
+export const IconSave = ({ size = 18 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+    <path d="M17 21v-8H7v8M7 3v5h8" />
+  </svg>
+)
+
+export const IconPlus = ({ size = 18 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M12 5v14M5 12h14" />
+  </svg>
+)
+
+export const IconTrash = ({ size = 18 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M4 7h16M10 11v6M14 11v6" />
+    <path d="M6 7v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
+  </svg>
+)
+
+export const IconBack = ({ size = 18 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M19 12H5M12 19l-7-7 7-7" />
+  </svg>
+)
+
+export const IconAlert = ({ size = 18 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M12 9v4M12 17h.01" />
+    <path d="M10.3 3.9 2.4 17.6A2 2 0 0 0 4.1 20.6h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />
+  </svg>
+)
+
+export const IconWing = ({ size = 22 }: Props) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M2.5 13.8 21 4.2c.6-.3 1.2.4.8.9l-5.5 7.3 4 6.6c.3.5-.2 1.1-.8.9l-6.6-2.6-3.2 3.9c-.4.5-1.2.2-1.2-.4l-.1-4.6-5.8-1.4c-.6-.2-.6-1 .1-1z" />
+  </svg>
+)
