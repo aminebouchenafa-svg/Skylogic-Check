@@ -25,7 +25,7 @@ export const discussionSubjectsForm: FormDef = {
   subtitle: 'Sujets traités en formation en ligne',
   category: 'Ligne',
   revision: 'OMD ED 03 – REV 17 JUL 2026',
-  accent: '#0E9BF0',
+  accent: '#E0518B',
   icon: 'discussion',
   scaleId: 'ah-5-1',
   sections: [

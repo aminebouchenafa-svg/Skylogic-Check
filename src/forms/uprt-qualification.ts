@@ -26,7 +26,7 @@ export const uprtQualificationForm: FormDef = {
   subtitle: 'Upset Prevention & Recovery Training',
   category: 'Simulateur',
   revision: 'AH DOA FPNT/ED01/REV00/2024',
-  accent: '#E08B4B',
+  accent: '#E2725C',
   icon: 'uprt',
   scaleId: 'ah-5-1',
   sections: [

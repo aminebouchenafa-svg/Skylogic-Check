@@ -15,7 +15,7 @@ export const checkFailureForm: FormDef = {
   subtitle: 'Mandatory Check Failure Notification Form',
   category: 'Remédiation',
   revision: 'REF. D.O.A – Training Department',
-  accent: '#7C5CE0',
+  accent: '#E2544C',
   icon: 'notification',
   scaleId: 'ah-5-1',
   sections: [
