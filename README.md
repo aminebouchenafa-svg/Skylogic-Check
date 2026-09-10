@@ -27,6 +27,18 @@ npm run preview  # prévisualisation du build
 L'application est entièrement côté client : aucun serveur, aucune base de données.
 Les dossiers sont enregistrés dans le navigateur de l'appareil (`localStorage`).
 
+## Accès
+
+L'application s'ouvre sur un écran d'entrée : un identifiant unique, partagé
+par l'équipe, défini dans `src/lib/auth.ts`. Seule l'empreinte SHA-256 du mot
+de passe y figure ; pour le changer, remplacer `passwordHash` par l'empreinte
+du nouveau.
+
+Ce n'est **pas une protection** : l'application est entièrement téléchargée
+par le navigateur avant que cet écran ne s'affiche, son contenu est donc
+lisible par qui sait le chercher. Le but est d'éviter qu'une personne de
+passage ouvre l'outil. Une vraie fermeture se pose devant le site, pas dedans.
+
 ## Principe : des formulaires décrits, pas codés
 
 Le moteur construit l'écran de saisie, la validation, le code couleur et le PDF à
