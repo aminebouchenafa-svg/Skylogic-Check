@@ -4,6 +4,8 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // L'application est servie à la racine du domaine (Cloudflare Pages).
-  base: '/',
+  // Publiée sur GitHub Pages dans un sous-dossier
+  // (https://<compte>.github.io/Skylogic-Check/) : toutes les ressources
+  // doivent être référencées à partir de ce préfixe.
+  base: '/Skylogic-Check/',
 })

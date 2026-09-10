@@ -1,12 +1,11 @@
 name: Contrôle
 
-# Vérifie que chaque version poussée compile. Le déploiement est assuré
-# par Cloudflare Pages, directement à partir du dépôt.
+# Vérifie les versions poussées sur les branches de travail. La publication
+# de main est assurée par le workflow « Déploiement GitHub Pages ».
 on:
   push:
-    branches: [main, 'claude/**']
+    branches: ['claude/**']
   pull_request:
-  workflow_dispatch:
 
 jobs:
   build:
