@@ -9,6 +9,7 @@ import { Checklist } from './Checklist'
 import { Field } from './Field'
 import { GradeRow } from './GradeRow'
 import { Matrix } from './Matrix'
+import { Statement } from './Statement'
 import { IconAlert, IconBack, IconMail, IconPdf, IconSave, IconShare, IconWhatsapp } from './Icons'
 
 interface Props {
@@ -204,6 +205,12 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
                   <Field key={field.id} field={{ ...field, width: 'full' }} values={values} onChange={setValue} />
                 ))}
             </div>
+          </div>
+        )}
+
+        {section.kind === 'statement' && section.statement && (
+          <div className="panel-body">
+            <Statement statement={section.statement} values={values} onChange={setValue} />
           </div>
         )}
 
