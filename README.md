@@ -4,6 +4,22 @@ Application de notation en vol et au simulateur pour le **Fleet Training Departm
 Saisie sur tablette ou poste fixe, code couleur unique, export **PDF** prêt à être
 transmis par e-mail ou WhatsApp.
 
+## Mise en ligne
+
+L'application est publiée par **Cloudflare Pages**, directement à partir du dépôt.
+Réglages à saisir une seule fois dans le tableau de bord Cloudflare :
+
+| Réglage | Valeur |
+|---------|--------|
+| Branche de production | `main` |
+| Commande de build | `npm run build` |
+| Dossier de sortie | `dist` |
+| Version de Node | lue dans `.nvmrc` (22) |
+
+Chaque push sur `main` redéclenche la publication. Le workflow GitHub
+`Contrôle` ne déploie rien : il vérifie seulement que la version poussée
+passe le lint et compile.
+
 ## Démarrer
 
 ```bash

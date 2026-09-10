@@ -1,0 +1,22 @@
+name: Contrôle
+
+# Vérifie que chaque version poussée compile. Le déploiement est assuré
+# par Cloudflare Pages, directement à partir du dépôt.
+on:
+  push:
+    branches: [main, 'claude/**']
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
