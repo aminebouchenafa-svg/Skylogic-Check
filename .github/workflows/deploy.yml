@@ -1,8 +1,11 @@
 name: Déploiement GitHub Pages
 
+# GitHub n'autorise la publication que depuis la branche par défaut du dépôt.
+# Elle est encore la branche de travail : on déclenche donc sur les deux, et
+# la publication partira de celle qui est en vigueur.
 on:
   push:
-    branches: [main]
+    branches: [main, 'claude/**']
   workflow_dispatch:
 
 permissions:
