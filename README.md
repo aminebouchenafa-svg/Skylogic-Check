@@ -43,9 +43,14 @@ src/
 ### Ajouter un formulaire
 
 1. Créer `src/forms/mon-formulaire.ts` exportant un objet `FormDef`.
-2. Déclarer ses sections : `identification`, `grading`, `matrix`, `notes`,
-   `result`, `signature`. Deux sections partageant le même `spread` sont
-   imprimées côte à côte, comme sur le papier.
+2. Déclarer ses sections : `identification`, `grading`, `checklist`, `matrix`,
+   `notes`, `endorsement`, `result`, `signature`. Deux sections partageant le
+   même `spread` sont imprimées côte à côte, comme sur le papier.
+
+   - `grading` : items notés sur l'échelle du formulaire.
+   - `checklist` : items non notés, simplement cochés dans des colonnes
+     (ex. CM 1 / CM 2) ; les lignes `heading: true` sont des intitulés de rubrique.
+   - `endorsement` : bloc de commentaire suivi d'un visa (nom, fonction, signature).
 3. L'ajouter au tableau `FORMS` dans `src/forms/index.ts`.
 
 L'écran de saisie, la moyenne, l'alerte « sous le standard », le PDF et le partage
@@ -97,6 +102,7 @@ code couleur de notation partagent la même palette, définie une seule fois dan
 | Line Control | Intégré d'après le formulaire officiel D.O.A | 1 page |
 | Line Training | Intégré d'après le formulaire officiel D.O.A | 2 pages |
 | Proficiency Check | Intégré d'après le formulaire officiel D.O.A | 1 page |
+| Mandatory Check Failure Notification | Intégré d'après le formulaire officiel D.O.A | 2 pages |
 | Line Form | En attente du modèle | — |
 | Skill Test | En attente du modèle | — |
 | Remedial Training | En attente du modèle | — |

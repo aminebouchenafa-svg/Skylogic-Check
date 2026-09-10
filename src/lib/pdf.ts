@@ -3,7 +3,7 @@ import autoTable from 'jspdf-autotable'
 import type { RowInput } from 'jspdf-autotable'
 import type { FormDef, FormRecord, MatrixDef, SectionDef } from '../types/form'
 import { findLevel, getScale } from '../forms/scales'
-import { cellId } from './ids'
+import { cellId, tickId } from './ids'
 import type { AppSettings } from './storage'
 
 /**
@@ -89,7 +89,9 @@ function drawTitle(doc: jsPDF, form: FormDef, settings: AppSettings, y: number):
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(16)
   doc.setTextColor(...hexToRgb(INK))
-  doc.text(form.title.toUpperCase(), M + (CONTENT_W - logoW) / 2, y + 8.8, { align: 'center' })
+  const heading = (form.printTitle ?? form.title).toUpperCase()
+  doc.setFontSize(heading.length > 34 ? 13 : 16)
+  doc.text(heading, M + (CONTENT_W - logoW) / 2, y + 8.6, { align: 'center' })
 
   if (settings.logo) {
     try {
@@ -133,17 +135,18 @@ function drawLegend(doc: jsPDF, form: FormDef, y: number): number {
 
 function drawIdentification(doc: jsPDF, section: SectionDef, record: FormRecord, y: number): number {
   const fields = (section.fields ?? []).filter((f) => f.type !== 'signature' && f.type !== 'textarea')
+  const pairs = section.pairsPerRow ?? 2
   const rows: string[][] = []
-  for (let i = 0; i < fields.length; i += 2) {
-    const a = fields[i]
-    const b = fields[i + 1]
-    rows.push([
-      `${a.label} :`,
-      show(record.values[a.id], a.type),
-      b ? `${b.label} :` : '',
-      b ? show(record.values[b.id], b.type) : '',
-    ])
+  for (let i = 0; i < fields.length; i += pairs) {
+    const row: string[] = []
+    for (let k = 0; k < pairs; k += 1) {
+      const field = fields[i + k]
+      row.push(field ? `${field.label} :` : '', field ? show(record.values[field.id], field.type) : '')
+    }
+    rows.push(row)
   }
+  const labelW = pairs === 3 ? 28 : 42
+  const valueW = (CONTENT_W - labelW * pairs) / pairs
   autoTable(doc, {
     startY: y,
     margin: { left: M, right: M, top: M, bottom: PAGE_H - bottomLimit },
@@ -156,25 +159,27 @@ function drawIdentification(doc: jsPDF, section: SectionDef, record: FormRecord,
       lineWidth: 0.3,
       textColor: hexToRgb(INK),
     },
-    columnStyles: {
-      0: { cellWidth: 42, fontStyle: 'bold' },
-      1: { cellWidth: 51 },
-      2: { cellWidth: 42, fontStyle: 'bold' },
-      3: { cellWidth: 'auto' },
-    },
+    columnStyles: Object.fromEntries(
+      Array.from({ length: pairs * 2 }, (_, i) =>
+        i % 2 === 0
+          ? [i, { cellWidth: labelW, fontStyle: 'bold' as const }]
+          : [i, { cellWidth: valueW }],
+      ),
+    ),
   })
   return lastY(doc, y) + 3
 }
 
 function drawMatrix(doc: jsPDF, id: string, matrix: MatrixDef, record: FormRecord, y: number): number {
+  const lead = matrix.hideRowLabels ? [] : ['']
   const head: RowInput[] = []
   if (matrix.groups) {
-    head.push(['', ...matrix.groups.map((g) => ({ content: g.label, colSpan: g.span }))])
+    head.push([...lead, ...matrix.groups.map((g) => ({ content: g.label, colSpan: g.span }))])
   }
-  head.push(['', ...matrix.columns.map((c) => c.label)])
+  head.push([...lead, ...matrix.columns.map((c) => c.label)])
 
   const body = matrix.rows.map((row) => [
-    row.label,
+    ...(matrix.hideRowLabels ? [] : [row.label]),
     ...matrix.columns.map((column) => {
       const raw = record.values[cellId(id, row.id, column.id)]
       const text = show(raw, column.type)
@@ -190,7 +195,7 @@ function drawMatrix(doc: jsPDF, id: string, matrix: MatrixDef, record: FormRecor
     theme: 'grid',
     styles: { fontSize: 7.8, cellPadding: 1.1, lineColor: hexToRgb(INK), lineWidth: 0.3, textColor: hexToRgb(INK), halign: 'center' },
     headStyles: { fillColor: [238, 241, 232], textColor: hexToRgb(INK), fontStyle: 'bold', fontSize: 7.5 },
-    columnStyles: { 0: { halign: 'left', fontStyle: 'bold', cellWidth: 34 } },
+    columnStyles: matrix.hideRowLabels ? {} : { 0: { halign: 'left', fontStyle: 'bold', cellWidth: 34 } },
   })
 
   let cursor = lastY(doc, y)
@@ -287,6 +292,222 @@ function drawGrading(
     },
   })
   return lastY(doc, y)
+}
+
+/**
+ * Découpe un texte en lignes, la première étant raccourcie de la largeur du
+ * libellé en gras qui la précède.
+ */
+function wrapAfterLabel(doc: jsPDF, label: string, text: string, width: number): string[] {
+  doc.setFont('helvetica', 'bold')
+  const labelW = doc.getTextWidth(`${label} `)
+  doc.setFont('helvetica', 'normal')
+
+  const lines: string[] = []
+  let current = ''
+  let available = width - labelW
+  for (const word of text.split(/\s+/)) {
+    const candidate = current ? `${current} ${word}` : word
+    if (doc.getTextWidth(candidate) <= available || !current) {
+      current = candidate
+    } else {
+      lines.push(current)
+      current = word
+      available = width
+    }
+  }
+  lines.push(current)
+  return lines
+}
+
+/**
+ * Liste à cocher : items relevés dans l'une des colonnes, sans notation.
+ * Le libellé est imprimé en gras, ses indicateurs à la suite en romain.
+ */
+function drawChecklist(
+  doc: jsPDF,
+  form: FormDef,
+  section: SectionDef,
+  record: FormRecord,
+  y: number,
+): number {
+  const columns = section.tickColumns ?? []
+  const tickW = 17
+  const textW = CONTENT_W - columns.length * tickW
+  const items = section.items ?? []
+  const pad = 1.3
+  const wrapped = new Map<string, string[]>()
+
+  doc.setFontSize(7.2)
+  const body: RowInput[] = items.map((item) => {
+    if (item.description) {
+      const lines = wrapAfterLabel(doc, item.label, item.description, textW - pad * 2)
+      wrapped.set(item.id, lines)
+      return [lines.join(' '), ...columns.map((c) => (record.values[tickId(item.id, c.id)] ? 'X' : ''))]
+    }
+    return [item.label, ...columns.map((c) => (record.values[tickId(item.id, c.id)] ? 'X' : ''))]
+  })
+
+  autoTable(doc, {
+    startY: y,
+    margin: { left: M, right: M, top: M, bottom: PAGE_H - bottomLimit },
+    head: [['', ...columns.map((c) => c.label)]],
+    body,
+    theme: 'grid',
+    styles: {
+      fontSize: 7.2,
+      cellPadding: pad,
+      lineColor: hexToRgb(INK),
+      lineWidth: 0.25,
+      textColor: hexToRgb(INK),
+      overflow: 'linebreak',
+    },
+    headStyles: {
+      fillColor: tint(form.accent),
+      textColor: hexToRgb(INK),
+      fontStyle: 'bold',
+      fontSize: 7.6,
+      halign: 'center',
+    },
+    columnStyles: {
+      0: { cellWidth: textW },
+      1: { cellWidth: tickW, halign: 'center', fontStyle: 'bold' },
+      2: { cellWidth: tickW, halign: 'center', fontStyle: 'bold' },
+    },
+    didParseCell: (data) => {
+      if (data.section !== 'body') return
+      const item = items[data.row.index]
+      if (!item) return
+
+      if (item.heading) {
+        data.cell.styles.fillColor = tint(form.accent, 0.22)
+        data.cell.styles.fontStyle = 'bold'
+        data.cell.styles.fontSize = 7.6
+        if (data.column.index > 0) data.cell.styles.fillColor = [225, 228, 233]
+        return
+      }
+      if (data.column.index === 0) {
+        const lines = wrapped.get(item.id)
+        if (lines) data.cell.text = lines
+        return
+      }
+      if (data.cell.raw === 'X') {
+        data.cell.styles.fillColor = hexToRgb(form.accent)
+        data.cell.styles.textColor = [255, 255, 255]
+        data.cell.styles.fontSize = 9
+      }
+    },
+    didDrawCell: (data) => {
+      // Le libellé en gras est redessiné par-dessus la première ligne.
+      if (data.section !== 'body' || data.column.index !== 0) return
+      const item = items[data.row.index]
+      const lines = item && !item.heading ? wrapped.get(item.id) : undefined
+      if (!item || !lines) return
+
+      const { x, y: cy, width, height } = data.cell
+      doc.setFillColor(255, 255, 255)
+      doc.rect(x + 0.15, cy + 0.15, width - 0.3, height - 0.3, 'F')
+
+      doc.setFontSize(7.2)
+      doc.setTextColor(...hexToRgb(INK))
+      const lh = 3.1
+      const baseY = cy + pad + 2.2
+      doc.setFont('helvetica', 'bold')
+      doc.text(item.label, x + pad, baseY)
+      const labelW = doc.getTextWidth(`${item.label} `)
+      doc.setFont('helvetica', 'normal')
+      lines.forEach((line, index) => {
+        doc.text(line, x + pad + (index === 0 ? labelW : 0), baseY + index * lh)
+      })
+    },
+  })
+
+  let cursor = lastY(doc, y)
+  if (section.note) {
+    doc.setFont('helvetica', 'bolditalic')
+    doc.setFontSize(7)
+    doc.setTextColor(...hexToRgb(INK))
+    const noteLines = doc.splitTextToSize(section.note, CONTENT_W) as string[]
+    doc.text(noteLines, M, cursor + 3.4)
+    cursor += noteLines.length * 3.2 + 2
+  }
+  return cursor + 3
+}
+
+/** Bloc de commentaire suivi d'un visa nominatif (nom, fonction, signature). */
+function drawEndorsement(
+  doc: jsPDF,
+  form: FormDef,
+  section: SectionDef,
+  record: FormRecord,
+  y: number,
+): number {
+  const fields = section.fields ?? []
+  const comment = fields.find((f) => f.type === 'textarea')
+  const strip = fields.filter((f) => f.type !== 'textarea')
+  const headH = 6
+  const stripH = strip.length ? 18 : 0
+
+  doc.setFontSize(8.5)
+  const lines = comment
+    ? (doc.splitTextToSize(show(record.values[comment.id]).trim(), CONTENT_W - 10) as string[])
+    : []
+  const boxH = Math.max(30, lines.length * 3.8 + 6)
+
+  if (y + headH + boxH + stripH > bottomLimit) {
+    doc.addPage()
+    y = M
+  }
+
+  doc.setDrawColor(...hexToRgb(INK))
+  doc.setLineWidth(0.35)
+  doc.setFillColor(...tint(form.accent))
+  doc.rect(M, y, CONTENT_W, headH, 'FD')
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(8)
+  doc.setTextColor(...hexToRgb(INK))
+  doc.text(section.title.toUpperCase(), M + CONTENT_W / 2, y + 4.2, { align: 'center' })
+
+  doc.rect(M, y + headH, CONTENT_W, boxH)
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(8.5)
+  if (lines.length) doc.text(lines, M + 3, y + headH + 5.5)
+  doc.setDrawColor(205, 212, 222)
+  doc.setLineWidth(0.15)
+  for (let ly = y + headH + 7.5; ly < y + headH + boxH - 2; ly += 4.6) {
+    doc.line(M + 3, ly, M + CONTENT_W - 3, ly)
+  }
+
+  if (!strip.length) return y + headH + boxH + 3
+
+  const cellW = CONTENT_W / strip.length
+  const stripY = y + headH + boxH
+  strip.forEach((field, index) => {
+    const x = M + index * cellW
+    doc.setDrawColor(...hexToRgb(INK))
+    doc.setLineWidth(0.35)
+    doc.rect(x, stripY, cellW, stripH)
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(7.5)
+    doc.setTextColor(...hexToRgb(INK))
+    doc.text(`${field.label} :`, x + 3, stripY + 4.5)
+
+    const value = record.values[field.id]
+    if (field.type === 'signature') {
+      if (typeof value === 'string' && value.startsWith('data:image')) {
+        try {
+          doc.addImage(value, 'PNG', x + 3, stripY + 5.5, cellW - 6, stripH - 8)
+        } catch {
+          /* signature illisible : la case reste vide */
+        }
+      }
+    } else {
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(8.5)
+      doc.text(show(value), x + 3, stripY + 12)
+    }
+  })
+  return stripY + stripH + 3
 }
 
 /** Bloc encadré avec bandeau de titre (Remarks, commentaires). */
@@ -506,6 +727,16 @@ export function buildPdf(form: FormDef, record: FormRecord, settings: AppSetting
         if (field) y = drawBoxed(doc, form, field.label, show(record.values[field.id]), y, 15)
         break
       }
+      case 'checklist':
+        if (y + 30 > bottomLimit && y > M + 30) {
+          doc.addPage()
+          y = M
+        }
+        y = drawChecklist(doc, form, section, record, y)
+        break
+      case 'endorsement':
+        y = drawEndorsement(doc, form, section, record, y)
+        break
       case 'result':
         y = drawResult(doc, section, record, y)
         break

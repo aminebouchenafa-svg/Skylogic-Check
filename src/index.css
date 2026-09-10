@@ -613,3 +613,88 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 
+
+/* ------------------------------------------------------- Listes à cocher */
+
+.tick-list { --tick-cols: 74px; }
+
+.tick-head,
+.tick-row {
+  display: grid;
+  grid-template-columns: 1fr var(--tick-cols) var(--tick-cols);
+  gap: 10px;
+  align-items: center;
+}
+
+.tick-head {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  background: var(--surface-solid);
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--stroke);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  font-weight: 600;
+}
+
+.tick-head span { text-align: center; }
+
+.tick-heading {
+  padding: 11px 18px;
+  background: rgba(120, 170, 225, 0.07);
+  border-top: 1px solid var(--stroke);
+  border-bottom: 1px solid var(--stroke);
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.tick-row { padding: 12px 18px; border-bottom: 1px solid var(--stroke); }
+.tick-row:last-child { border-bottom: none; }
+.tick-row:hover { background: rgba(120, 170, 225, 0.04); }
+
+.tick-label { font-size: 13px; font-weight: 600; }
+.tick-desc { font-size: 12.5px; color: var(--text-faint); line-height: 1.55; }
+
+.tick-box {
+  justify-self: center;
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border-radius: 9px;
+  border: 2px solid rgba(120, 165, 220, 0.22);
+  background: rgba(8, 14, 26, 0.7);
+  color: transparent;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.tick-box:hover { border-color: var(--hud); }
+
+.tick-box.on {
+  border-color: var(--hud);
+  color: var(--hud);
+  background: color-mix(in srgb, var(--hud) 16%, rgba(8, 14, 26, 0.9));
+  box-shadow: 0 0 16px color-mix(in srgb, var(--hud) 30%, transparent);
+}
+
+/* ------------------------------------------------------------ Visas */
+
+.endorse-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--stroke);
+}
+
+@media (max-width: 700px) {
+  .tick-list { --tick-cols: 56px; }
+  .tick-head, .tick-row { padding-left: 12px; padding-right: 12px; }
+}

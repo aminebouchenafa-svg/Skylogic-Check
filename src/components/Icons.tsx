@@ -158,3 +158,12 @@ export const IconRemedial = ({ size = 26 }: Props) => (
     <path d="m9.4 12.2 1.9 1.9 3.6-3.8" />
   </svg>
 )
+
+export const IconNotification = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" />
+    <path d="M14 3v5h5" />
+    <circle cx="17.5" cy="6.5" r="3.5" />
+    <path d="M17.5 5v1.8M17.5 8.3v.01" />
+  </svg>
+)

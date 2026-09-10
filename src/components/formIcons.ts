@@ -1,5 +1,13 @@
 import type { ReactElement } from 'react'
-import { IconLineCheck, IconRemedial, IconReport, IconSimulator, IconSkill, IconTraining } from './Icons'
+import {
+  IconLineCheck,
+  IconNotification,
+  IconRemedial,
+  IconReport,
+  IconSimulator,
+  IconSkill,
+  IconTraining,
+} from './Icons'
 
 /** Association entre la clé d'un formulaire et son pictogramme sur l'accueil. */
 export const FORM_ICONS: Record<string, (props: { size?: number }) => ReactElement> = {
@@ -9,4 +17,5 @@ export const FORM_ICONS: Record<string, (props: { size?: number }) => ReactEleme
   report: IconReport,
   skill: IconSkill,
   remedial: IconRemedial,
+  notification: IconNotification,
 }

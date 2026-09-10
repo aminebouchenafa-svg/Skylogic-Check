@@ -43,6 +43,8 @@ export interface GradedItemDef {
   allowNA?: boolean
   /** Certaines lignes ne portent pas une note mais une date (ex. date d'approche sur avion). */
   input?: 'grade' | 'date' | 'text'
+  /** Ligne d'intitulé de rubrique à l'intérieur d'une grille (PRE-FLIGHT, CRUISE…). */
+  heading?: boolean
   /** Item mis en évidence sur le formulaire officiel. */
   emphasis?: boolean
 }
@@ -53,6 +55,8 @@ export interface MatrixDef {
   groups?: { label: string; span: number }[]
   columns: { id: string; label: string; type?: FieldType; options?: string[]; prefix?: string }[]
   rows: { id: string; label: string }[]
+  /** Masque la colonne des intitulés de ligne quand le tableau n'en a pas. */
+  hideRowLabels?: boolean
   /** Note affichée sous le tableau. */
   note?: string
 }
@@ -60,8 +64,12 @@ export interface MatrixDef {
 export type SectionKind =
   | 'identification'
   | 'grading'
+  /** Liste à cocher : les items ne sont pas notés, ils sont relevés. */
+  | 'checklist'
   | 'matrix'
   | 'notes'
+  /** Bloc de commentaire suivi d'un visa nominatif. */
+  | 'endorsement'
   | 'result'
   | 'signature'
 
@@ -82,6 +90,12 @@ export interface SectionDef {
   scaleId?: string
   /** Commentaire libre attaché à la grille. */
   commentField?: { id: string; label: string; placeholder?: string }
+  /** Colonnes à cocher des sections « checklist » (ex. CM 1 / CM 2). */
+  tickColumns?: { id: string; label: string }[]
+  /** Mention imprimée sous la section. */
+  note?: string
+  /** Nombre de couples libellé/valeur par ligne à l'impression (défaut : 2). */
+  pairsPerRow?: number
   /**
    * Mise en page du PDF : les sections partageant le même « spread » sont
    * imprimées côte à côte, comme sur le formulaire papier.
@@ -119,6 +133,8 @@ export interface FormDef {
   /** Référence document. */
   code: string
   title: string
+  /** Intitulé exact porté par le document papier, imprimé en tête du PDF. */
+  printTitle?: string
   subtitle?: string
   category: 'Ligne' | 'Simulateur' | 'Examen' | 'Remédiation'
   revision: string

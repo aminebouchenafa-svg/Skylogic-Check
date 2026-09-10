@@ -5,6 +5,7 @@ import { buildPdfFile } from '../lib/pdf'
 import { downloadBlob, canShareFiles, mailtoLink, shareFile, whatsappLink } from '../lib/share'
 import { upsertRecord } from '../lib/storage'
 import type { AppSettings } from '../lib/storage'
+import { Checklist } from './Checklist'
 import { Field } from './Field'
 import { GradeRow } from './GradeRow'
 import { Matrix } from './Matrix'
@@ -67,6 +68,7 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
     summary.failing.length > 0 && !String(values.remarks ?? '').trim() &&
     form.sections.some((s) => s.id === 'remarks')
 
+  const isGraded = form.sections.some((s) => s.kind === 'grading')
   const subject = String(values.name ?? '').trim()
 
   const persist = (nextStatus: FormRecord['status']) => {
@@ -172,6 +174,39 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
           </>
         )}
 
+        {section.kind === 'checklist' && (
+          <>
+            <Checklist
+              items={section.items ?? []}
+              columns={section.tickColumns ?? []}
+              values={values}
+              onChange={setValue}
+            />
+            {section.note && (
+              <div className="panel-body" style={{ borderTop: '1px solid var(--stroke)' }}>
+                <div className="field-hint">{section.note}</div>
+              </div>
+            )}
+          </>
+        )}
+
+        {section.kind === 'endorsement' && (
+          <div className="panel-body">
+            {(section.fields ?? [])
+              .filter((f) => f.type === 'textarea')
+              .map((field) => (
+                <Field key={field.id} field={field} values={values} onChange={setValue} />
+              ))}
+            <div className="endorse-strip">
+              {(section.fields ?? [])
+                .filter((f) => f.type !== 'textarea')
+                .map((field) => (
+                  <Field key={field.id} field={{ ...field, width: 'full' }} values={values} onChange={setValue} />
+                ))}
+            </div>
+          </div>
+        )}
+
         {section.kind === 'matrix' && section.matrix && (
           <div className="panel-body">
             <Matrix id={section.id} matrix={section.matrix} values={values} onChange={setValue} />
@@ -255,15 +290,17 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
           <p className="page-sub">{form.subtitle}</p>
         </div>
 
-        <div className="panel kpi" style={{ minWidth: 200 }}>
-          <div className="kpi-label">Moyenne</div>
-          <div className="kpi-value" style={{ color: form.accent }}>
-            {summary.average ? summary.average.toFixed(2) : '—'}
+        {isGraded && (
+          <div className="panel kpi" style={{ minWidth: 200 }}>
+            <div className="kpi-label">Moyenne</div>
+            <div className="kpi-value" style={{ color: form.accent }}>
+              {summary.average ? summary.average.toFixed(2) : '—'}
+            </div>
+            <div className="kpi-hint">
+              {summary.scored} item(s) noté(s) sur {summary.count}
+            </div>
           </div>
-          <div className="kpi-hint">
-            {summary.scored} item(s) noté(s) sur {summary.count}
-          </div>
-        </div>
+        )}
       </div>
 
       {summary.failing.length > 0 && (
@@ -287,16 +324,18 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
         </div>
       )}
 
-      <div className="panel legend-bar">
-        {selectableLevels(getScale(form.scaleId)).map((level) => (
-          <span className="legend-item" key={level.value}>
-            <span className="legend-badge" style={{ ['--dot' as string]: level.color }}>
-              {level.short}
+      {isGraded && (
+        <div className="panel legend-bar">
+          {selectableLevels(getScale(form.scaleId)).map((level) => (
+            <span className="legend-item" key={level.value}>
+              <span className="legend-badge" style={{ ['--dot' as string]: level.color }}>
+                {level.short}
+              </span>
+              {level.label}
             </span>
-            {level.label}
-          </span>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {blocks}
 

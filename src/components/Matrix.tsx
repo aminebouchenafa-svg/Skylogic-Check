@@ -16,7 +16,7 @@ export function Matrix({ id, matrix, values, onChange }: Props) {
         <thead>
           {matrix.groups && (
             <tr>
-              <th className="row-head" />
+              {!matrix.hideRowLabels && <th className="row-head" />}
               {matrix.groups.map((group) => (
                 <th key={group.label} colSpan={group.span}>
                   {group.label}
@@ -25,7 +25,7 @@ export function Matrix({ id, matrix, values, onChange }: Props) {
             </tr>
           )}
           <tr>
-            <th className="row-head" />
+            {!matrix.hideRowLabels && <th className="row-head" />}
             {matrix.columns.map((column) => (
               <th key={column.id}>{column.label}</th>
             ))}
@@ -34,7 +34,7 @@ export function Matrix({ id, matrix, values, onChange }: Props) {
         <tbody>
           {matrix.rows.map((row) => (
             <tr key={row.id}>
-              <td className="row-label">{row.label}</td>
+              {!matrix.hideRowLabels && <td className="row-label">{row.label}</td>}
               {matrix.columns.map((column) => {
                 const key = cellId(id, row.id, column.id)
                 const value = String(values[key] ?? '')
