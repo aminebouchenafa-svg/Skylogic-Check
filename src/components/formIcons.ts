@@ -11,6 +11,7 @@ import {
   IconRnav,
   IconSimulator,
   IconSkill,
+  IconSyllabus,
   IconTraining,
 } from './Icons'
 
@@ -28,4 +29,5 @@ export const FORM_ICONS: Record<string, (props: { size?: number }) => ReactEleme
   rnav: IconRnav,
   confidential: IconConfidential,
   airfield: IconAirfield,
+  syllabus: IconSyllabus,
 }

@@ -564,8 +564,10 @@ function drawChecklist(
   y: number,
 ): number {
   const columns = section.tickColumns ?? []
+  const suite = section.trailingColumns ?? []
   const tickW = 17
-  const textW = CONTENT_W - columns.length * tickW
+  const suiteW = suite.length ? 34 : 0
+  const textW = CONTENT_W - columns.length * tickW - suite.length * suiteW
   const items = section.items ?? []
   const pad = 1.3
   const wrapped = new Map<string, string[]>()
@@ -575,15 +577,23 @@ function drawChecklist(
     if (item.description) {
       const lines = wrapAfterLabel(doc, item.label, item.description, textW - pad * 2)
       wrapped.set(item.id, lines)
-      return [lines.join(' '), ...columns.map((c) => (record.values[tickId(item.id, c.id)] ? 'X' : ''))]
+      return [
+        lines.join(' '),
+        ...columns.map((c) => (record.values[tickId(item.id, c.id)] ? (c.mark ?? 'X') : '')),
+        ...suite.map((c) => show(record.values[tickId(item.id, c.id)], c.type)),
+      ]
     }
-    return [item.label, ...columns.map((c) => (record.values[tickId(item.id, c.id)] ? 'X' : ''))]
+    return [
+      item.label,
+      ...columns.map((c) => (record.values[tickId(item.id, c.id)] ? (c.mark ?? 'X') : '')),
+      ...suite.map((c) => show(record.values[tickId(item.id, c.id)], c.type)),
+    ]
   })
 
   autoTable(doc, {
     startY: y,
     margin: { left: M, right: M, top: M, bottom: PAGE_H - bottomLimit },
-    head: [['', ...columns.map((c) => c.label)]],
+    head: [['', ...columns.map((c) => c.label), ...suite.map((c) => c.label)]],
     body,
     theme: 'grid',
     styles: {
@@ -601,11 +611,17 @@ function drawChecklist(
       fontSize: 7.6,
       halign: 'center',
     },
-    columnStyles: {
-      0: { cellWidth: textW },
-      1: { cellWidth: tickW, halign: 'center', fontStyle: 'bold' },
-      2: { cellWidth: tickW, halign: 'center', fontStyle: 'bold' },
-    },
+    columnStyles: Object.fromEntries([
+      [0, { cellWidth: textW }],
+      ...columns.map((_, i) => [
+        i + 1,
+        { cellWidth: tickW, halign: 'center' as const, fontStyle: 'bold' as const },
+      ]),
+      ...suite.map((_, i) => [
+        columns.length + i + 1,
+        { cellWidth: suiteW, halign: 'center' as const },
+      ]),
+    ]),
     didParseCell: (data) => {
       if (data.section !== 'body') return
       const item = items[data.row.index]
@@ -623,9 +639,11 @@ function drawChecklist(
         if (lines) data.cell.text = lines
         return
       }
-      if (data.cell.raw === 'X') {
-        data.cell.styles.fillColor = hexToRgb(form.accent)
-        data.cell.styles.textColor = [255, 255, 255]
+      if (data.column.index > columns.length) return
+      if (data.cell.raw) {
+        const couleur = columns[data.column.index - 1]?.color ?? form.accent
+        data.cell.styles.fillColor = hexToRgb(couleur)
+        data.cell.styles.textColor = isLight(couleur) ? hexToRgb(INK) : [255, 255, 255]
         data.cell.styles.fontSize = 9
       }
     },

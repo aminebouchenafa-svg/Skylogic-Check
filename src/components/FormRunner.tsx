@@ -238,6 +238,8 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
               columns={section.tickColumns ?? []}
               values={values}
               onChange={setValue}
+              exclusive={section.exclusiveTicks}
+              trailing={section.trailingColumns}
             />
             {section.note && (
               <div className="panel-body" style={{ borderTop: '1px solid var(--stroke)' }}>

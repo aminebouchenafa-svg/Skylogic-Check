@@ -73,6 +73,9 @@ src/
    - `grading` : items notés sur l'échelle du formulaire.
    - `checklist` : items non notés, simplement cochés dans des colonnes
      (ex. CM 1 / CM 2) ; les lignes `heading: true` sont des intitulés de rubrique.
+     `exclusiveTicks` rend les colonnes mutuellement exclusives (Oui / Non),
+     `trailingColumns` ajoute des colonnes de saisie après les cases, et chaque
+     colonne peut porter son propre signe et sa propre couleur.
    - `endorsement` : bloc de commentaire suivi d'un visa (nom, fonction, signature).
    - `statement` : phrase d'attestation dont les passages `{entre accolades}`
      se complètent directement dans le texte.
@@ -153,6 +156,7 @@ palette, définie une seule fois dans `src/index.css` (jetons `--grade-*`) et
 | RNAV Approaches – Initial Qualification Training | Intégré d'après le formulaire officiel D.O.A | 1 page |
 | Confidential Report | Intégré d'après le formulaire officiel D.O.A | 1 page |
 | CAT “C” Airfield Training Record | Intégré d'après le formulaire officiel D.O.A | 1 page |
+| Training Requirement Record | Intégré d'après le formulaire officiel D.O.A | 1 page |
 | Line Form | En attente du modèle | — |
 | Skill Test | En attente du modèle | — |
 | Remedial Training | En attente du modèle | — |
