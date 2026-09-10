@@ -196,9 +196,13 @@ function drawMatrix(doc: jsPDF, id: string, matrix: MatrixDef, record: FormRecor
   }
   head.push([...lead, ...matrix.columns.map((c) => c.label)])
 
+  const signatures = matrix.columns.some((c) => c.type === 'signature')
+  const decalage = matrix.hideRowLabels ? 0 : 1
+
   const body = matrix.rows.map((row) => [
     ...(matrix.hideRowLabels ? [] : [row.label]),
     ...matrix.columns.map((column) => {
+      if (column.type === 'signature') return ''
       const raw = record.values[cellId(id, row.id, column.id)]
       const text = show(raw, column.type)
       return text && column.prefix ? `${column.prefix} ${text}` : text
@@ -211,9 +215,30 @@ function drawMatrix(doc: jsPDF, id: string, matrix: MatrixDef, record: FormRecor
     head,
     body,
     theme: 'grid',
-    styles: { fontSize: 7.8, cellPadding: 1.1, lineColor: hexToRgb(INK), lineWidth: 0.3, textColor: hexToRgb(INK), halign: 'center' },
+    styles: {
+      fontSize: 7.8,
+      cellPadding: 1.1,
+      lineColor: hexToRgb(INK),
+      lineWidth: 0.3,
+      textColor: hexToRgb(INK),
+      halign: 'center',
+      minCellHeight: signatures ? 14 : undefined,
+    },
     headStyles: { fillColor: [238, 241, 232], textColor: hexToRgb(INK), fontStyle: 'bold', fontSize: 7.5 },
     columnStyles: matrix.hideRowLabels ? {} : { 0: { halign: 'left', fontStyle: 'bold', cellWidth: 34 } },
+    didDrawCell: (data) => {
+      if (data.section !== 'body') return
+      const column = matrix.columns[data.column.index - decalage]
+      if (column?.type !== 'signature') return
+      const valeur = record.values[cellId(id, matrix.rows[data.row.index].id, column.id)]
+      if (typeof valeur !== 'string' || !valeur.startsWith('data:image')) return
+      try {
+        const { x, y: cy, width, height } = data.cell
+        doc.addImage(valeur, 'PNG', x + 2, cy + 1.5, width - 4, height - 3)
+      } catch {
+        /* signature illisible : la case reste vide */
+      }
+    },
   })
 
   let cursor = lastY(doc, y)
@@ -369,6 +394,28 @@ function drawGrading(
     },
   })
   return lastY(doc, y)
+}
+
+/** Trait de découpe, comme les pointillés du formulaire papier. */
+function drawDivider(doc: jsPDF, section: SectionDef, y: number): number {
+  if (y + 12 > bottomLimit) {
+    doc.addPage()
+    y = M
+  }
+  doc.setDrawColor(...hexToRgb(MUTED))
+  doc.setLineWidth(0.3)
+  doc.setLineDashPattern([1.6, 1.4], 0)
+  doc.line(M, y + 4, PAGE_W - M, y + 4)
+  doc.setLineDashPattern([], 0)
+
+  if (section.title) {
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(8)
+    doc.setTextColor(...hexToRgb(INK))
+    doc.text(section.title, M, y + 10)
+    return y + 13
+  }
+  return y + 8
 }
 
 /** Grille de réponses numérotées d'un questionnaire. */
@@ -709,7 +756,7 @@ function drawEndorsement(
     } else {
       doc.setFont('helvetica', 'normal')
       doc.setFontSize(8.5)
-      doc.text(show(value), x + 3, bas + 6)
+      doc.text(show(value, field.type), x + 3, bas + 6)
     }
   })
   return stripY + stripH + 3
@@ -979,6 +1026,9 @@ export function buildPdf(form: FormDef, record: FormRecord, settings: AppSetting
         break
       case 'endorsement':
         y = drawEndorsement(doc, form, section, record, y)
+        break
+      case 'divider':
+        y = drawDivider(doc, section, y)
         break
       case 'answers':
         y = drawAnswers(doc, form, section, record, y)
