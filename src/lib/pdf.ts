@@ -87,11 +87,22 @@ function drawTitle(doc: jsPDF, form: FormDef, settings: AppSettings, y: number):
   doc.rect(M + CONTENT_W - logoW, y, logoW, h)
 
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(16)
   doc.setTextColor(...hexToRgb(INK))
   const heading = (form.printTitle ?? form.title).toUpperCase()
-  doc.setFontSize(heading.length > 34 ? 13 : 16)
-  doc.text(heading, M + (CONTENT_W - logoW) / 2, y + 8.6, { align: 'center' })
+  const titreW = CONTENT_W - logoW - 6
+  // On réduit la taille tant que le titre déborde du cadre, puis on le passe
+  // sur deux lignes : un intitulé long ne doit jamais mordre sur le logo.
+  let taille = 16
+  while (taille > 10 && doc.getStringUnitWidth(heading) * taille * 0.352778 > titreW) taille -= 0.5
+  doc.setFontSize(taille)
+  const lignes = doc.splitTextToSize(heading, titreW) as string[]
+  const centre = M + (CONTENT_W - logoW) / 2
+  if (lignes.length > 1) {
+    doc.setFontSize(Math.min(taille, 11))
+    doc.text(lignes.slice(0, 2), centre, y + 5.6, { align: 'center', lineHeightFactor: 1.3 })
+  } else {
+    doc.text(heading, centre, y + 8.6, { align: 'center' })
+  }
 
   if (settings.logo) {
     try {
@@ -188,9 +199,20 @@ function drawIdentification(doc: jsPDF, section: SectionDef, record: FormRecord,
   return lastY(doc, y) + 3
 }
 
-function drawMatrix(doc: jsPDF, id: string, matrix: MatrixDef, record: FormRecord, y: number): number {
+function drawMatrix(
+  doc: jsPDF,
+  id: string,
+  matrix: MatrixDef,
+  record: FormRecord,
+  y: number,
+  title?: string,
+): number {
   const lead = matrix.hideRowLabels ? [] : ['']
   const head: RowInput[] = []
+  const largeur = matrix.columns.length + lead.length
+  if (title) {
+    head.push([{ content: title, colSpan: largeur, styles: { halign: 'center' } }])
+  }
   if (matrix.groups) {
     head.push([...lead, ...matrix.groups.map((g) => ({ content: g.label, colSpan: g.span }))])
   }
@@ -204,6 +226,7 @@ function drawMatrix(doc: jsPDF, id: string, matrix: MatrixDef, record: FormRecor
     ...matrix.columns.map((column) => {
       if (column.type === 'signature') return ''
       const raw = record.values[cellId(id, row.id, column.id)]
+      if (column.type === 'checkbox') return raw === 'x' ? 'X' : ''
       const text = show(raw, column.type)
       return text && column.prefix ? `${column.prefix} ${text}` : text
     }),
@@ -224,7 +247,14 @@ function drawMatrix(doc: jsPDF, id: string, matrix: MatrixDef, record: FormRecor
       halign: 'center',
       minCellHeight: signatures ? 14 : undefined,
     },
-    headStyles: { fillColor: [238, 241, 232], textColor: hexToRgb(INK), fontStyle: 'bold', fontSize: 7.5 },
+    headStyles: {
+      fillColor: [238, 241, 232],
+      textColor: hexToRgb(INK),
+      fontStyle: 'bold',
+      fontSize: 7.5,
+      // La hauteur réservée aux signatures ne concerne que le corps du tableau.
+      minCellHeight: 0,
+    },
     columnStyles: matrix.hideRowLabels ? {} : { 0: { halign: 'left', fontStyle: 'bold', cellWidth: 34 } },
     didDrawCell: (data) => {
       if (data.section !== 'body') return
@@ -1042,7 +1072,7 @@ export function buildPdf(form: FormDef, record: FormRecord, settings: AppSetting
         y = drawIdentification(doc, section, record, y)
         break
       case 'matrix':
-        if (section.matrix) y = drawMatrix(doc, section.id, section.matrix, record, y)
+        if (section.matrix) y = drawMatrix(doc, section.id, section.matrix, record, y, section.title)
         break
       case 'grading': {
         // On ne rejette la grille sur la page suivante que si l'espace restant

@@ -853,6 +853,16 @@ button, input, select, textarea { font: inherit; color: inherit; }
   transition: border-color 0.15s ease;
 }
 
+.blank.filled {
+  padding: 2px 8px 4px;
+  border-bottom: 2px solid var(--stroke-strong);
+  color: var(--hud);
+  font-weight: 600;
+  text-align: center;
+}
+
+.matrix-tick { width: 20px; height: 20px; accent-color: var(--hud); cursor: pointer; }
+
 .blank::placeholder { color: var(--text-faint); font-weight: 400; font-size: 13px; }
 .blank:focus { border-color: var(--hud); }
 

@@ -53,7 +53,14 @@ export interface GradedItemDef {
 export interface StatementDef {
   /** Texte où chaque {identifiant} marque un passage à compléter. */
   template: string
-  blanks: { id: string; label: string; size?: number; required?: boolean }[]
+  blanks: {
+    id: string
+    label: string
+    size?: number
+    required?: boolean
+    /** Passage repris d'une saisie faite ailleurs : affiché, non modifiable ici. */
+    readOnly?: boolean
+  }[]
   /** Encadre l'attestation et centre son texte, comme un certificat papier. */
   framed?: boolean
 }

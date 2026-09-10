@@ -43,6 +43,14 @@ export function Matrix({ id, matrix, values, onChange }: Props) {
                   <td key={column.id} className={column.type === 'signature' ? 'matrix-sign' : undefined}>
                     {column.type === 'signature' ? (
                       <SignaturePad value={value} onChange={(data) => onChange(key, data)} compact />
+                    ) : column.type === 'checkbox' ? (
+                      <input
+                        id={key}
+                        type="checkbox"
+                        className="matrix-tick"
+                        checked={value === 'x'}
+                        onChange={(e) => onChange(key, e.target.checked ? 'x' : '')}
+                      />
                     ) : column.type === 'select' ? (
                       <select id={key} className="select input" value={value} onChange={(e) => onChange(key, e.target.value)}>
                         <option value="">—</option>
@@ -67,7 +75,7 @@ export function Matrix({ id, matrix, values, onChange }: Props) {
                       <input
                         id={key}
                         className="input"
-                        type={column.type === 'number' ? 'number' : 'text'}
+                        type={column.type === 'date' || column.type === 'number' ? column.type : 'text'}
                         value={value}
                         onChange={(e) => onChange(key, e.target.value)}
                       />

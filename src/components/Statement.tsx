@@ -22,6 +22,15 @@ export function Statement({ statement, values, onChange }: Props) {
         const blank = statement.blanks.find((b) => b.id === match[1])
         if (!blank) return <span key={index}>{part}</span>
 
+        const value = String(values[blank.id] ?? '')
+        if (blank.readOnly) {
+          return (
+            <span className="blank filled" key={index} style={{ minWidth: `${blank.size ?? 14}ch` }}>
+              {value || blank.label}
+            </span>
+          )
+        }
+
         return (
           <input
             key={index}
@@ -29,7 +38,7 @@ export function Statement({ statement, values, onChange }: Props) {
             style={{ width: `${blank.size ?? 14}ch` }}
             aria-label={blank.label}
             placeholder={blank.label}
-            value={String(values[blank.id] ?? '')}
+            value={value}
             onChange={(e) => onChange(blank.id, e.target.value)}
           />
         )

@@ -234,3 +234,10 @@ export const IconLowVis = ({ size = 26 }: Props) => (
     <path d="M4 12.5h16M3 16h13M6 19.5h15" />
   </svg>
 )
+
+export const IconEtops = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M3.5 12h17M12 3.5c2.4 2.4 2.4 14.1 0 17M12 3.5c-2.4 2.4-2.4 14.1 0 17" />
+  </svg>
+)

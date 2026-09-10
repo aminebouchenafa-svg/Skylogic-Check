@@ -4,6 +4,7 @@ import { checkFailureForm } from './check-failure'
 import { commandUpgradeForm } from './command-upgrade'
 import { confidentialAssessmentForm } from './confidential-assessment'
 import { confidentialReportForm } from './confidential-report'
+import { etopsRecordForm } from './etops-record'
 import { lineControlForm } from './line-control'
 import { lowVisibilityForm } from './low-visibility'
 import { lineTrainingForm } from './line-training'
@@ -54,6 +55,7 @@ export const FORMS: FormDef[] = [
   confidentialAssessmentForm,
   catCAirfieldForm,
   trainingRequirementForm,
+  etopsRecordForm,
   placeholder('line-form', 'D.O.A — LINE FORM', 'Line Form', 'Suivi de vol en ligne', 'Ligne', '#17AE96', 'report'),
   placeholder('skill-test', 'D.O.A — SKILL TEST', 'Skill Test', 'Épreuve pratique de qualification de type', 'Examen', '#2F63D8', 'skill'),
   placeholder('remedial', 'D.O.A — REMEDIAL', 'Remedial Training', 'Entraînement de remédiation', 'Remédiation', '#C93FAE', 'remedial'),
