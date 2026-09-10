@@ -67,9 +67,11 @@ export const AIRPORTS: Airport[] = [
   a('SXB', 'Strasbourg'),
   a('ETZ', 'Metz / Nancy'),
   a('BSL', 'Bâle-Mulhouse'),
+  a('MLH', 'Bâle-Mulhouse'),
   // Europe hors France
   a('LHR', 'Londres Heathrow'),
   a('STN', 'Londres Stansted'),
+  a('LGW', 'Londres Gatwick'),
   a('FRA', 'Francfort'),
   a('BER', 'Berlin'),
   a('BRU', 'Bruxelles'),
