@@ -1,4 +1,5 @@
 import type { FormDef } from '../types/form'
+import { FLEET } from './network'
 
 const OUI = '#52B685'
 const NON = '#DB524C'
@@ -35,7 +36,7 @@ export const rnavQualificationForm: FormDef = {
           id: 'aircraft_type',
           label: 'Aircraft Type',
           type: 'select',
-          options: ['B737-800', 'B737 MAX 8', 'A330-200', 'A330-900', 'ATR 72-600', 'B767-300', 'A320'],
+          options: FLEET,
           required: true,
         },
         { id: 'date', label: 'Date', type: 'date', required: true },

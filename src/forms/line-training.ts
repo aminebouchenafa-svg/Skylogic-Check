@@ -1,5 +1,5 @@
 import type { FormDef } from '../types/form'
-import { AIRCRAFT_REGISTRATIONS, AIRPORTS } from './network'
+import { AIRCRAFT_REGISTRATIONS, AIRPORTS, FLEET } from './network'
 import { signatureSection } from './shared'
 import { REMINDER_LINE } from './scales'
 
@@ -33,7 +33,7 @@ export const lineTrainingForm: FormDef = {
           label: 'A/C Type',
           type: 'select',
           width: 'quarter',
-          options: ['B737-800', 'B737 MAX 8', 'A330-200', 'A330-900', 'ATR 72-600', 'B767-300', 'A320'],
+          options: FLEET,
           required: true,
         },
         { id: 'aircraft_reg', label: 'A/C REG', type: 'text', width: 'quarter', suggestions: AIRCRAFT_REGISTRATIONS },

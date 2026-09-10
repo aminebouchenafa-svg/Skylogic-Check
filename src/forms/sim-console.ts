@@ -1,4 +1,5 @@
 import type { FormDef } from '../types/form'
+import { FLEET } from './network'
 
 /**
  * SIMULATOR CONSOLE HANDLING CERTIFICATE — REF. D.O.A, Training Department.
@@ -31,7 +32,7 @@ export const simConsoleForm: FormDef = {
           label: 'Aircraft type',
           type: 'select',
           width: 'half',
-          options: ['B737-800', 'B737 MAX 8', 'A330-200', 'A330-900', 'ATR 72-600', 'B767-300', 'A320'],
+          options: FLEET,
           required: true,
         },
       ],

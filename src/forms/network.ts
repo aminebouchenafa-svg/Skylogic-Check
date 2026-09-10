@@ -24,6 +24,22 @@ export const AIRPORTS: string[] = [
 ]
 
 /**
+ * Types exploités par la compagnie, proposés partout où un formulaire
+ * demande le type avion.
+ */
+export const FLEET: string[] = [
+  'ATR 72-500',
+  'ATR 72-600',
+  'B737-600 NG',
+  'B737-700 NG',
+  'B737-800 NG',
+  'B737 MAX 8',
+  'B737 MAX 9',
+  'A330-200',
+  'A330neo',
+]
+
+/**
  * Immatriculations de la flotte, proposées à la saisie.
  * En attente de la liste officielle : la saisie reste libre d'ici là.
  */

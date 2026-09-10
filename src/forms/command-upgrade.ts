@@ -1,6 +1,7 @@
 import type { FormDef, GradedItemDef } from '../types/form'
 import { REMINDER_LINE } from './scales'
 import { SCALE_COMMAND } from './scales-command'
+import { FLEET } from './network'
 
 /**
  * COMMAND UPGRADE – ASSESSMENT FLIGHT — REF. D.O.A, Training Department.
@@ -159,7 +160,7 @@ export const commandUpgradeForm: FormDef = {
           id: 'aircraft_type',
           label: 'A/C Type',
           type: 'select',
-          options: ['B737-800', 'B737 MAX 8', 'A330-200', 'A330-900', 'ATR 72-600', 'B767-300', 'A320'],
+          options: FLEET,
           required: true,
         },
         { id: 'date', label: 'Date', type: 'date', required: true },
