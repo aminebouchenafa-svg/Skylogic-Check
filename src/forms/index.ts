@@ -70,7 +70,6 @@ export const FORMS: FormDef[] = [
   uprtQualificationForm,
   englishCertificateForm,
   discussionSubjectsForm,
-  placeholder('line-form', 'D.O.A — LINE FORM', 'Line Form', 'Suivi de vol en ligne', 'Ligne', '#17AE96', 'report'),
   placeholder('skill-test', 'D.O.A — SKILL TEST', 'Skill Test', 'Épreuve pratique de qualification de type', 'Examen', '#2F63D8', 'skill'),
   placeholder('remedial', 'D.O.A — REMEDIAL', 'Remedial Training', 'Entraînement de remédiation', 'Remédiation', '#C93FAE', 'remedial'),
 ]
