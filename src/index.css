@@ -853,6 +853,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
   transition: border-color 0.15s ease;
 }
 
+.statement.framed.left { text-align: left; }
+
 .blank.filled {
   padding: 2px 8px 4px;
   border-bottom: 2px solid var(--stroke-strong);

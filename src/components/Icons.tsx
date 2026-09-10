@@ -241,3 +241,12 @@ export const IconEtops = ({ size = 26 }: Props) => (
     <path d="M3.5 12h17M12 3.5c2.4 2.4 2.4 14.1 0 17M12 3.5c-2.4 2.4-2.4 14.1 0 17" />
   </svg>
 )
+
+export const IconRelease = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M3 20.5h18" />
+    <path d="M5.5 17.5 9 8.5a3 3 0 0 1 5.6 0l3.4 9" />
+    <path d="M8.2 14.5h7.6" />
+    <path d="M12 5.5V3" />
+  </svg>
+)

@@ -61,8 +61,10 @@ export interface StatementDef {
     /** Passage repris d'une saisie faite ailleurs : affiché, non modifiable ici. */
     readOnly?: boolean
   }[]
-  /** Encadre l'attestation et centre son texte, comme un certificat papier. */
+  /** Encadre l'attestation, comme un certificat papier. */
   framed?: boolean
+  /** Alignement du texte encadré (défaut : centré). */
+  align?: 'left' | 'center'
 }
 
 /** Tableau à cellules libres (étapes, secteurs, temps de vol…). */

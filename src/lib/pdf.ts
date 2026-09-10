@@ -245,7 +245,9 @@ function drawMatrix(
       lineWidth: 0.3,
       textColor: hexToRgb(INK),
       halign: 'center',
-      minCellHeight: signatures ? 14 : undefined,
+      // La hauteur n'est imposée que si une case doit recevoir une signature :
+      // passer « undefined » ici écrase le défaut et aplatit les lignes.
+      ...(signatures ? { minCellHeight: 14 } : {}),
     },
     headStyles: {
       fillColor: [238, 241, 232],
@@ -849,11 +851,15 @@ function drawStatement(doc: jsPDF, section: SectionDef, record: FormRecord, y: n
   }
 
   if (cadre) {
-    // Certificat : texte centré dans un encadré, comme le document papier.
+    // Certificat : texte encadré, centré ou aligné à gauche selon le document.
+    const gauche = statement.align === 'left'
     doc.setDrawColor(...hexToRgb(INK))
     doc.setLineWidth(0.7)
     doc.rect(M, y, CONTENT_W, hauteur)
-    doc.text(lignes, M + CONTENT_W / 2, y + 14, { align: 'center', lineHeightFactor: 1.6 })
+    doc.text(lignes, gauche ? M + 8 : M + CONTENT_W / 2, y + 14, {
+      align: gauche ? 'left' : 'center',
+      lineHeightFactor: 1.6,
+    })
     return y + hauteur + 6
   }
 
@@ -942,22 +948,25 @@ function drawSignatures(doc: jsPDF, section: SectionDef, record: FormRecord, for
     y = M
   }
 
-  signatures.slice(0, 2).forEach((field, index) => {
-    const x = M + index * (COL_W + GUTTER)
+  const visas = signatures.slice(0, 3)
+  const caseW = (CONTENT_W - GUTTER * (visas.length - 1)) / Math.max(1, visas.length)
+  visas.forEach((field, index) => {
+    const x = M + index * (caseW + GUTTER)
     doc.setDrawColor(...hexToRgb(INK))
     doc.setLineWidth(0.35)
     doc.setFillColor(...tint(form.accent))
-    doc.rect(x, y, COL_W, headH, 'FD')
+    doc.rect(x, y, caseW, headH, 'FD')
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(8)
     doc.setTextColor(...hexToRgb(INK))
-    doc.text(field.label, x + COL_W / 2, y + 4.2, { align: 'center' })
-    doc.rect(x, y + headH, COL_W, boxH)
+    const intitule = doc.splitTextToSize(field.label, caseW - 4) as string[]
+    doc.text(intitule[0], x + caseW / 2, y + 4.2, { align: 'center' })
+    doc.rect(x, y + headH, caseW, boxH)
 
     const data = record.values[field.id]
     if (typeof data === 'string' && data.startsWith('data:image')) {
       try {
-        doc.addImage(data, 'PNG', x + 3, y + headH + 2, COL_W - 6, boxH - 8)
+        doc.addImage(data, 'PNG', x + 3, y + headH + 2, caseW - 6, boxH - 8)
       } catch {
         /* signature illisible : la case reste vide */
       }
@@ -975,7 +984,7 @@ function drawSignatures(doc: jsPDF, section: SectionDef, record: FormRecord, for
 
   // Mention portée sous le visa : la qualité du signataire, par exemple.
   if (section.note) {
-    const largeur = signatures.length > 1 ? CONTENT_W : COL_W
+    const largeur = visas.length > 1 ? CONTENT_W : COL_W
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(8)
     doc.setTextColor(...hexToRgb(INK))
