@@ -1,9 +1,9 @@
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import type { RowInput } from 'jspdf-autotable'
-import type { FieldDef, FormDef, FormRecord, MatrixDef, SectionDef } from '../types/form'
+import type { FieldDef, FormDef, FormRecord, GradedItemDef, MatrixDef, SectionDef } from '../types/form'
 import { findLevel, getScale } from '../forms/scales'
-import { cellId, tickId } from './ids'
+import { cellId, gradeId, tickId } from './ids'
 import type { AppSettings } from './storage'
 
 /**
@@ -227,7 +227,10 @@ function drawMatrix(doc: jsPDF, id: string, matrix: MatrixDef, record: FormRecor
   return cursor + 3
 }
 
-/** Grille de notation. La case « Grading » porte la couleur du code couleur. */
+/**
+ * Grille de notation. La case porte la couleur du code couleur ; une grille
+ * peut comporter plusieurs colonnes, une par secteur évalué.
+ */
 function drawGrading(
   doc: jsPDF,
   form: FormDef,
@@ -238,24 +241,54 @@ function drawGrading(
   width: number,
 ): number {
   const scale = getScale(section.scaleId ?? form.scaleId)
-  const numbered = (section.items ?? []).some((item) => item.code)
-  const gradeW = 17
+  const items = section.items ?? []
+  const colonnes = section.gradeColumns ?? [{ id: '', label: 'Grading' }]
+  const multiple = Boolean(section.gradeColumns)
+  const numbered = items.some((item) => item.code)
+  const gradeW = multiple ? 10 : 17
   const codeW = numbered ? 7 : 0
+  const pad = multiple ? 1 : 0.7
+  const textW = width - codeW - gradeW * colonnes.length
 
-  const body = (section.items ?? []).map((item) => {
-    const raw = record.values[item.id]
-    if (item.input === 'date') {
-      const cells = [item.label, show(raw, 'date') || '/    /']
-      return numbered ? [item.code ?? '', ...cells] : cells
+  const valeur = (item: GradedItemDef, colId: string) =>
+    record.values[colId ? gradeId(item.id, colId) : item.id]
+
+  doc.setFontSize(7.2)
+  const wrapped = new Map<string, string[]>()
+
+  const body: RowInput[] = items.map((item) => {
+    let libelle = item.label
+    if (item.description) {
+      const lignes = wrapAfterLabel(doc, item.label, item.description, textW - pad * 2)
+      wrapped.set(item.id, lignes)
+      libelle = lignes.join(' ')
     }
-    const level = raw ? findLevel(scale, String(raw)) : undefined
-    const cells = [item.label, level ? level.short : '']
-    return numbered ? [item.code ?? '', ...cells] : cells
+    const notes = item.heading
+      ? colonnes.map(() => '')
+      : colonnes.map((col) => {
+          const brut = valeur(item, col.id)
+          if (item.input === 'date') return show(brut, 'date') || '/    /'
+          const niveau = brut ? findLevel(scale, String(brut)) : undefined
+          return niveau ? niveau.short : ''
+        })
+    return numbered ? [item.code ?? '', libelle, ...notes] : [libelle, ...notes]
   })
 
-  const head = numbered
-    ? [['', section.title, 'Grading']]
-    : [[section.title, 'Grading']]
+  const head: RowInput[] = [
+    numbered
+      ? ['', section.title, ...colonnes.map((c) => c.label)]
+      : [section.title, ...colonnes.map((c) => c.label)],
+  ]
+
+  const labelCol = numbered ? 1 : 0
+  const premiereNote = labelCol + 1
+
+  const columnStyles: Record<number, Partial<{ cellWidth: number; halign: 'center' | 'left'; fontStyle: 'bold' }>> = {}
+  if (numbered) columnStyles[0] = { cellWidth: codeW, halign: 'center', fontStyle: 'bold' }
+  columnStyles[labelCol] = { cellWidth: textW }
+  colonnes.forEach((_, i) => {
+    columnStyles[premiereNote + i] = { cellWidth: gradeW, halign: 'center', fontStyle: 'bold' }
+  })
 
   autoTable(doc, {
     startY: y,
@@ -266,7 +299,7 @@ function drawGrading(
     theme: 'grid',
     styles: {
       fontSize: 7.2,
-      cellPadding: 0.7,
+      cellPadding: pad,
       lineColor: hexToRgb(INK),
       lineWidth: 0.25,
       textColor: hexToRgb(INK),
@@ -280,36 +313,98 @@ function drawGrading(
       halign: 'left',
       cellPadding: 1.1,
     },
-    columnStyles: numbered
-      ? {
-          0: { cellWidth: codeW, halign: 'center', fontStyle: 'bold' },
-          1: { cellWidth: width - codeW - gradeW },
-          2: { cellWidth: gradeW, halign: 'center', fontStyle: 'bold' },
-        }
-      : {
-          0: { cellWidth: width - gradeW },
-          1: { cellWidth: gradeW, halign: 'center', fontStyle: 'bold' },
-        },
+    columnStyles,
     didParseCell: (data) => {
-      const gradeCol = numbered ? 2 : 1
-      const labelCol = numbered ? 1 : 0
-      if (data.section === 'head' && data.column.index === gradeCol) data.cell.styles.halign = 'center'
+      if (data.section === 'head' && data.column.index >= premiereNote) data.cell.styles.halign = 'center'
       if (data.section !== 'body') return
 
-      const item = (section.items ?? [])[data.row.index]
-      if (item?.emphasis && data.column.index === labelCol) {
-        data.cell.styles.fontStyle = 'bolditalic'
-      }
-      if (data.column.index !== gradeCol || item?.input === 'date') return
+      const item = items[data.row.index]
+      if (!item) return
 
-      const level = item ? findLevel(scale, String(record.values[item.id] ?? '')) : undefined
-      if (!level) return
-      data.cell.styles.fillColor = hexToRgb(level.color)
-      data.cell.styles.textColor = isLight(level.color) ? hexToRgb(INK) : [255, 255, 255]
-      data.cell.styles.fontSize = 9
+      if (item.heading) {
+        data.cell.styles.fillColor =
+          data.column.index >= premiereNote ? [225, 228, 233] : tint(form.accent, 0.22)
+        data.cell.styles.fontStyle = 'bold'
+        data.cell.styles.fontSize = 7.6
+        return
+      }
+      if (item.emphasis && data.column.index === labelCol) data.cell.styles.fontStyle = 'bolditalic'
+      if (data.column.index < premiereNote) {
+        if (data.column.index === labelCol) {
+          const lignes = wrapped.get(item.id)
+          if (lignes) data.cell.text = lignes
+        }
+        return
+      }
+      if (item.input === 'date') return
+
+      const col = colonnes[data.column.index - premiereNote]
+      const niveau = findLevel(scale, String(valeur(item, col.id) ?? ''))
+      if (!niveau) return
+      data.cell.styles.fillColor = hexToRgb(niveau.color)
+      data.cell.styles.textColor = isLight(niveau.color) ? hexToRgb(INK) : [255, 255, 255]
+      data.cell.styles.fontSize = multiple ? 8 : 9
+    },
+    didDrawCell: (data) => {
+      // Le libellé en gras est redessiné par-dessus la première ligne.
+      if (data.section !== 'body' || data.column.index !== labelCol) return
+      const item = items[data.row.index]
+      const lignes = item && !item.heading ? wrapped.get(item.id) : undefined
+      if (!item || !lignes) return
+
+      const { x: cx, y: cy, width: cw, height: ch } = data.cell
+      doc.setFillColor(255, 255, 255)
+      doc.rect(cx + 0.15, cy + 0.15, cw - 0.3, ch - 0.3, 'F')
+
+      doc.setFontSize(7.2)
+      doc.setTextColor(...hexToRgb(INK))
+      const base = cy + pad + 2.2
+      doc.setFont('helvetica', 'bold')
+      doc.text(item.label, cx + pad, base)
+      const largeurLibelle = doc.getTextWidth(`${item.label} `)
+      doc.setFont('helvetica', 'normal')
+      lignes.forEach((ligne, i) => {
+        doc.text(ligne, cx + pad + (i === 0 ? largeurLibelle : 0), base + i * 3.1)
+      })
     },
   })
   return lastY(doc, y)
+}
+
+/** Tableau de référence : barème détaillé, notes et consignes. */
+function drawReference(doc: jsPDF, form: FormDef, section: SectionDef, y: number): number {
+  const rows = section.referenceRows ?? []
+  autoTable(doc, {
+    startY: y,
+    margin: { left: M, right: M, top: M, bottom: PAGE_H - bottomLimit },
+    head: [[{ content: section.title, colSpan: 2 }]],
+    body: rows.map((row) => [row.label, row.description]),
+    theme: 'grid',
+    styles: {
+      fontSize: 7,
+      cellPadding: 1.4,
+      lineColor: hexToRgb(INK),
+      lineWidth: 0.25,
+      textColor: hexToRgb(INK),
+      overflow: 'linebreak',
+    },
+    headStyles: {
+      fillColor: tint(form.accent),
+      textColor: hexToRgb(INK),
+      fontStyle: 'bold',
+      fontSize: 7.6,
+      halign: 'left',
+    },
+    columnStyles: { 0: { cellWidth: 12, halign: 'center', fontStyle: 'bold', fontSize: 9 } },
+    didParseCell: (data) => {
+      if (data.section !== 'body' || data.column.index !== 0) return
+      const couleur = rows[data.row.index]?.color
+      if (!couleur) return
+      data.cell.styles.fillColor = hexToRgb(couleur)
+      data.cell.styles.textColor = isLight(couleur) ? hexToRgb(INK) : [255, 255, 255]
+    },
+  })
+  return lastY(doc, y) + 3
 }
 
 /**
@@ -470,7 +565,7 @@ function drawEndorsement(
   const lines = comment
     ? (doc.splitTextToSize(show(record.values[comment.id]).trim(), CONTENT_W - 10) as string[])
     : []
-  const boxH = Math.max(30, lines.length * 3.8 + 6)
+  const boxH = comment ? Math.max(30, lines.length * 3.8 + 6) : 0
 
   if (y + headH + boxH + stripH > bottomLimit) {
     doc.addPage()
@@ -486,14 +581,16 @@ function drawEndorsement(
   doc.setTextColor(...hexToRgb(INK))
   doc.text(section.title.toUpperCase(), M + CONTENT_W / 2, y + 4.2, { align: 'center' })
 
-  doc.rect(M, y + headH, CONTENT_W, boxH)
-  doc.setFont('helvetica', 'normal')
-  doc.setFontSize(8.5)
-  if (lines.length) doc.text(lines, M + 3, y + headH + 5.5)
-  doc.setDrawColor(205, 212, 222)
-  doc.setLineWidth(0.15)
-  for (let ly = y + headH + 7.5; ly < y + headH + boxH - 2; ly += 4.6) {
-    doc.line(M + 3, ly, M + CONTENT_W - 3, ly)
+  if (comment) {
+    doc.rect(M, y + headH, CONTENT_W, boxH)
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(8.5)
+    if (lines.length) doc.text(lines, M + 3, y + headH + 5.5)
+    doc.setDrawColor(205, 212, 222)
+    doc.setLineWidth(0.15)
+    for (let ly = y + headH + 7.5; ly < y + headH + boxH - 2; ly += 4.6) {
+      doc.line(M + 3, ly, M + CONTENT_W - 3, ly)
+    }
   }
 
   if (!strip.length) return y + headH + boxH + 3
@@ -773,6 +870,9 @@ export function buildPdf(form: FormDef, record: FormRecord, settings: AppSetting
         if (field) y = drawBoxed(doc, form, field.label, show(record.values[field.id]), y, 15)
         break
       }
+      case 'reference':
+        y = drawReference(doc, form, section, y)
+        break
       case 'statement':
         y = drawStatement(doc, section, record, y)
         break

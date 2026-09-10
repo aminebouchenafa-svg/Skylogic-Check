@@ -76,6 +76,12 @@ src/
    - `endorsement` : bloc de commentaire suivi d'un visa (nom, fonction, signature).
    - `statement` : phrase d'attestation dont les passages `{entre accolades}`
      se complètent directement dans le texte.
+   - `reference` : tableau en lecture seule (barème détaillé, consignes).
+
+   Une grille `grading` peut porter plusieurs colonnes de notation
+   (`gradeColumns`) : l'item reçoit alors une note par colonne — un secteur de
+   vol, par exemple. La saisie se fait colonne par colonne, l'impression les
+   affiche toutes.
 3. L'ajouter au tableau `FORMS` dans `src/forms/index.ts`.
 
 L'écran de saisie, la moyenne, l'alerte « sous le standard », le PDF et le partage
@@ -129,6 +135,7 @@ code couleur de notation partagent la même palette, définie une seule fois dan
 | Proficiency Check | Intégré d'après le formulaire officiel D.O.A | 1 page |
 | Mandatory Check Failure Notification | Intégré d'après le formulaire officiel D.O.A | 2 pages |
 | Simulator Console Handling Certificate | Intégré d'après le formulaire officiel D.O.A | 1 page |
+| Command Upgrade – Assessment Flight | Intégré d'après le formulaire officiel D.O.A | 2 pages |
 | Line Form | En attente du modèle | — |
 | Skill Test | En attente du modèle | — |
 | Remedial Training | En attente du modèle | — |

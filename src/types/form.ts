@@ -75,6 +75,8 @@ export type SectionKind =
   | 'checklist'
   /** Phrase d'attestation à compléter. */
   | 'statement'
+  /** Tableau de référence, en lecture seule (barème détaillé). */
+  | 'reference'
   | 'matrix'
   | 'notes'
   /** Bloc de commentaire suivi d'un visa nominatif. */
@@ -103,6 +105,13 @@ export interface SectionDef {
   commentField?: { id: string; label: string; placeholder?: string }
   /** Colonnes à cocher des sections « checklist » (ex. CM 1 / CM 2). */
   tickColumns?: { id: string; label: string }[]
+  /**
+   * Colonnes de notation d'une grille : un item reçoit alors une note par
+   * colonne (ex. un secteur de vol) au lieu d'une note unique.
+   */
+  gradeColumns?: { id: string; label: string }[]
+  /** Lignes d'un tableau de référence (sections « reference »). */
+  referenceRows?: { label: string; description: string; color?: string }[]
   /** Mention imprimée sous la section. */
   note?: string
   /** Nombre de couples libellé/valeur par ligne à l'impression (défaut : 2). */

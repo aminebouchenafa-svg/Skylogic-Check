@@ -3,6 +3,7 @@ import type { FormDef, FormRecord, FormValues, SectionDef } from '../types/form'
 import { findLevel, getScale, selectableLevels } from '../forms/scales'
 import { buildPdfFile } from '../lib/pdf'
 import { downloadBlob, canShareFiles, mailtoLink, shareFile, whatsappLink } from '../lib/share'
+import { gradeId } from '../lib/ids'
 import { upsertRecord } from '../lib/storage'
 import type { AppSettings } from '../lib/storage'
 import { Checklist } from './Checklist'
@@ -25,6 +26,10 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
   const [values, setValues] = useState<FormValues>(record.values)
   const [status, setStatus] = useState(record.status)
   const [showErrors, setShowErrors] = useState(false)
+  /** Colonne de notation en cours de saisie, pour les grilles à plusieurs colonnes. */
+  const [column, setColumn] = useState(
+    form.sections.find((s) => s.gradeColumns)?.gradeColumns?.[0].id ?? '',
+  )
 
   const setValue = (id: string, value: string | boolean) =>
     setValues((prev) => ({ ...prev, [id]: value }))
@@ -35,8 +40,14 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
         .filter((s) => s.kind === 'grading')
         .flatMap((s) =>
           (s.items ?? [])
-            .filter((item) => item.input !== 'date' && item.input !== 'text')
-            .map((item) => ({ item, scaleId: s.scaleId ?? form.scaleId })),
+            .filter((item) => !item.heading && item.input !== 'date' && item.input !== 'text')
+            .flatMap((item) =>
+              (s.gradeColumns ?? [{ id: '' }]).map((col) => ({
+                key: col.id ? gradeId(item.id, col.id) : item.id,
+                item,
+                scaleId: s.scaleId ?? form.scaleId,
+              })),
+            ),
         ),
     [form],
   )
@@ -45,8 +56,8 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
     let scored = 0
     let total = 0
     const failing: string[] = []
-    for (const { item, scaleId } of gradedItems) {
-      const raw = values[item.id]
+    for (const { key, item, scaleId } of gradedItems) {
+      const raw = values[key]
       if (raw === undefined || raw === null || raw === '' || raw === 'NA') continue
       const level = findLevel(getScale(scaleId), String(raw))
       if (!level) continue
@@ -146,16 +157,47 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
 
         {section.kind === 'grading' && (
           <>
+            {section.gradeColumns && (
+              <div className="column-tabs">
+                <span className="column-tabs-label">Secteur</span>
+                {section.gradeColumns.map((col) => {
+                  const notes = (section.items ?? []).filter(
+                    (i) => !i.heading && values[gradeId(i.id, col.id)],
+                  ).length
+                  return (
+                    <button
+                      key={col.id}
+                      type="button"
+                      className={`column-tab${column === col.id ? ' on' : ''}`}
+                      onClick={() => setColumn(col.id)}
+                    >
+                      {col.label}
+                      {notes > 0 && <span className="column-tab-count">{notes}</span>}
+                    </button>
+                  )
+                })}
+              </div>
+            )}
             <div>
-              {(section.items ?? []).map((item) => (
-                <GradeRow
-                  key={item.id}
-                  item={item}
-                  scale={scale}
-                  value={String(values[item.id] ?? '')}
-                  onChange={(value) => setValue(item.id, value)}
-                />
-              ))}
+              {(section.items ?? []).map((item) => {
+                if (item.heading) {
+                  return (
+                    <div className="tick-heading" key={item.id}>
+                      {item.label}
+                    </div>
+                  )
+                }
+                const key = section.gradeColumns ? gradeId(item.id, column) : item.id
+                return (
+                  <GradeRow
+                    key={item.id}
+                    item={item}
+                    scale={scale}
+                    value={String(values[key] ?? '')}
+                    onChange={(value) => setValue(key, value)}
+                  />
+                )
+              })}
             </div>
             {section.commentField && (
               <div className="panel-body" style={{ borderTop: '1px solid var(--stroke)' }}>
@@ -205,6 +247,22 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
                   <Field key={field.id} field={{ ...field, width: 'full' }} values={values} onChange={setValue} />
                 ))}
             </div>
+          </div>
+        )}
+
+        {section.kind === 'reference' && (
+          <div className="reference">
+            {(section.referenceRows ?? []).map((row) => (
+              <div className="reference-row" key={row.label}>
+                <span
+                  className="reference-badge"
+                  style={{ ['--dot' as string]: row.color ?? 'var(--text-faint)' }}
+                >
+                  {row.label}
+                </span>
+                <span className="reference-text">{row.description}</span>
+              </div>
+            ))}
           </div>
         )}
 

@@ -829,3 +829,96 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 .blank::placeholder { color: var(--text-faint); font-weight: 400; font-size: 13px; }
 .blank:focus { border-color: var(--hud); }
+
+/* -------------------------------------- Colonnes de notation (secteurs) */
+
+.column-tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--stroke);
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  background: var(--surface-solid);
+}
+
+.column-tabs-label {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-right: 4px;
+}
+
+.column-tab {
+  position: relative;
+  min-width: 44px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 2px solid rgba(120, 165, 220, 0.2);
+  background: rgba(8, 14, 26, 0.7);
+  color: var(--text-dim);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  transition: all 0.14s ease;
+}
+
+.column-tab:hover { border-color: var(--hud); color: var(--text); }
+
+.column-tab.on {
+  border-color: var(--hud);
+  color: var(--hud);
+  background: color-mix(in srgb, var(--hud) 15%, rgba(8, 14, 26, 0.9));
+}
+
+.column-tab-count {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: var(--grade-4);
+  color: #04070f;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+/* ------------------------------------------------- Tableau de référence */
+
+.reference { padding: 6px 0; }
+
+.reference-row {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 14px;
+  padding: 13px 18px;
+  border-bottom: 1px solid var(--stroke);
+  align-items: start;
+}
+
+.reference-row:last-child { border-bottom: none; }
+
+.reference-badge {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 28px;
+  border-radius: 8px;
+  border: 2px solid var(--dot);
+  color: var(--dot);
+  background: rgba(8, 14, 26, 0.6);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.reference-text { font-size: 12.5px; line-height: 1.6; color: var(--text-dim); }
