@@ -3,8 +3,6 @@ name: Contrôle
 # Vérifie les versions poussées sur les branches de travail. La publication
 # de main est assurée par le workflow « Déploiement GitHub Pages ».
 on:
-  push:
-    branches: ['claude/**']
   pull_request:
 
 jobs:
