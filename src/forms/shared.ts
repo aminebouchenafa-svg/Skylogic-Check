@@ -1,4 +1,5 @@
 import type { FieldDef, SectionDef } from '../types/form'
+import { FLEET } from './network'
 
 /** Blocs communs aux formulaires du Training Department. */
 
@@ -48,6 +49,6 @@ export const aircraftField: FieldDef = {
   label: 'Aircraft Type',
   type: 'select',
   width: 'quarter',
-  options: ['B737-800', 'B737 MAX 8', 'A330-200', 'A330-900', 'ATR 72-600', 'B767-300', 'A320'],
+  options: FLEET,
   required: true,
 }

@@ -1,4 +1,5 @@
 import type { FormDef } from '../types/form'
+import { FLEET } from './network'
 
 const item = (id: string, label: string) => ({ id, label })
 
@@ -36,7 +37,7 @@ export const trainingRequirementForm: FormDef = {
           id: 'fleet',
           label: 'Fleet',
           type: 'select',
-          options: ['B737-800', 'B737 MAX 8', 'A330-200', 'A330-900', 'ATR 72-600', 'B767-300', 'A320'],
+          options: FLEET,
           required: true,
         },
       ],
