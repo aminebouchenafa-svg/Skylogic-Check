@@ -49,7 +49,7 @@ export const AIRPORTS: Airport[] = [
   a('QSF', 'Sétif'),
   a('TMR', 'Tamanrasset'),
   a('TLM', 'Tlemcen'),
-  a('VNE', 'Tindouf'),
+  a('TIN', 'Tindouf'),
   a('TGR', 'Touggourt'),
   a('TEE', 'Tébessa'),
   a('VVZ', 'Illizi'),
