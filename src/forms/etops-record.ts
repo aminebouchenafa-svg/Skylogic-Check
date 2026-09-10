@@ -87,7 +87,7 @@ export const etopsRecordForm: FormDef = {
       matrix: {
         columns: [
           { id: 'date', label: 'Date', type: 'date' },
-          { id: 'route', label: 'Route', type: 'text', prefix: 'AH' },
+          { id: 'route', label: 'Route', type: 'text', prefix: 'AH', keyboard: 'numeric' },
           { id: 'pf', label: 'PF', type: 'checkbox' },
           { id: 'pm', label: 'PM', type: 'checkbox' },
           ...triColumns,

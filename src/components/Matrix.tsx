@@ -2,6 +2,7 @@ import type { FormValues, MatrixDef } from '../types/form'
 import { cellId } from '../lib/ids'
 import { columnTotal } from '../lib/totals'
 import { Choice } from './Choice'
+import { Combobox } from './Combobox'
 import { SignaturePad } from './SignaturePad'
 
 interface Props {
@@ -61,6 +62,15 @@ export function Matrix({ id, matrix, values, onChange }: Props) {
                         checked={value === 'x'}
                         onChange={(e) => onChange(key, e.target.checked ? 'x' : '')}
                       />
+                    ) : column.suggestions?.length ? (
+                      <Combobox
+                        id={key}
+                        value={value}
+                        options={column.suggestions}
+                        ariaLabel={`${row.label || column.label} — ${column.label}`}
+                        uppercase={column.uppercase}
+                        onChange={(v) => onChange(key, v)}
+                      />
                     ) : column.type === 'select' ? (
                       <Choice
                         id={key}
@@ -84,24 +94,14 @@ export function Matrix({ id, matrix, values, onChange }: Props) {
                         />
                       </div>
                     ) : (
-                      <>
-                        <input
-                          id={key}
-                          className="input"
-                          type={column.type === 'date' || column.type === 'number' ? column.type : 'text'}
-                          inputMode={column.keyboard ?? (column.type === 'number' ? 'numeric' : undefined)}
-                          list={column.suggestions?.length ? `${key}_list` : undefined}
-                          value={value}
-                          onChange={(e) => onChange(key, e.target.value)}
-                        />
-                        {column.suggestions?.length ? (
-                          <datalist id={`${key}_list`}>
-                            {column.suggestions.map((option) => (
-                              <option key={option} value={option} />
-                            ))}
-                          </datalist>
-                        ) : null}
-                      </>
+                      <input
+                        id={key}
+                        className="input"
+                        type={column.type === 'date' || column.type === 'number' ? column.type : 'text'}
+                        inputMode={column.keyboard ?? (column.type === 'number' ? 'numeric' : undefined)}
+                        value={value}
+                        onChange={(e) => onChange(key, e.target.value)}
+                      />
                     )}
                   </td>
                 )

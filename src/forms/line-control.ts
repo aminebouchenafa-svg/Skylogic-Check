@@ -47,8 +47,8 @@ export const lineControlForm: FormDef = {
       matrix: {
         note: 'At least one (01) leg as PF and one (01) leg as PM.',
         columns: [
-          { id: 'from', label: 'From', type: 'select', options: AIRPORTS, allowOther: true },
-          { id: 'to', label: 'To', type: 'select', options: AIRPORTS, allowOther: true },
+          { id: 'from', label: 'From', type: 'text', suggestions: AIRPORTS, uppercase: true },
+          { id: 'to', label: 'To', type: 'text', suggestions: AIRPORTS, uppercase: true },
           { id: 'flt', label: 'Flt N°', type: 'text', prefix: 'AH', keyboard: 'numeric' },
           { id: 'position', label: 'Position', type: 'select', options: ['PF', 'PM'] },
         ],

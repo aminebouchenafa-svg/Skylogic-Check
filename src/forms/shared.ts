@@ -57,8 +57,8 @@ export const aircraftField: FieldDef = {
 export const aircraftRegField: FieldDef = {
   id: 'aircraft_reg',
   label: 'A/C REG',
-  type: 'select',
+  type: 'text',
   width: 'quarter',
-  options: AIRCRAFT_REGISTRATIONS,
-  allowOther: true,
+  suggestions: AIRCRAFT_REGISTRATIONS,
+  uppercase: true,
 }

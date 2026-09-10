@@ -1,5 +1,6 @@
 import type { FieldDef, FormValues } from '../types/form'
 import { Choice } from './Choice'
+import { Combobox } from './Combobox'
 import { SignaturePad } from './SignaturePad'
 
 interface Props {
@@ -70,27 +71,26 @@ export function Field({ field, values, onChange }: Props) {
     default: {
       // Un préfixe à choisir occupe sa propre valeur : « <champ>_prefix ».
       const prefixId = `${field.id}_prefix`
-      const listId = field.suggestions?.length ? `${field.id}_list` : undefined
-      const input = (
-        <>
-          <input
-            id={field.id}
-            className="input"
-            type={field.type === 'number' ? 'number' : field.type}
-            inputMode={field.keyboard}
-            list={listId}
-            value={text}
-            placeholder={field.placeholder}
-            onChange={(e) => onChange(field.id, e.target.value)}
-          />
-          {listId && (
-            <datalist id={listId}>
-              {field.suggestions?.map((option) => (
-                <option key={option} value={option} />
-              ))}
-            </datalist>
-          )}
-        </>
+      const input = field.suggestions?.length ? (
+        <Combobox
+          id={field.id}
+          value={text}
+          options={field.suggestions}
+          ariaLabel={field.label}
+          placeholder={field.placeholder}
+          uppercase={field.uppercase}
+          onChange={(value) => onChange(field.id, value)}
+        />
+      ) : (
+        <input
+          id={field.id}
+          className="input"
+          type={field.type === 'number' ? 'number' : field.type}
+          inputMode={field.keyboard}
+          value={text}
+          placeholder={field.placeholder}
+          onChange={(e) => onChange(field.id, e.target.value)}
+        />
       )
 
       if (field.prefixOptions?.length) {

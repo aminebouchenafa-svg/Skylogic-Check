@@ -37,6 +37,8 @@ export interface FieldDef {
   suggestions?: string[]
   /** Sur une liste : autorise une valeur hors liste, saisie à la main. */
   allowOther?: boolean
+  /** Saisie mise en majuscules (codes d'aéroport, immatriculations). */
+  uppercase?: boolean
 }
 
 /** Un item noté dans une grille d'évaluation. */
@@ -91,6 +93,8 @@ export interface MatrixDef {
     suggestions?: string[]
     /** Sur une liste : autorise une valeur hors liste, saisie à la main. */
     allowOther?: boolean
+    /** Saisie mise en majuscules (codes d'aéroport, immatriculations). */
+    uppercase?: boolean
   }[]
   /** Une ligne « computed » porte la somme des autres, elle n'est pas saisie. */
   rows: { id: string; label: string; computed?: boolean }[]
