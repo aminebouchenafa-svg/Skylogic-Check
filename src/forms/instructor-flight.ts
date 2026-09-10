@@ -3,6 +3,7 @@ import { instructorClosing } from './instructor-common'
 import { REMINDER_LINE } from './scales'
 import { SCALE_SU } from './scales-instructor'
 import { aircraftField } from './shared'
+import { AIRCRAFT_REGISTRATIONS } from './network'
 
 const item = (code: string, label: string) => ({ id: `i${code}`, code, label })
 
@@ -52,7 +53,7 @@ export const instructorFlightForm: FormDef = {
         },
         { id: 'licence', label: 'License Nbr', type: 'text' },
         aircraftField,
-        { id: 'aircraft_reg', label: 'Aircraft Registration', type: 'text' },
+        { id: 'aircraft_reg', label: 'Aircraft Registration', type: 'text', suggestions: AIRCRAFT_REGISTRATIONS },
       ],
     },
     {

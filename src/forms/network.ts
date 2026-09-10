@@ -41,6 +41,13 @@ export const FLEET: string[] = [
 
 /**
  * Immatriculations de la flotte, proposées à la saisie.
- * En attente de la liste officielle : la saisie reste libre d'ici là.
+ * Relevé OMD ED 03 – REV 17 JUL 2026.
  */
-export const AIRCRAFT_REGISTRATIONS: string[] = []
+export const AIRCRAFT_REGISTRATIONS: string[] = [
+  '7T-VJJ', '7T-VJK', '7T-VJL', '7T-VJM', '7T-VJN', '7T-VJO',
+  '7T-VJP', '7T-VJQ', '7T-VJR', '7T-VJS', '7T-VJT', '7T-VJU',
+  '7T-VKA', '7T-VKB', '7T-VKC', '7T-VKD', '7T-VKE', '7T-VKF',
+  '7T-VKG', '7T-VKH', '7T-VKI', '7T-VKJ', '7T-VKK', '7T-VKL',
+  '7T-VKM', '7T-VKN', '7T-VKO', '7T-VKP', '7T-VKQ', '7T-VKR',
+  '7T-VKS', '7T-VKT',
+]
