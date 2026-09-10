@@ -1,6 +1,6 @@
 import type { FormDef } from '../types/form'
-import { AIRCRAFT_REGISTRATIONS, AIRPORTS } from './network'
-import { remarksSection, resultSection, signatureSection } from './shared'
+import { AIRPORTS } from './network'
+import { aircraftField, aircraftRegField, remarksSection, resultSection, signatureSection } from './shared'
 import { REMINDER_LINE } from './scales'
 
 /**
@@ -36,14 +36,8 @@ export const lineControlForm: FormDef = {
           prefixOptions: ['PP', 'PL'],
           keyboard: 'numeric',
         },
-        {
-          id: 'aircraft',
-          label: 'Aircraft Type & REG',
-          type: 'text',
-          width: 'quarter',
-          required: true,
-          suggestions: AIRCRAFT_REGISTRATIONS,
-        },
+        aircraftField,
+        aircraftRegField,
       ],
     },
     {
@@ -53,8 +47,8 @@ export const lineControlForm: FormDef = {
       matrix: {
         note: 'At least one (01) leg as PF and one (01) leg as PM.',
         columns: [
-          { id: 'from', label: 'From', type: 'text', suggestions: AIRPORTS },
-          { id: 'to', label: 'To', type: 'text', suggestions: AIRPORTS },
+          { id: 'from', label: 'From', type: 'select', options: AIRPORTS, allowOther: true },
+          { id: 'to', label: 'To', type: 'select', options: AIRPORTS, allowOther: true },
           { id: 'flt', label: 'Flt N°', type: 'text', prefix: 'AH', keyboard: 'numeric' },
           { id: 'position', label: 'Position', type: 'select', options: ['PF', 'PM'] },
         ],

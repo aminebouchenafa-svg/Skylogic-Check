@@ -1,6 +1,6 @@
 import type { FormDef } from '../types/form'
-import { AIRCRAFT_REGISTRATIONS, AIRPORTS, FLEET } from './network'
-import { signatureSection } from './shared'
+import { AIRPORTS, FLEET } from './network'
+import { aircraftRegField, signatureSection } from './shared'
 import { REMINDER_LINE } from './scales'
 
 /**
@@ -36,7 +36,7 @@ export const lineTrainingForm: FormDef = {
           options: FLEET,
           required: true,
         },
-        { id: 'aircraft_reg', label: 'A/C REG', type: 'text', width: 'quarter', suggestions: AIRCRAFT_REGISTRATIONS },
+        aircraftRegField,
         { id: 'safety_pilot', label: 'Safety Pilot', type: 'select', width: 'quarter', options: ['Yes', 'No'] },
         { id: 'tri_name', label: 'TRI Name', type: 'text', width: 'quarter' },
       ],
@@ -71,8 +71,8 @@ export const lineTrainingForm: FormDef = {
       matrix: {
         columns: [
           { id: 'flt', label: 'FLT Nbr', type: 'text', prefix: 'AH', keyboard: 'numeric' },
-          { id: 'from', label: 'FROM', type: 'text', suggestions: AIRPORTS },
-          { id: 'to', label: 'TO', type: 'text', suggestions: AIRPORTS },
+          { id: 'from', label: 'FROM', type: 'select', options: AIRPORTS, allowOther: true },
+          { id: 'to', label: 'TO', type: 'select', options: AIRPORTS, allowOther: true },
         ],
         rows: [
           { id: 'f1', label: '1' },

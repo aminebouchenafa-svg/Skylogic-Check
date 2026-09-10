@@ -1,4 +1,5 @@
 import type { FieldDef, FormValues } from '../types/form'
+import { Choice } from './Choice'
 import { SignaturePad } from './SignaturePad'
 
 interface Props {
@@ -35,14 +36,14 @@ export function Field({ field, values, onChange }: Props) {
       break
     case 'select':
       control = (
-        <select id={field.id} className="select" value={text} onChange={(e) => onChange(field.id, e.target.value)}>
-          <option value="">— Sélectionner —</option>
-          {field.options?.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
+        <Choice
+          id={field.id}
+          value={text}
+          options={field.options ?? []}
+          allowOther={field.allowOther}
+          ariaLabel={field.label}
+          onChange={(value) => onChange(field.id, value)}
+        />
       )
       break
     case 'checkbox':

@@ -1,7 +1,6 @@
 import type { FormDef } from '../types/form'
 import { REMINDER_LINE } from './scales'
-import { aircraftField, remarksSection } from './shared'
-import { AIRCRAFT_REGISTRATIONS } from './network'
+import { aircraftField, aircraftRegField, remarksSection } from './shared'
 
 /**
  * LINE RELEASE FORM — REF. D.O.A, § 13.1.15.
@@ -37,7 +36,7 @@ export const lineReleaseForm: FormDef = {
         },
         { id: 'name', label: 'Name', type: 'text', required: true },
         aircraftField,
-        { id: 'aircraft_reg', label: 'A/C REG', type: 'text', suggestions: AIRCRAFT_REGISTRATIONS },
+        { ...aircraftRegField, width: 'full' },
       ],
     },
     {

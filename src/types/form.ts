@@ -35,6 +35,8 @@ export interface FieldDef {
   keyboard?: 'numeric' | 'decimal'
   /** Valeurs proposées à la saisie, sans interdire une autre valeur. */
   suggestions?: string[]
+  /** Sur une liste : autorise une valeur hors liste, saisie à la main. */
+  allowOther?: boolean
 }
 
 /** Un item noté dans une grille d'évaluation. */
@@ -87,6 +89,8 @@ export interface MatrixDef {
     keyboard?: 'numeric' | 'decimal'
     /** Valeurs proposées à la saisie, sans interdire une autre valeur. */
     suggestions?: string[]
+    /** Sur une liste : autorise une valeur hors liste, saisie à la main. */
+    allowOther?: boolean
   }[]
   /** Une ligne « computed » porte la somme des autres, elle n'est pas saisie. */
   rows: { id: string; label: string; computed?: boolean }[]
