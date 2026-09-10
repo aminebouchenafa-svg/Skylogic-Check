@@ -9,9 +9,8 @@ transmis par e-mail ou WhatsApp.
 Publiée par **GitHub Pages** à chaque push sur `main` :
 https://aminebouchenafa-svg.github.io/Skylogic-Check/
 
-Réglage à faire une seule fois dans le dépôt — **Settings → Pages →
-Build and deployment → Source : GitHub Actions**. Sans lui, le workflow
-s'arrête à l'étape `configure-pages`.
+Le workflow écrit la version compilée dans la branche `gh-pages`, que
+GitHub publie d'elle-même : aucun réglage n'est nécessaire dans le dépôt.
 
 Le workflow `Contrôle` ne déploie rien : il vérifie que les versions
 poussées sur les branches de travail passent le lint et compilent.

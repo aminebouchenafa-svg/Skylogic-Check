@@ -5,18 +5,17 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Le job écrit la version compilée dans la branche gh-pages, que GitHub
+# publie sans qu'aucun réglage ne soit nécessaire dans le dépôt.
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
-# Un seul déploiement à la fois ; un nouveau push annule celui en cours.
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
-  build:
+  publier:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,17 +29,16 @@ jobs:
       - run: npm run lint
       - run: npm run build
 
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Publier dans la branche gh-pages
+        run: |
+          cd dist
+          # Empêche GitHub de faire passer le site par Jekyll.
+          touch .nojekyll
+          git init -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Publication de ${GITHUB_SHA::7}"
+          git push --force \
+            "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" \
+            gh-pages
