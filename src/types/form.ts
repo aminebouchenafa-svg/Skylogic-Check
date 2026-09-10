@@ -118,8 +118,15 @@ export interface SectionDef {
   scaleId?: string
   /** Commentaire libre attaché à la grille. */
   commentField?: { id: string; label: string; placeholder?: string }
-  /** Colonnes à cocher des sections « checklist » (ex. CM 1 / CM 2). */
-  tickColumns?: { id: string; label: string }[]
+  /**
+   * Colonnes à cocher des sections « checklist » (ex. CM 1 / CM 2).
+   * `mark` fixe le signe imprimé dans la case cochée, « X » par défaut.
+   */
+  tickColumns?: { id: string; label: string; mark?: string; color?: string }[]
+  /** Une seule colonne peut être cochée par ligne (ex. OUI / NON). */
+  exclusiveTicks?: boolean
+  /** Colonnes de saisie ajoutées après les cases à cocher (ex. une date). */
+  trailingColumns?: { id: string; label: string; type?: FieldType }[]
   /**
    * Colonnes de notation d'une grille : un item reçoit alors une note par
    * colonne (ex. un secteur de vol) au lieu d'une note unique.

@@ -675,6 +675,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .tick-desc { font-size: 12.5px; color: var(--text-faint); line-height: 1.55; }
 
 .tick-box {
+  --tick: var(--hud);
   justify-self: center;
   width: 34px; height: 34px;
   display: grid; place-items: center;
@@ -686,13 +687,13 @@ button, input, select, textarea { font: inherit; color: inherit; }
   transition: all 0.14s ease;
 }
 
-.tick-box:hover { border-color: var(--hud); }
+.tick-box:hover { border-color: var(--tick); }
 
 .tick-box.on {
-  border-color: var(--hud);
-  color: var(--hud);
-  background: color-mix(in srgb, var(--hud) 16%, rgba(8, 14, 26, 0.9));
-  box-shadow: 0 0 16px color-mix(in srgb, var(--hud) 30%, transparent);
+  border-color: var(--tick);
+  color: var(--tick);
+  background: color-mix(in srgb, var(--tick) 16%, rgba(8, 14, 26, 0.9));
+  box-shadow: 0 0 16px color-mix(in srgb, var(--tick) 30%, transparent);
 }
 
 /* ------------------------------------------------------------ Visas */
@@ -1016,4 +1017,31 @@ button, input, select, textarea { font: inherit; color: inherit; }
   content: '';
   flex: 1;
   border-top: 2px dashed var(--stroke-strong);
+}
+
+.tick-extra { padding: 8px 10px; font-size: 12.5px; }
+
+/* La case et son intitulé forment un bloc : l'intitulé n'apparaît que sur
+   petit écran, où l'en-tête du tableau est masqué. */
+.tick-cell { display: grid; justify-items: center; gap: 5px; }
+.tick-cell-label { display: none; }
+
+@media (max-width: 760px) {
+  .tick-head { display: none; }
+  .tick-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+  .tick-row > div:first-child { flex: 1 1 100%; }
+  .tick-cell { grid-auto-flow: column; align-items: center; gap: 8px; }
+  .tick-cell-label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+  .tick-extra { flex: 1 1 140px; }
 }

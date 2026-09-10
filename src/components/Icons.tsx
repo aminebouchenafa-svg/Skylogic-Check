@@ -208,3 +208,11 @@ export const IconAirfield = ({ size = 26 }: Props) => (
     <path d="M4 9.5 2.5 21M20 9.5 21.5 21" />
   </svg>
 )
+
+export const IconSyllabus = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <rect x="3.5" y="3.5" width="17" height="17" rx="2" />
+    <path d="m6.6 8.5 1.4 1.4 2.4-2.6M6.6 13.5l1.4 1.4 2.4-2.6" />
+    <path d="M13.5 9h4.2M13.5 14h4.2" />
+  </svg>
+)
