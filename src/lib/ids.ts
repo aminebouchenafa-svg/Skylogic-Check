@@ -7,3 +7,6 @@ export const tickId = (itemId: string, columnId: string) => `${itemId}_${columnI
 
 /** Identifiant d'une note portée sur une colonne donnée (ex. un secteur). */
 export const gradeId = (itemId: string, columnId: string) => `${itemId}_${columnId}`
+
+/** Identifiant de la n-ième réponse d'un questionnaire. */
+export const answerId = (sectionId: string, index: number) => `${sectionId}_q${index}`

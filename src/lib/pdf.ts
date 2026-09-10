@@ -3,7 +3,7 @@ import autoTable from 'jspdf-autotable'
 import type { RowInput } from 'jspdf-autotable'
 import type { FieldDef, FormDef, FormRecord, GradedItemDef, MatrixDef, SectionDef } from '../types/form'
 import { findLevel, getScale } from '../forms/scales'
-import { cellId, gradeId, tickId } from './ids'
+import { answerId, cellId, gradeId, tickId } from './ids'
 import type { AppSettings } from './storage'
 
 /**
@@ -371,6 +371,78 @@ function drawGrading(
   return lastY(doc, y)
 }
 
+/** Grille de réponses numérotées d'un questionnaire. */
+function drawAnswers(doc: jsPDF, form: FormDef, section: SectionDef, record: FormRecord, y: number): number {
+  const total = section.answerCount ?? 10
+  const numeros = Array.from({ length: total }, (_, i) => String(i + 1))
+  const reponses = numeros.map((_, i) => show(record.values[answerId(section.id, i + 1)]))
+
+  autoTable(doc, {
+    startY: y,
+    margin: { left: M, right: M, top: M, bottom: PAGE_H - bottomLimit },
+    head: [[{ content: section.title, colSpan: total }], numeros],
+    body: [reponses],
+    theme: 'grid',
+    styles: {
+      fontSize: 9,
+      cellPadding: 2,
+      lineColor: hexToRgb(INK),
+      lineWidth: 0.25,
+      textColor: hexToRgb(INK),
+      halign: 'center',
+      minCellHeight: 8,
+    },
+    headStyles: { fillColor: tint(form.accent), textColor: hexToRgb(INK), fontStyle: 'bold', fontSize: 7.6 },
+    didParseCell: (data) => {
+      if (data.section === 'head' && data.row.index === 0) data.cell.styles.halign = 'left'
+    },
+  })
+  return lastY(doc, y) + 3
+}
+
+/** Plusieurs choix en ligne : la case retenue porte sa couleur. */
+function drawChoiceRows(doc: jsPDF, form: FormDef, section: SectionDef, record: FormRecord, y: number): number {
+  const rows = section.choiceRows ?? []
+  const maxOptions = Math.max(1, ...rows.map((r) => r.options.length))
+  const labelW = 70
+  const optionW = (CONTENT_W - labelW) / maxOptions
+
+  const columnStyles: Record<number, { cellWidth: number; halign?: 'center'; fontStyle?: 'bold' }> = {
+    0: { cellWidth: labelW, fontStyle: 'bold' },
+  }
+  for (let i = 1; i <= maxOptions; i += 1) columnStyles[i] = { cellWidth: optionW, halign: 'center' }
+
+  autoTable(doc, {
+    startY: y,
+    margin: { left: M, right: M, top: M, bottom: PAGE_H - bottomLimit },
+    head: [[{ content: section.title, colSpan: maxOptions + 1 }]],
+    body: rows.map((row) => [
+      row.hint ? `${row.label}  (${row.hint})` : row.label,
+      ...Array.from({ length: maxOptions }, (_, i) => row.options[i]?.label ?? ''),
+    ]),
+    theme: 'grid',
+    styles: {
+      fontSize: 8,
+      cellPadding: 1.9,
+      lineColor: hexToRgb(INK),
+      lineWidth: 0.25,
+      textColor: hexToRgb(INK),
+    },
+    headStyles: { fillColor: tint(form.accent), textColor: hexToRgb(INK), fontStyle: 'bold', fontSize: 7.6 },
+    columnStyles,
+    didParseCell: (data) => {
+      if (data.section !== 'body' || data.column.index === 0) return
+      const row = rows[data.row.index]
+      const option = row?.options[data.column.index - 1]
+      if (!option || record.values[row.id] !== option.value) return
+      data.cell.styles.fillColor = hexToRgb(option.color)
+      data.cell.styles.textColor = isLight(option.color) ? hexToRgb(INK) : [255, 255, 255]
+      data.cell.styles.fontStyle = 'bold'
+    },
+  })
+  return lastY(doc, y) + 3
+}
+
 /** Tableau de référence : barème détaillé, notes et consignes. */
 function drawReference(doc: jsPDF, form: FormDef, section: SectionDef, y: number): number {
   const rows = section.referenceRows ?? []
@@ -559,7 +631,7 @@ function drawEndorsement(
   const comment = fields.find((f) => f.type === 'textarea')
   const strip = fields.filter((f) => f.type !== 'textarea')
   const headH = 6
-  const stripH = strip.length ? 18 : 0
+  const stripH = strip.length ? 20 : 0
 
   doc.setFontSize(8.5)
   const lines = comment
@@ -580,6 +652,16 @@ function drawEndorsement(
   doc.setFontSize(8)
   doc.setTextColor(...hexToRgb(INK))
   doc.text(section.title.toUpperCase(), M + CONTENT_W / 2, y + 4.2, { align: 'center' })
+
+  if (section.note) {
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(8)
+    const lignes = doc.splitTextToSize(section.note, CONTENT_W - 8) as string[]
+    const h = lignes.length * 4 + 3
+    doc.rect(M, y + headH, CONTENT_W, h)
+    doc.text(lignes, M + 4, y + headH + 4.5)
+    y += h
+  }
 
   if (comment) {
     doc.rect(M, y + headH, CONTENT_W, boxH)
@@ -605,21 +687,28 @@ function drawEndorsement(
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(7.5)
     doc.setTextColor(...hexToRgb(INK))
-    doc.text(`${field.label} :`, x + 3, stripY + 4.5)
+    // Un intitulé long est replié pour ne pas déborder sur la case voisine.
+    const titre = doc.splitTextToSize(`${field.label} :`, cellW - 6) as string[]
+    doc.text(titre, x + 3, stripY + 4.5)
+    const bas = stripY + 4.5 + (titre.length - 1) * 3.2
 
     const value = record.values[field.id]
     if (field.type === 'signature') {
       if (typeof value === 'string' && value.startsWith('data:image')) {
         try {
-          doc.addImage(value, 'PNG', x + 3, stripY + 5.5, cellW - 6, stripH - 8)
+          doc.addImage(value, 'PNG', x + 3, bas + 1.5, cellW - 6, stripH - (bas - stripY) - 3)
         } catch {
           /* signature illisible : la case reste vide */
         }
       }
+    } else if (field.type === 'checkbox') {
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(9)
+      doc.text(value ? '[X]' : '[  ]', x + 3, bas + 6)
     } else {
       doc.setFont('helvetica', 'normal')
       doc.setFontSize(8.5)
-      doc.text(show(value), x + 3, stripY + 12)
+      doc.text(show(value), x + 3, bas + 6)
     }
   })
   return stripY + stripH + 3
@@ -886,8 +975,13 @@ export function buildPdf(form: FormDef, record: FormRecord, settings: AppSetting
       case 'endorsement':
         y = drawEndorsement(doc, form, section, record, y)
         break
+      case 'answers':
+        y = drawAnswers(doc, form, section, record, y)
+        break
       case 'result':
-        y = drawResult(doc, section, record, y)
+        y = section.choiceRows
+          ? drawChoiceRows(doc, form, section, record, y)
+          : drawResult(doc, section, record, y)
         break
       case 'signature':
         y = drawSignatures(doc, section, record, form, y)

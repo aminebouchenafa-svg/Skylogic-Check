@@ -6,6 +6,7 @@ import {
   IconNotification,
   IconRemedial,
   IconReport,
+  IconRnav,
   IconSimulator,
   IconSkill,
   IconTraining,
@@ -22,4 +23,5 @@ export const FORM_ICONS: Record<string, (props: { size?: number }) => ReactEleme
   notification: IconNotification,
   certificate: IconCertificate,
   command: IconCommand,
+  rnav: IconRnav,
 }

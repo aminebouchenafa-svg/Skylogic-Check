@@ -77,6 +77,11 @@ src/
    - `statement` : phrase d'attestation dont les passages `{entre accolades}`
      se complètent directement dans le texte.
    - `reference` : tableau en lecture seule (barème détaillé, consignes).
+   - `answers` : grille de réponses numérotées d'un questionnaire.
+
+   Une section `result` porte soit un choix unique mis en avant (`choices`),
+   soit plusieurs choix en ligne (`choiceRows`) — Pass/Fail, Completed/Not
+   Completed, etc.
 
    Une grille `grading` peut porter plusieurs colonnes de notation
    (`gradeColumns`) : l'item reçoit alors une note par colonne — un secteur de
@@ -113,9 +118,13 @@ L'écran d'accueil est une roue : un secteur coloré par formulaire, son pictogr
 et son titre. Le centre affiche le formulaire survolé. Les formulaires dont le modèle
 officiel n'est pas encore intégré apparaissent en veille.
 
-Les six couleurs de la roue — azur, orange, or, émeraude, bleu roi, magenta — et le
-code couleur de notation partagent la même palette, définie une seule fois dans
-`src/index.css` (jetons `--grade-*`) et `src/forms/scales.ts`.
+Passé huit formulaires, la roue passe d'elle-même à deux niveaux : les familles
+d'abord — Ligne, Simulateur, Examen, Remédiation — puis les formulaires de la
+famille choisie. Le centre ramène aux familles.
+
+Les couleurs de la roue et le code couleur de notation partagent la même
+palette, définie une seule fois dans `src/index.css` (jetons `--grade-*`) et
+`src/forms/scales.ts`.
 
 ## Transmission du rapport
 
@@ -136,6 +145,7 @@ code couleur de notation partagent la même palette, définie une seule fois dan
 | Mandatory Check Failure Notification | Intégré d'après le formulaire officiel D.O.A | 2 pages |
 | Simulator Console Handling Certificate | Intégré d'après le formulaire officiel D.O.A | 1 page |
 | Command Upgrade – Assessment Flight | Intégré d'après le formulaire officiel D.O.A | 2 pages |
+| RNAV Approaches – Initial Qualification Training | Intégré d'après le formulaire officiel D.O.A | 1 page |
 | Line Form | En attente du modèle | — |
 | Skill Test | En attente du modèle | — |
 | Remedial Training | En attente du modèle | — |
