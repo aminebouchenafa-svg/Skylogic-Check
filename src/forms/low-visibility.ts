@@ -15,7 +15,7 @@ export const lowVisibilityForm: FormDef = {
   subtitle: 'Habilitation CAT II / CAT III',
   category: 'Simulateur',
   revision: 'REF. D.O.A – Training Department',
-  accent: '#6FA8DC',
+  accent: '#8FA0B8',
   icon: 'lowvis',
   scaleId: 'ah-5-1',
   sections: [

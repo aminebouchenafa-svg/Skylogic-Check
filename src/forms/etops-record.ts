@@ -33,7 +33,7 @@ export const etopsRecordForm: FormDef = {
   subtitle: 'École au sol, simulateur, ligne et lâcher',
   category: 'Examen',
   revision: 'REF. D.O.A – Training Department',
-  accent: '#2FA98C',
+  accent: '#2F6FE0',
   icon: 'etops',
   scaleId: 'ah-5-1',
   reminder: REMINDER_LINE,

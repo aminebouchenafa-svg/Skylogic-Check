@@ -15,7 +15,7 @@ export const englishCertificateForm: FormDef = {
   subtitle: 'Habilitation à évaluer le niveau d’anglais',
   category: 'Simulateur',
   revision: 'REF. D.O.A – Training Department',
-  accent: '#1FB6C8',
+  accent: '#46C17A',
   icon: 'english',
   scaleId: 'ah-5-1',
   sections: [
