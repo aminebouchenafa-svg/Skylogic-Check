@@ -670,7 +670,8 @@ function drawEndorsement(
     if (lines.length) doc.text(lines, M + 3, y + headH + 5.5)
     doc.setDrawColor(205, 212, 222)
     doc.setLineWidth(0.15)
-    for (let ly = y + headH + 7.5; ly < y + headH + boxH - 2; ly += 4.6) {
+    const debut = y + headH + (lines.length ? 5.5 + lines.length * 3.8 : 7.5)
+    for (let ly = debut; ly < y + headH + boxH - 2; ly += 4.6) {
       doc.line(M + 3, ly, M + CONTENT_W - 3, ly)
     }
   }
@@ -765,10 +766,12 @@ function drawBoxed(doc: jsPDF, form: FormDef, title: string, text: string, y: nu
   doc.setFontSize(8.5)
   doc.text(lines, M + 3, y + headH + 5)
 
-  // Lignes de guidage, comme sur le formulaire papier.
+  // Lignes de guidage, comme sur le formulaire papier : elles commencent
+  // sous le texte pour ne pas le barrer.
   doc.setDrawColor(200, 208, 218)
   doc.setLineWidth(0.15)
-  for (let ly = y + headH + 7; ly < y + headH + bodyH - 2; ly += 4.6) {
+  const debut = y + headH + (text.trim() ? 5 + lines.length * 3.8 : 7)
+  for (let ly = debut; ly < y + headH + bodyH - 2; ly += 4.6) {
     doc.line(M + 3, ly, M + CONTENT_W - 3, ly)
   }
   return y + headH + bodyH + 3
@@ -956,7 +959,9 @@ export function buildPdf(form: FormDef, record: FormRecord, settings: AppSetting
       }
       case 'notes': {
         const field = (section.fields ?? [])[0]
-        if (field) y = drawBoxed(doc, form, field.label, show(record.values[field.id]), y, 15)
+        if (field) {
+          y = drawBoxed(doc, form, field.label, show(record.values[field.id]), y, section.minHeight ?? 15)
+        }
         break
       }
       case 'reference':
