@@ -49,7 +49,12 @@ export function Field({ field, values, onChange }: Props) {
       return (
         <div className={`field field-${field.width ?? 'full'}`}>
           <label className="checkbox">
-            <input type="checkbox" checked={Boolean(raw)} onChange={(e) => onChange(field.id, e.target.checked)} />
+            <input
+              id={field.id}
+              type="checkbox"
+              checked={Boolean(raw)}
+              onChange={(e) => onChange(field.id, e.target.checked)}
+            />
             {field.label}
           </label>
         </div>

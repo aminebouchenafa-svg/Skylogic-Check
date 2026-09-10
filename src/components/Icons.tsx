@@ -183,3 +183,11 @@ export const IconCommand = ({ size = 26 }: Props) => (
     <path d="M9 9h6M9 12h6M9 15h4" />
   </svg>
 )
+
+export const IconRnav = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M12 21s6.5-5.6 6.5-11a6.5 6.5 0 1 0-13 0c0 5.4 6.5 11 6.5 11z" />
+    <circle cx="12" cy="10" r="2.2" />
+    <path d="M3 13.5h3M18 13.5h3" />
+  </svg>
+)

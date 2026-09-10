@@ -77,6 +77,8 @@ export type SectionKind =
   | 'statement'
   /** Tableau de référence, en lecture seule (barème détaillé). */
   | 'reference'
+  /** Grille de réponses numérotées d'un questionnaire. */
+  | 'answers'
   | 'matrix'
   | 'notes'
   /** Bloc de commentaire suivi d'un visa nominatif. */
@@ -99,6 +101,15 @@ export interface SectionDef {
   statement?: StatementDef
   /** Choix unique mis en avant (sections « result »). */
   choices?: { value: string; label: string; color: string }[]
+  /** Plusieurs choix en ligne dans une même section (sections « result »). */
+  choiceRows?: {
+    id: string
+    label: string
+    hint?: string
+    options: { value: string; label: string; color: string }[]
+  }[]
+  /** Nombre de réponses attendues (sections « answers »). */
+  answerCount?: number
   /** Échelle de notation de la section (défaut : celle du formulaire). */
   scaleId?: string
   /** Commentaire libre attaché à la grille. */

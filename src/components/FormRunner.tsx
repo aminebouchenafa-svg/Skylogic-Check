@@ -6,6 +6,7 @@ import { downloadBlob, canShareFiles, mailtoLink, shareFile, whatsappLink } from
 import { gradeId } from '../lib/ids'
 import { upsertRecord } from '../lib/storage'
 import type { AppSettings } from '../lib/storage'
+import { Answers } from './Answers'
 import { Checklist } from './Checklist'
 import { Field } from './Field'
 import { GradeRow } from './GradeRow'
@@ -235,6 +236,7 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
 
         {section.kind === 'endorsement' && (
           <div className="panel-body">
+            {section.note && <p className="endorse-note">{section.note}</p>}
             {(section.fields ?? [])
               .filter((f) => f.type === 'textarea')
               .map((field) => (
@@ -278,7 +280,46 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
           </div>
         )}
 
-        {section.kind === 'result' && (
+        {section.kind === 'answers' && (
+          <div className="panel-body">
+            <Answers
+              sectionId={section.id}
+              count={section.answerCount ?? 10}
+              values={values}
+              onChange={setValue}
+            />
+          </div>
+        )}
+
+        {section.kind === 'result' && section.choiceRows && (
+          <div>
+            {section.choiceRows.map((row) => (
+              <div className="choice-row" key={row.id}>
+                <div>
+                  <div className="choice-row-label">{row.label}</div>
+                  {row.hint && <div className="choice-row-hint">{row.hint}</div>}
+                </div>
+                <div className="choice-row-buttons">
+                  {row.options.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      className={`choice-btn${values[row.id] === option.value ? ' on' : ''}`}
+                      style={{ ['--choice' as string]: option.color }}
+                      onClick={() =>
+                        setValue(row.id, values[row.id] === option.value ? '' : option.value)
+                      }
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {section.kind === 'result' && !section.choiceRows && (
           <div className="panel-body">
             <div className="result-choice">
               {(section.choices ?? []).map((choice) => (
