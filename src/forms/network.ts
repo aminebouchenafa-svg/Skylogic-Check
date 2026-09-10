@@ -122,7 +122,7 @@ export const AIRPORTS: Airport[] = [
   a('NDJ', 'N’Djaména'),
   a('JNB', 'Johannesbourg'),
   a('ADD', 'Addis-Abeba'),
-  a('NBJ', 'Luanda'),
+  a('LAD', 'Luanda'),
   // Amérique du Nord
   a('YUL', 'Montréal'),
 ]
