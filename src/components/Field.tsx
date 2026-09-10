@@ -67,24 +67,61 @@ export function Field({ field, values, onChange }: Props) {
         </div>
       )
     default: {
+      // Un préfixe à choisir occupe sa propre valeur : « <champ>_prefix ».
+      const prefixId = `${field.id}_prefix`
+      const listId = field.suggestions?.length ? `${field.id}_list` : undefined
       const input = (
-        <input
-          id={field.id}
-          className="input"
-          type={field.type === 'number' ? 'number' : field.type}
-          value={text}
-          placeholder={field.placeholder}
-          onChange={(e) => onChange(field.id, e.target.value)}
-        />
+        <>
+          <input
+            id={field.id}
+            className="input"
+            type={field.type === 'number' ? 'number' : field.type}
+            inputMode={field.keyboard}
+            list={listId}
+            value={text}
+            placeholder={field.placeholder}
+            onChange={(e) => onChange(field.id, e.target.value)}
+          />
+          {listId && (
+            <datalist id={listId}>
+              {field.suggestions?.map((option) => (
+                <option key={option} value={option} />
+              ))}
+            </datalist>
+          )}
+        </>
       )
-      control = field.prefix ? (
-        <div className="prefix-input">
-          <span className="prefix">{field.prefix}</span>
-          {input}
-        </div>
-      ) : (
-        input
-      )
+
+      if (field.prefixOptions?.length) {
+        control = (
+          <div className="prefix-input">
+            <select
+              id={prefixId}
+              className="prefix prefix-select"
+              aria-label={`${field.label} — préfixe`}
+              value={String(values[prefixId] ?? '')}
+              onChange={(e) => onChange(prefixId, e.target.value)}
+            >
+              <option value="">—</option>
+              {field.prefixOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+            {input}
+          </div>
+        )
+      } else if (field.prefix) {
+        control = (
+          <div className="prefix-input">
+            <span className="prefix">{field.prefix}</span>
+            {input}
+          </div>
+        )
+      } else {
+        control = input
+      }
     }
   }
 

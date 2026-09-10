@@ -1,4 +1,5 @@
 import type { FormDef } from '../types/form'
+import { AIRCRAFT_REGISTRATIONS, AIRPORTS } from './network'
 import { signatureSection } from './shared'
 import { REMINDER_LINE } from './scales'
 
@@ -35,7 +36,7 @@ export const lineTrainingForm: FormDef = {
           options: ['B737-800', 'B737 MAX 8', 'A330-200', 'A330-900', 'ATR 72-600', 'B767-300', 'A320'],
           required: true,
         },
-        { id: 'aircraft_reg', label: 'A/C REG', type: 'text', width: 'quarter' },
+        { id: 'aircraft_reg', label: 'A/C REG', type: 'text', width: 'quarter', suggestions: AIRCRAFT_REGISTRATIONS },
         { id: 'safety_pilot', label: 'Safety Pilot', type: 'select', width: 'quarter', options: ['Yes', 'No'] },
         { id: 'tri_name', label: 'TRI Name', type: 'text', width: 'quarter' },
       ],
@@ -50,16 +51,17 @@ export const lineTrainingForm: FormDef = {
           { label: 'Times (hh / mm)', span: 2 },
         ],
         columns: [
-          { id: 'sect_pf', label: 'PF', type: 'number' },
-          { id: 'sect_pm', label: 'PM', type: 'number' },
-          { id: 'time_pf', label: 'PF', type: 'text' },
-          { id: 'time_pm', label: 'PM', type: 'text' },
+          { id: 'sect_pf', label: 'PF', type: 'number', keyboard: 'numeric' },
+          { id: 'sect_pm', label: 'PM', type: 'number', keyboard: 'numeric' },
+          { id: 'time_pf', label: 'PF', type: 'text', keyboard: 'numeric' },
+          { id: 'time_pm', label: 'PM', type: 'text', keyboard: 'numeric' },
         ],
         rows: [
           { id: 'previous', label: 'Previous' },
           { id: 'present', label: 'Present' },
-          { id: 'total', label: 'Total' },
+          { id: 'total', label: 'Total', computed: true },
         ],
+        note: 'Temps au format h:mm — le total se calcule tout seul.',
       },
     },
     {
@@ -68,9 +70,9 @@ export const lineTrainingForm: FormDef = {
       kind: 'matrix',
       matrix: {
         columns: [
-          { id: 'flt', label: 'FLT Nbr', type: 'text', prefix: 'AH' },
-          { id: 'from', label: 'FROM', type: 'text' },
-          { id: 'to', label: 'TO', type: 'text' },
+          { id: 'flt', label: 'FLT Nbr', type: 'text', prefix: 'AH', keyboard: 'numeric' },
+          { id: 'from', label: 'FROM', type: 'text', suggestions: AIRPORTS },
+          { id: 'to', label: 'TO', type: 'text', suggestions: AIRPORTS },
         ],
         rows: [
           { id: 'f1', label: '1' },
@@ -143,7 +145,9 @@ export const lineTrainingForm: FormDef = {
     {
       id: 'overall',
       title: 'Overall pilot grading',
+      subtitle: 'Calculée à partir des items notés — modifiable',
       kind: 'grading',
+      autoGrade: true,
       items: [{ id: 'overall_grading', label: 'OVERALL PILOT GRADING', allowNA: false }],
       commentField: {
         id: 'overall_comment',

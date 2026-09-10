@@ -1,4 +1,5 @@
 import type { FormDef } from '../types/form'
+import { AIRCRAFT_REGISTRATIONS, AIRPORTS } from './network'
 import { remarksSection, resultSection, signatureSection } from './shared'
 import { REMINDER_LINE } from './scales'
 
@@ -26,9 +27,23 @@ export const lineControlForm: FormDef = {
         { id: 'date', label: 'Date', type: 'date', width: 'quarter', required: true },
         { id: 'position', label: 'Position', type: 'select', width: 'quarter', options: ['CAPT', 'F/O'], required: true },
         { id: 'name', label: 'Name', type: 'text', width: 'half', required: true },
-        { id: 'staff_id', label: 'Staff ID', type: 'text', width: 'quarter' },
-        { id: 'licence', label: 'License Type & Nbr', type: 'text', width: 'half' },
-        { id: 'aircraft', label: 'Aircraft Type & REG', type: 'text', width: 'quarter', required: true },
+        { id: 'staff_id', label: 'Staff ID', type: 'text', width: 'quarter', keyboard: 'numeric' },
+        {
+          id: 'licence',
+          label: 'License Type & Nbr',
+          type: 'text',
+          width: 'half',
+          prefixOptions: ['PP', 'PL'],
+          keyboard: 'numeric',
+        },
+        {
+          id: 'aircraft',
+          label: 'Aircraft Type & REG',
+          type: 'text',
+          width: 'quarter',
+          required: true,
+          suggestions: AIRCRAFT_REGISTRATIONS,
+        },
       ],
     },
     {
@@ -38,9 +53,9 @@ export const lineControlForm: FormDef = {
       matrix: {
         note: 'At least one (01) leg as PF and one (01) leg as PM.',
         columns: [
-          { id: 'from', label: 'From', type: 'text' },
-          { id: 'to', label: 'To', type: 'text' },
-          { id: 'flt', label: 'Flt N°', type: 'text', prefix: 'AH' },
+          { id: 'from', label: 'From', type: 'text', suggestions: AIRPORTS },
+          { id: 'to', label: 'To', type: 'text', suggestions: AIRPORTS },
+          { id: 'flt', label: 'Flt N°', type: 'text', prefix: 'AH', keyboard: 'numeric' },
           { id: 'position', label: 'Position', type: 'select', options: ['PF', 'PM'] },
         ],
         rows: [

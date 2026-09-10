@@ -79,15 +79,7 @@ export function Home({ records, onOpenForm, onOpenRecord, onGoArchive }: Props) 
         <div className="panel-body">
           <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(165px, 1fr))' }}>
             {selectableLevels(SCALE_AH).map((level) => (
-              <div
-                key={level.value}
-                style={{
-                  border: '1px solid var(--stroke)',
-                  background: 'rgba(6,12,23,0.5)',
-                  borderRadius: 11,
-                  padding: '14px 16px',
-                }}
-              >
+              <div className="scale-tile" key={level.value}>
                 <span className="legend-badge" style={{ ['--dot' as string]: level.color }}>
                   {level.short}
                 </span>

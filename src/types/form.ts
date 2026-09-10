@@ -29,6 +29,12 @@ export interface FieldDef {
   required?: boolean
   /** Préfixe non modifiable affiché devant la saisie (ex. « AH » pour un n° de vol). */
   prefix?: string
+  /** Préfixe à choisir dans une liste courte (ex. PP / PL pour une licence). */
+  prefixOptions?: string[]
+  /** Clavier proposé sur tablette et téléphone. */
+  keyboard?: 'numeric' | 'decimal'
+  /** Valeurs proposées à la saisie, sans interdire une autre valeur. */
+  suggestions?: string[]
 }
 
 /** Un item noté dans une grille d'évaluation. */
@@ -71,8 +77,19 @@ export interface StatementDef {
 export interface MatrixDef {
   /** En-têtes groupés affichés au-dessus des colonnes. */
   groups?: { label: string; span: number }[]
-  columns: { id: string; label: string; type?: FieldType; options?: string[]; prefix?: string }[]
-  rows: { id: string; label: string }[]
+  columns: {
+    id: string
+    label: string
+    type?: FieldType
+    options?: string[]
+    prefix?: string
+    /** Clavier proposé sur tablette et téléphone. */
+    keyboard?: 'numeric' | 'decimal'
+    /** Valeurs proposées à la saisie, sans interdire une autre valeur. */
+    suggestions?: string[]
+  }[]
+  /** Une ligne « computed » porte la somme des autres, elle n'est pas saisie. */
+  rows: { id: string; label: string; computed?: boolean }[]
   /** Masque la colonne des intitulés de ligne quand le tableau n'en a pas. */
   hideRowLabels?: boolean
   /** Note affichée sous le tableau. */
@@ -143,6 +160,11 @@ export interface SectionDef {
    * colonne (ex. un secteur de vol) au lieu d'une note unique.
    */
   gradeColumns?: { id: string; label: string }[]
+  /**
+   * Note de synthèse : elle se calcule à partir des items notés ailleurs dans
+   * le formulaire, et reste modifiable à la main.
+   */
+  autoGrade?: boolean
   /** Colonne de remarque propre à chaque item noté (ex. « Remarks »). */
   itemRemarks?: { label: string; placeholder?: string }
   /** Lignes d'un tableau de référence (sections « reference »). */
