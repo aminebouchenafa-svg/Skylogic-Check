@@ -3,6 +3,7 @@ import { checkFailureForm } from './check-failure'
 import { lineControlForm } from './line-control'
 import { lineTrainingForm } from './line-training'
 import { proficiencyCheckForm } from './proficiency-check'
+import { simConsoleForm } from './sim-console'
 
 /**
  * Catalogue des formulaires.
@@ -38,6 +39,7 @@ export const FORMS: FormDef[] = [
   lineTrainingForm,
   proficiencyCheckForm,
   checkFailureForm,
+  simConsoleForm,
   placeholder('line-form', 'D.O.A — LINE FORM', 'Line Form', 'Suivi de vol en ligne', 'Ligne', '#17AE96', 'report'),
   placeholder('skill-test', 'D.O.A — SKILL TEST', 'Skill Test', 'Épreuve pratique de qualification de type', 'Examen', '#2F63D8', 'skill'),
   placeholder('remedial', 'D.O.A — REMEDIAL', 'Remedial Training', 'Entraînement de remédiation', 'Remédiation', '#C93FAE', 'remedial'),

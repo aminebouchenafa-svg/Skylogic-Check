@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import type { RowInput } from 'jspdf-autotable'
-import type { FormDef, FormRecord, MatrixDef, SectionDef } from '../types/form'
+import type { FieldDef, FormDef, FormRecord, MatrixDef, SectionDef } from '../types/form'
 import { findLevel, getScale } from '../forms/scales'
 import { cellId, tickId } from './ids'
 import type { AppSettings } from './storage'
@@ -136,17 +136,35 @@ function drawLegend(doc: jsPDF, form: FormDef, y: number): number {
 function drawIdentification(doc: jsPDF, section: SectionDef, record: FormRecord, y: number): number {
   const fields = (section.fields ?? []).filter((f) => f.type !== 'signature' && f.type !== 'textarea')
   const pairs = section.pairsPerRow ?? 2
-  const rows: string[][] = []
-  for (let i = 0; i < fields.length; i += pairs) {
+  const labelW = pairs === 3 ? 28 : 42
+  const valueW = (CONTENT_W - labelW * pairs) / pairs
+
+  const rows: RowInput[] = []
+  let buffer: FieldDef[] = []
+  const flush = () => {
+    if (!buffer.length) return
     const row: string[] = []
     for (let k = 0; k < pairs; k += 1) {
-      const field = fields[i + k]
+      const field = buffer[k]
       row.push(field ? `${field.label} :` : '', field ? show(record.values[field.id], field.type) : '')
     }
     rows.push(row)
+    buffer = []
   }
-  const labelW = pairs === 3 ? 28 : 42
-  const valueW = (CONTENT_W - labelW * pairs) / pairs
+  for (const field of fields) {
+    if (field.width === 'full') {
+      flush()
+      // Un champ pleine largeur occupe sa propre ligne, valeur étirée.
+      rows.push([
+        `${field.label} :`,
+        { content: show(record.values[field.id], field.type), colSpan: pairs * 2 - 1 },
+      ])
+      continue
+    }
+    buffer.push(field)
+    if (buffer.length === pairs) flush()
+  }
+  flush()
   autoTable(doc, {
     startY: y,
     margin: { left: M, right: M, top: M, bottom: PAGE_H - bottomLimit },
@@ -510,6 +528,32 @@ function drawEndorsement(
   return stripY + stripH + 3
 }
 
+/** Attestation : la phrase type, complétée des valeurs saisies. */
+function drawStatement(doc: jsPDF, section: SectionDef, record: FormRecord, y: number): number {
+  const statement = section.statement
+  if (!statement) return y
+
+  const texte = statement.template.replace(/\{([a-z_]+)\}/gi, (_, id: string) => {
+    const valeur = show(record.values[id]).trim()
+    const blanc = statement.blanks.find((b) => b.id === id)
+    // Un passage non renseigné garde les pointillés du formulaire papier.
+    return valeur || '.'.repeat(Math.max(12, blanc?.size ?? 14))
+  })
+
+  doc.setFont('helvetica', 'bold')
+  doc.setFontSize(12)
+  doc.setTextColor(...hexToRgb(INK))
+  const lignes = doc.splitTextToSize(texte, CONTENT_W - 14) as string[]
+  const hauteur = lignes.length * 7 + 10
+
+  if (y + hauteur > bottomLimit) {
+    doc.addPage()
+    y = M
+  }
+  doc.text(lignes, M + 7, y + 8, { lineHeightFactor: 1.6 })
+  return y + hauteur + 6
+}
+
 /** Bloc encadré avec bandeau de titre (Remarks, commentaires). */
 function drawBoxed(doc: jsPDF, form: FormDef, title: string, text: string, y: number, minHeight = 15): number {
   const lines = doc.splitTextToSize(text.trim(), CONTENT_W - 10) as string[]
@@ -609,7 +653,9 @@ function drawSignatures(doc: jsPDF, section: SectionDef, record: FormRecord, for
         /* signature illisible : la case reste vide */
       }
     }
-    const name = index === 1 ? show(record.values.sig_examiner_name) : show(record.values.name)
+    // Le nom porté sous une signature suit la convention « <champ>_name » ;
+    // à défaut, la signature de l'équipage reprend le nom du candidat.
+    const name = show(record.values[`${field.id}_name`]) || (field.id === 'sig_crew' ? show(record.values.name) : '')
     if (name) {
       doc.setFont('helvetica', 'normal')
       doc.setFontSize(7.5)
@@ -727,6 +773,9 @@ export function buildPdf(form: FormDef, record: FormRecord, settings: AppSetting
         if (field) y = drawBoxed(doc, form, field.label, show(record.values[field.id]), y, 15)
         break
       }
+      case 'statement':
+        y = drawStatement(doc, section, record, y)
+        break
       case 'checklist':
         if (y + 30 > bottomLimit && y > M + 30) {
           doc.addPage()

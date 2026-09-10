@@ -49,6 +49,13 @@ export interface GradedItemDef {
   emphasis?: boolean
 }
 
+/** Attestation : une phrase type dont certains passages sont à compléter. */
+export interface StatementDef {
+  /** Texte où chaque {identifiant} marque un passage à compléter. */
+  template: string
+  blanks: { id: string; label: string; size?: number }[]
+}
+
 /** Tableau à cellules libres (étapes, secteurs, temps de vol…). */
 export interface MatrixDef {
   /** En-têtes groupés affichés au-dessus des colonnes. */
@@ -66,6 +73,8 @@ export type SectionKind =
   | 'grading'
   /** Liste à cocher : les items ne sont pas notés, ils sont relevés. */
   | 'checklist'
+  /** Phrase d'attestation à compléter. */
+  | 'statement'
   | 'matrix'
   | 'notes'
   /** Bloc de commentaire suivi d'un visa nominatif. */
@@ -84,6 +93,8 @@ export interface SectionDef {
   items?: GradedItemDef[]
   /** Tableau de saisie (sections « matrix »). */
   matrix?: MatrixDef
+  /** Phrase d'attestation (sections « statement »). */
+  statement?: StatementDef
   /** Choix unique mis en avant (sections « result »). */
   choices?: { value: string; label: string; color: string }[]
   /** Échelle de notation de la section (défaut : celle du formulaire). */

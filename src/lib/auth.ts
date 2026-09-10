@@ -11,11 +11,15 @@
 
 const KEY = 'skylogic:unlocked:v1'
 
-export const ACCOUNT = {
-  user: 'airalgerie',
-  /** Empreinte SHA-256 du mot de passe : il n'apparaît pas en clair. */
-  passwordHash: '63d0caf15edadbc65a0933d128d1fe7a3b6024b325a3562bf6c7e934040df993',
-}
+/**
+ * Comptes acceptés. Le mot de passe n'apparaît jamais en clair : seule son
+ * empreinte SHA-256 est stockée. Pour en changer un, remplacer l'empreinte.
+ * Le second compte sert de secours si le premier venait à être diffusé.
+ */
+export const ACCOUNTS = [
+  { user: 'airalgerie', passwordHash: '63d0caf15edadbc65a0933d128d1fe7a3b6024b325a3562bf6c7e934040df993' },
+  { user: 'training', passwordHash: '6632ab8a9d0af0f85fa433e4811f505f80b721f930e9e7c6523bb01f2ce50926' },
+]
 
 async function sha256(text: string): Promise<string> {
   const bytes = new TextEncoder().encode(text)
@@ -26,9 +30,10 @@ async function sha256(text: string): Promise<string> {
 }
 
 export async function checkCredentials(user: string, password: string): Promise<boolean> {
-  if (user.trim().toLowerCase() !== ACCOUNT.user) return false
+  const compte = ACCOUNTS.find((c) => c.user === user.trim().toLowerCase())
+  if (!compte) return false
   try {
-    return (await sha256(password)) === ACCOUNT.passwordHash
+    return (await sha256(password)) === compte.passwordHash
   } catch {
     // crypto.subtle exige une connexion sécurisée (https ou localhost).
     return false

@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react'
 import {
+  IconCertificate,
   IconLineCheck,
   IconNotification,
   IconRemedial,
@@ -18,4 +19,5 @@ export const FORM_ICONS: Record<string, (props: { size?: number }) => ReactEleme
   skill: IconSkill,
   remedial: IconRemedial,
   notification: IconNotification,
+  certificate: IconCertificate,
 }

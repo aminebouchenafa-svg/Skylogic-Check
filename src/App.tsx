@@ -6,7 +6,7 @@ import { Lock } from './components/Lock'
 import { Archive } from './pages/Archive'
 import { Home } from './pages/Home'
 import { Settings } from './pages/Settings'
-import { IconArchive, IconBack, IconGauge, IconSettings, IconWing } from './components/Icons'
+import { IconArchive, IconBack, IconGauge, IconSettings } from './components/Icons'
 import { isUnlocked, lock } from './lib/auth'
 import {
   deleteRecord,
@@ -80,11 +80,12 @@ export default function App() {
     <div className="app">
       <aside className="sidebar">
         <div className="brand">
-          <div className="brand-mark">
-            <IconWing size={22} />
-          </div>
+          <img className="brand-mark" src={`${import.meta.env.BASE_URL}emblem.png`} alt="" />
           <div>
-            <div className="brand-name">SKYLOGIC</div>
+            <div className="brand-name">
+              <span className="wm-sky">SKY</span>
+              <span className="wm-logic">LOGIC</span>
+            </div>
             <div className="brand-sub">Check · Fleet Training</div>
           </div>
         </div>

@@ -167,3 +167,12 @@ export const IconNotification = ({ size = 26 }: Props) => (
     <path d="M17.5 5v1.8M17.5 8.3v.01" />
   </svg>
 )
+
+export const IconCertificate = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M19 12V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h5" />
+    <path d="M8.5 7.5h7M8.5 11h5" />
+    <circle cx="17" cy="16.5" r="3.2" />
+    <path d="m15 19.2-.6 2.8 2.6-1.3 2.6 1.3-.6-2.8" />
+  </svg>
+)

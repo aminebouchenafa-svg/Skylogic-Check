@@ -29,10 +29,10 @@ Les dossiers sont enregistrés dans le navigateur de l'appareil (`localStorage`)
 
 ## Accès
 
-L'application s'ouvre sur un écran d'entrée : un identifiant unique, partagé
-par l'équipe, défini dans `src/lib/auth.ts`. Seule l'empreinte SHA-256 du mot
-de passe y figure ; pour le changer, remplacer `passwordHash` par l'empreinte
-du nouveau.
+L'application s'ouvre sur un écran d'entrée. Deux comptes sont acceptés — un
+principal et un de secours — définis dans `src/lib/auth.ts`. Seule l'empreinte
+SHA-256 des mots de passe y figure ; pour en changer un, remplacer son
+`passwordHash` par l'empreinte du nouveau.
 
 Ce n'est **pas une protection** : l'application est entièrement téléchargée
 par le navigateur avant que cet écran ne s'affiche, son contenu est donc
@@ -74,6 +74,8 @@ src/
    - `checklist` : items non notés, simplement cochés dans des colonnes
      (ex. CM 1 / CM 2) ; les lignes `heading: true` sont des intitulés de rubrique.
    - `endorsement` : bloc de commentaire suivi d'un visa (nom, fonction, signature).
+   - `statement` : phrase d'attestation dont les passages `{entre accolades}`
+     se complètent directement dans le texte.
 3. L'ajouter au tableau `FORMS` dans `src/forms/index.ts`.
 
 L'écran de saisie, la moyenne, l'alerte « sous le standard », le PDF et le partage
@@ -126,6 +128,7 @@ code couleur de notation partagent la même palette, définie une seule fois dan
 | Line Training | Intégré d'après le formulaire officiel D.O.A | 2 pages |
 | Proficiency Check | Intégré d'après le formulaire officiel D.O.A | 1 page |
 | Mandatory Check Failure Notification | Intégré d'après le formulaire officiel D.O.A | 2 pages |
+| Simulator Console Handling Certificate | Intégré d'après le formulaire officiel D.O.A | 1 page |
 | Line Form | En attente du modèle | — |
 | Skill Test | En attente du modèle | — |
 | Remedial Training | En attente du modèle | — |

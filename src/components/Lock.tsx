@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { checkCredentials, unlock } from '../lib/auth'
-import { IconWing } from './Icons'
+import { Wordmark } from './Wordmark'
 
 interface Props {
   onUnlock: () => void
@@ -31,15 +31,7 @@ export function Lock({ onUnlock }: Props) {
   return (
     <div className="lock">
       <form className="panel lock-card" onSubmit={submit}>
-        <div className="lock-brand">
-          <div className="brand-mark">
-            <IconWing size={24} />
-          </div>
-          <div>
-            <div className="brand-name">SKYLOGIC</div>
-            <div className="brand-sub">Check · Fleet Training</div>
-          </div>
-        </div>
+        <Wordmark />
 
         <p className="lock-intro">
           Accès réservé au Fleet Training Department. Identifiant commun à l’équipe.
