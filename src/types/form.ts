@@ -18,6 +18,12 @@ export type FieldType =
 
 export type FieldWidth = 'full' | 'half' | 'third' | 'quarter'
 
+/**
+ * Valeur proposée à la saisie. Le libellé n'est qu'une aide à la recherche :
+ * seule la valeur est enregistrée et imprimée.
+ */
+export type Suggestion = string | { value: string; hint?: string }
+
 export interface FieldDef {
   id: string
   label: string
@@ -34,7 +40,7 @@ export interface FieldDef {
   /** Clavier proposé sur tablette et téléphone. */
   keyboard?: 'numeric' | 'decimal'
   /** Valeurs proposées à la saisie, sans interdire une autre valeur. */
-  suggestions?: string[]
+  suggestions?: Suggestion[]
   /** Sur une liste : autorise une valeur hors liste, saisie à la main. */
   allowOther?: boolean
   /** Saisie mise en majuscules (codes d'aéroport, immatriculations). */
@@ -90,7 +96,7 @@ export interface MatrixDef {
     /** Clavier proposé sur tablette et téléphone. */
     keyboard?: 'numeric' | 'decimal'
     /** Valeurs proposées à la saisie, sans interdire une autre valeur. */
-    suggestions?: string[]
+    suggestions?: Suggestion[]
     /** Sur une liste : autorise une valeur hors liste, saisie à la main. */
     allowOther?: boolean
     /** Saisie mise en majuscules (codes d'aéroport, immatriculations). */

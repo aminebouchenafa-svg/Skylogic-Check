@@ -6,27 +6,123 @@
  * À compléter avec les listes officielles du Training Department.
  */
 
+/** Une escale proposée à la saisie : son code IATA et la ville desservie. */
+export interface Airport {
+  value: string
+  hint: string
+}
+
+const a = (value: string, hint: string): Airport => ({ value, hint })
+
 /**
- * Codes IATA proposés à la saisie d'une étape.
+ * Réseau Air Algérie, codes IATA.
  *
- * Liste provisoire, en attente du relevé officiel du réseau. Elle ne fait que
- * proposer : un vol charter ou exceptionnel s'écrit directement dans le champ.
+ * La liste ne fait que proposer : un vol charter ou exceptionnel s'écrit
+ * directement dans le champ et est conservé tel quel.
  */
-export const AIRPORTS: string[] = [
-  // Réseau domestique
-  'ALG', 'ORN', 'CZL', 'AAE', 'TLM', 'BJA', 'GJL', 'QSF', 'BLJ', 'TEE',
-  'HME', 'IAM', 'VVZ', 'OGX', 'TGR', 'ELU', 'BSK', 'GHA', 'LOO', 'ELG',
-  'TMX', 'AZR', 'INZ', 'TMR', 'DJG', 'BMW', 'TIN', 'BFW', 'MZW', 'EBH',
-  'CFK', 'TID', 'MUW', 'HRM',
-  // Europe
-  'CDG', 'ORY', 'MRS', 'LYS', 'TLS', 'NCE', 'BOD', 'LIL', 'NTE', 'MPL',
-  'MLH', 'SXB', 'PGF', 'MAD', 'BCN', 'ALC', 'GVA', 'FCO', 'MXP', 'LHR',
-  'FRA', 'BRU', 'LIS', 'IST',
-  // Afrique et Moyen-Orient
-  'CMN', 'RAK', 'TUN', 'MIR', 'DJE', 'TIP', 'CAI', 'DSS', 'BKO', 'OUA',
-  'NIM', 'NKC', 'ABJ', 'LOS', 'JED', 'MED', 'DXB', 'AMM', 'BEY', 'DOH',
+export const AIRPORTS: Airport[] = [
+  // Algérie
+  a('ALG', 'Alger'),
+  a('ORN', 'Oran'),
+  a('CZL', 'Constantine'),
+  a('AAE', 'Annaba'),
+  a('AZR', 'Adrar'),
+  a('BLJ', 'Batna'),
+  a('CBH', 'Béchar'),
+  a('BJA', 'Béjaïa'),
+  a('BSK', 'Biskra'),
+  a('BMW', 'Bordj Badji Mokhtar'),
+  a('CFK', 'Chlef'),
+  a('DJG', 'Djanet'),
+  a('EBH', 'El Bayadh'),
+  a('ELG', 'El Goléa'),
+  a('ELU', 'El Oued'),
+  a('GHA', 'Ghardaïa'),
+  a('HME', 'Hassi Messaoud'),
+  a('INZ', 'In Salah'),
+  a('IAM', 'In Amenas'),
+  a('INF', 'In Guezzam'),
+  a('GJL', 'Jijel'),
+  a('LOO', 'Laghouat'),
+  a('MZW', 'Mécheria'),
+  a('OGX', 'Ouargla'),
+  a('QSF', 'Sétif'),
+  a('TMR', 'Tamanrasset'),
+  a('TLM', 'Tlemcen'),
+  a('VNE', 'Tindouf'),
+  a('TGR', 'Touggourt'),
+  a('TEE', 'Tébessa'),
+  a('VVZ', 'Illizi'),
+  // France
+  a('ORY', 'Paris Orly'),
+  a('CDG', 'Paris Charles-de-Gaulle'),
+  a('MRS', 'Marseille'),
+  a('LYS', 'Lyon'),
+  a('NCE', 'Nice'),
+  a('TLS', 'Toulouse'),
+  a('BOD', 'Bordeaux'),
+  a('LIL', 'Lille'),
+  a('NTE', 'Nantes'),
+  a('MPL', 'Montpellier'),
+  a('SXB', 'Strasbourg'),
+  a('ETZ', 'Metz / Nancy'),
+  a('BSL', 'Bâle-Mulhouse'),
+  // Europe hors France
+  a('LHR', 'Londres Heathrow'),
+  a('STN', 'Londres Stansted'),
+  a('FRA', 'Francfort'),
+  a('BER', 'Berlin'),
+  a('BRU', 'Bruxelles'),
+  a('GVA', 'Genève'),
+  a('FCO', 'Rome'),
+  a('MXP', 'Milan'),
+  a('MAD', 'Madrid'),
+  a('BCN', 'Barcelone'),
+  a('ALC', 'Alicante'),
+  a('VLC', 'Valence'),
+  a('PMI', 'Palma de Majorque'),
+  a('LIS', 'Lisbonne'),
+  a('VIE', 'Vienne'),
+  a('BUD', 'Budapest'),
+  a('SVO', 'Moscou'),
+  // Moyen-Orient et Asie
+  a('DXB', 'Dubaï'),
+  a('JED', 'Djeddah'),
+  a('MED', 'Médine'),
+  a('CAI', 'Le Caire'),
+  a('IST', 'Istanbul'),
+  a('AYT', 'Antalya'),
+  a('AMM', 'Amman'),
+  a('BEY', 'Beyrouth'),
+  a('KWI', 'Koweït City'),
+  a('DOH', 'Doha'),
+  a('PEK', 'Pékin'),
+  a('CAN', 'Canton'),
+  a('PVG', 'Shanghai'),
+  a('KUL', 'Kuala Lumpur'),
+  a('DEL', 'New Delhi'),
+  // Afrique
+  a('TUN', 'Tunis'),
+  a('CMN', 'Casablanca'),
+  a('TIP', 'Tripoli'),
+  a('NKC', 'Nouakchott'),
+  a('DSS', 'Dakar'),
+  a('ABJ', 'Abidjan'),
+  a('NIM', 'Niamey'),
+  a('OUA', 'Ouagadougou'),
+  a('BKO', 'Bamako'),
+  a('CKY', 'Conakry'),
+  a('LOS', 'Lagos'),
+  a('ABV', 'Abuja'),
+  a('DLA', 'Douala'),
+  a('LBV', 'Libreville'),
+  a('BZV', 'Brazzaville'),
+  a('NDJ', 'N’Djaména'),
+  a('JNB', 'Johannesbourg'),
+  a('ADD', 'Addis-Abeba'),
+  a('NBJ', 'Luanda'),
   // Amérique du Nord
-  'YUL', 'JFK',
+  a('YUL', 'Montréal'),
 ]
 
 /**
