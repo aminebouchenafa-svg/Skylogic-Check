@@ -863,6 +863,13 @@ button, input, select, textarea { font: inherit; color: inherit; }
   text-align: center;
 }
 
+/* Remarque propre à un item noté : elle occupe la largeur sous la ligne. */
+.grade-remark {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
 .matrix-tick { width: 20px; height: 20px; accent-color: var(--hud); cursor: pointer; }
 
 .blank::placeholder { color: var(--text-faint); font-weight: 400; font-size: 13px; }

@@ -6,10 +6,12 @@ interface Props {
   scale: GradeScale
   value: string
   onChange: (value: string) => void
+  /** Remarque propre à l'item, quand le formulaire en prévoit une. */
+  remark?: { label: string; placeholder?: string; value: string; onChange: (value: string) => void }
 }
 
 /** Une ligne de notation : l'item et les boutons du code couleur. */
-export function GradeRow({ item, scale, value, onChange }: Props) {
+export function GradeRow({ item, scale, value, onChange, remark }: Props) {
   const toggle = (next: string) => onChange(value === next ? '' : next)
   const levels = selectableLevels(scale).filter(
     (level) => level.value !== 'NA' || item.allowNA !== false,
@@ -46,6 +48,17 @@ export function GradeRow({ item, scale, value, onChange }: Props) {
             </button>
           ))}
         </div>
+      )}
+
+      {remark && (
+        <input
+          id={`${item.id}_remark`}
+          className="input grade-remark"
+          aria-label={`${remark.label} — ${item.label}`}
+          placeholder={remark.placeholder ?? remark.label}
+          value={remark.value}
+          onChange={(e) => remark.onChange(e.target.value)}
+        />
       )}
     </div>
   )

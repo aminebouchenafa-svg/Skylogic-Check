@@ -3,7 +3,7 @@ import autoTable from 'jspdf-autotable'
 import type { RowInput } from 'jspdf-autotable'
 import type { FieldDef, FormDef, FormRecord, GradedItemDef, MatrixDef, SectionDef } from '../types/form'
 import { findLevel, getScale, selectableLevels } from '../forms/scales'
-import { answerId, cellId, gradeId, tickId } from './ids'
+import { answerId, cellId, gradeId, remarkId, tickId } from './ids'
 import type { AppSettings } from './storage'
 
 /**
@@ -310,7 +310,10 @@ function drawGrading(
   const gradeW = grille ? 11 : multiple ? 10 : 17
   const codeW = numbered ? 7 : 0
   const pad = multiple ? 1 : 0.7
-  const textW = width - codeW - gradeW * colonnes.length
+  // Colonne de remarque propre à chaque item, quand le document en prévoit une.
+  const remarques = section.itemRemarks
+  const remarkW = remarques ? width * 0.36 : 0
+  const textW = width - codeW - remarkW - gradeW * colonnes.length
 
   const valeur = (item: GradedItemDef, colId: string) =>
     record.values[colId ? gradeId(item.id, colId) : item.id]
@@ -337,14 +340,12 @@ function drawGrading(
           const niveau = brut ? findLevel(scale, String(brut)) : undefined
           return niveau ? niveau.short : ''
         })
-    return numbered ? [item.code ?? '', libelle, ...notes] : [libelle, ...notes]
+    const suite = remarques && !item.heading ? [show(record.values[remarkId(item.id)])] : remarques ? [''] : []
+    return numbered ? [item.code ?? '', libelle, ...notes, ...suite] : [libelle, ...notes, ...suite]
   })
 
-  const head: RowInput[] = [
-    numbered
-      ? ['', section.title, ...colonnes.map((c) => c.label)]
-      : [section.title, ...colonnes.map((c) => c.label)],
-  ]
+  const entete = [...colonnes.map((c) => c.label), ...(remarques ? [remarques.label] : [])]
+  const head: RowInput[] = [numbered ? ['', section.title, ...entete] : [section.title, ...entete]]
 
   const labelCol = numbered ? 1 : 0
   const premiereNote = labelCol + 1
@@ -355,6 +356,7 @@ function drawGrading(
   colonnes.forEach((_, i) => {
     columnStyles[premiereNote + i] = { cellWidth: gradeW, halign: 'center', fontStyle: 'bold' }
   })
+  if (remarques) columnStyles[premiereNote + colonnes.length] = { cellWidth: remarkW, halign: 'left' }
 
   autoTable(doc, {
     startY: y,
@@ -403,6 +405,7 @@ function drawGrading(
         return
       }
       if (item.input === 'date') return
+      if (data.column.index >= premiereNote + colonnes.length) return
 
       const col = colonnes[data.column.index - premiereNote]
       const niveau = grille

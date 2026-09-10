@@ -143,6 +143,8 @@ export interface SectionDef {
    * colonne (ex. un secteur de vol) au lieu d'une note unique.
    */
   gradeColumns?: { id: string; label: string }[]
+  /** Colonne de remarque propre à chaque item noté (ex. « Remarks »). */
+  itemRemarks?: { label: string; placeholder?: string }
   /** Lignes d'un tableau de référence (sections « reference »). */
   referenceRows?: { label: string; description: string; color?: string }[]
   /**

@@ -10,3 +10,6 @@ export const gradeId = (itemId: string, columnId: string) => `${itemId}_${column
 
 /** Identifiant de la n-ième réponse d'un questionnaire. */
 export const answerId = (sectionId: string, index: number) => `${sectionId}_q${index}`
+
+/** Remarque attachée à un item noté. */
+export const remarkId = (item: string) => `${item}_remark`

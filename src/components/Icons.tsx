@@ -250,3 +250,11 @@ export const IconRelease = ({ size = 26 }: Props) => (
     <path d="M12 5.5V3" />
   </svg>
 )
+
+export const IconInstructor = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <circle cx="9" cy="7.5" r="3" />
+    <path d="M3.5 20.5v-1.6A4.4 4.4 0 0 1 7.9 14.5h2.2a4.4 4.4 0 0 1 4.4 4.4v1.6" />
+    <path d="M15.5 5.5h5.5v7h-3l-2.5 2.2V12.5h-.5" />
+  </svg>
+)
