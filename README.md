@@ -6,19 +6,15 @@ transmis par e-mail ou WhatsApp.
 
 ## Mise en ligne
 
-L'application est publiée par **Cloudflare Pages**, directement à partir du dépôt.
-Réglages à saisir une seule fois dans le tableau de bord Cloudflare :
+Publiée par **GitHub Pages** à chaque push sur `main` :
+https://aminebouchenafa-svg.github.io/Skylogic-Check/
 
-| Réglage | Valeur |
-|---------|--------|
-| Branche de production | `main` |
-| Commande de build | `npm run build` |
-| Dossier de sortie | `dist` |
-| Version de Node | lue dans `.nvmrc` (22) |
+Réglage à faire une seule fois dans le dépôt — **Settings → Pages →
+Build and deployment → Source : GitHub Actions**. Sans lui, le workflow
+s'arrête à l'étape `configure-pages`.
 
-Chaque push sur `main` redéclenche la publication. Le workflow GitHub
-`Contrôle` ne déploie rien : il vérifie seulement que la version poussée
-passe le lint et compile.
+Le workflow `Contrôle` ne déploie rien : il vérifie que les versions
+poussées sur les branches de travail passent le lint et compilent.
 
 ## Démarrer
 
