@@ -1,6 +1,7 @@
 import type { GradeLevel, GradeScale } from '../types/form'
 import { NA_LEVEL } from './na'
 import { SCALE_COMMAND } from './scales-command'
+import { SCALE_PROGRESS } from './scales-progress'
 
 export { NA_LEVEL }
 
@@ -62,6 +63,7 @@ export const SCALE_AH: GradeScale = {
 export const SCALES: Record<string, GradeScale> = {
   [SCALE_AH.id]: SCALE_AH,
   [SCALE_COMMAND.id]: SCALE_COMMAND,
+  [SCALE_PROGRESS.id]: SCALE_PROGRESS,
 }
 
 export function getScale(id: string): GradeScale {

@@ -216,3 +216,13 @@ export const IconSyllabus = ({ size = 26 }: Props) => (
     <path d="M13.5 9h4.2M13.5 14h4.2" />
   </svg>
 )
+
+export const IconProgress = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M3 20.5h18" />
+    <rect x="4.5" y="13" width="3.6" height="7.5" rx="0.8" />
+    <rect x="10.2" y="9.5" width="3.6" height="11" rx="0.8" />
+    <rect x="15.9" y="5.5" width="3.6" height="15" rx="0.8" />
+    <path d="M4 9.5 9 6l3.5 2.5L20 3" />
+  </svg>
+)

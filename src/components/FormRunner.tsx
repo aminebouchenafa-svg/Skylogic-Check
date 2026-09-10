@@ -77,9 +77,12 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
     })
   }, [form, values])
 
+  /** Rubrique où justifier les items notés 1 ou 2, quand le formulaire en a une. */
+  const remarksSection =
+    form.sections.find((s) => s.id === 'remarks') ?? form.sections.find((s) => s.kind === 'notes')
+  const remarksRequired = form.sections.some((s) => s.id === 'remarks')
   const remarksMissing =
-    summary.failing.length > 0 && !String(values.remarks ?? '').trim() &&
-    form.sections.some((s) => s.id === 'remarks')
+    summary.failing.length > 0 && !String(values.remarks ?? '').trim() && remarksRequired
 
   const isGraded = form.sections.some((s) => s.kind === 'grading')
   const subject = String(values.name ?? '').trim()
@@ -428,8 +431,11 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
         <div className="alert">
           <IconAlert size={17} />
           <div>
-            <strong>{summary.failing.length} item(s) noté(s) 1 ou 2.</strong> La rubrique Remarks est
-            obligatoire : {summary.failing.slice(0, 3).join(' · ')}
+            <strong>{summary.failing.length} item(s) noté(s) 1 ou 2.</strong>{' '}
+            {remarksSection
+              ? `La rubrique ${remarksSection.title} ${remarksRequired ? 'est obligatoire' : 'doit les justifier'} : `
+              : 'Items concernés : '}
+            {summary.failing.slice(0, 3).join(' · ')}
             {summary.failing.length > 3 && ' …'}
           </div>
         </div>
@@ -440,7 +446,7 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
           <IconAlert size={17} />
           <div>
             {missing.length > 0 && <>Champs obligatoires : {missing.map((f) => f.label).join(', ')}. </>}
-            {remarksMissing && <>La rubrique Remarks doit être renseignée.</>}
+            {remarksMissing && <>La rubrique {remarksSection?.title ?? 'Remarks'} doit être renseignée.</>}
           </div>
         </div>
       )}
