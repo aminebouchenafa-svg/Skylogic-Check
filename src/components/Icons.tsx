@@ -258,3 +258,18 @@ export const IconInstructor = ({ size = 26 }: Props) => (
     <path d="M15.5 5.5h5.5v7h-3l-2.5 2.2V12.5h-.5" />
   </svg>
 )
+
+export const IconAbsence = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 7v5.4l3.4 2" />
+    <path d="M3.2 5.2 6 3.4M20.8 5.2 18 3.4" />
+  </svg>
+)
+
+export const IconUprt = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M3.5 18.5c3-8.5 6.5-12 9.2-12a3.6 3.6 0 0 1 1 7.1c-2.6.6-4.6-1.5-4.6-4" />
+    <path d="M14.5 20.5 21 17l-2.6-2.4" />
+  </svg>
+)

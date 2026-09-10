@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react'
 import {
+  IconAbsence,
   IconAirfield,
   IconCertificate,
   IconCommand,
@@ -17,6 +18,7 @@ import {
   IconSimulator,
   IconSkill,
   IconSyllabus,
+  IconUprt,
   IconTraining,
 } from './Icons'
 
@@ -37,6 +39,8 @@ export const FORM_ICONS: Record<string, (props: { size?: number }) => ReactEleme
   etops: IconEtops,
   release: IconRelease,
   instructor: IconInstructor,
+  absence: IconAbsence,
+  uprt: IconUprt,
   progress: IconProgress,
   airfield: IconAirfield,
   syllabus: IconSyllabus,

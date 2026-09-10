@@ -641,7 +641,7 @@ function drawChecklist(
   autoTable(doc, {
     startY: y,
     margin: { left: M, right: M, top: M, bottom: PAGE_H - bottomLimit },
-    head: [['', ...columns.map((c) => c.label), ...suite.map((c) => c.label)]],
+    head: [[section.title, ...columns.map((c) => c.label), ...suite.map((c) => c.label)]],
     body,
     theme: 'grid',
     styles: {
