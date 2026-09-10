@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react'
 import type { FormDef, FormRecord } from './types/form'
 import { getForm } from './forms'
 import { FormRunner } from './components/FormRunner'
+import { Lock } from './components/Lock'
 import { Archive } from './pages/Archive'
 import { Home } from './pages/Home'
 import { Settings } from './pages/Settings'
-import { IconArchive, IconGauge, IconSettings, IconWing } from './components/Icons'
+import { IconArchive, IconBack, IconGauge, IconSettings, IconWing } from './components/Icons'
+import { isUnlocked, lock } from './lib/auth'
 import {
   deleteRecord,
   loadRecords,
@@ -24,6 +26,7 @@ const NAV: { id: View; label: string; icon: React.ReactNode }[] = [
 ]
 
 export default function App() {
+  const [unlocked, setUnlocked] = useState(() => isUnlocked())
   const [view, setView] = useState<View>('home')
   // Lecture directe du stockage local : l'application est entièrement côté client.
   const [records, setRecords] = useState<FormRecord[]>(() => loadRecords())
@@ -71,6 +74,8 @@ export default function App() {
     setView(next)
   }
 
+  if (!unlocked) return <Lock onUnlock={() => setUnlocked(true)} />
+
   return (
     <div className="app">
       <aside className="sidebar">
@@ -99,6 +104,17 @@ export default function App() {
         </nav>
 
         <div className="sidebar-foot">
+          <button
+            className="btn btn-ghost btn-sm"
+            style={{ marginBottom: 12 }}
+            onClick={() => {
+              lock()
+              setUnlocked(false)
+            }}
+          >
+            <IconBack size={14} /> Se déconnecter
+          </button>
+          <br />
           {settings.operator}
           <br />
           {settings.department}
