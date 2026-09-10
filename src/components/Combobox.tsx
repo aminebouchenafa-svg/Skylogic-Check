@@ -1,10 +1,11 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import type { Suggestion } from '../types/form'
 
 interface Props {
   id: string
   value: string
-  options: string[]
+  options: Suggestion[]
   placeholder?: string
   ariaLabel?: string
   className?: string
@@ -41,12 +42,22 @@ export function Combobox({
   const [actif, setActif] = useState(0)
   const [cadre, setCadre] = useState<{ top: number; left: number; width: number } | null>(null)
 
+  const entrees = options.map((o) => (typeof o === 'string' ? { value: o, hint: undefined } : o))
   const requete = value.trim().toUpperCase()
+  const sansAccent = (texte: string) =>
+    texte.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase()
+
+  // Le code d'abord, la ville ensuite : « ORA » comme « Oran » mènent à ORN.
   const filtres = requete
-    ? options.filter((o) => o.toUpperCase().startsWith(requete)).concat(
-        options.filter((o) => !o.toUpperCase().startsWith(requete) && o.toUpperCase().includes(requete)),
-      )
-    : options
+    ? [
+        ...entrees.filter((o) => o.value.toUpperCase().startsWith(requete)),
+        ...entrees.filter(
+          (o) =>
+            !o.value.toUpperCase().startsWith(requete) &&
+            (o.value.toUpperCase().includes(requete) || sansAccent(o.hint ?? '').includes(sansAccent(requete))),
+        ),
+      ]
+    : entrees
 
   const placer = () => {
     const boite = champ.current?.getBoundingClientRect()
@@ -110,7 +121,7 @@ export function Combobox({
             setActif((i) => Math.max(i - 1, 0))
           } else if (e.key === 'Enter' && ouvert && filtres[actif]) {
             e.preventDefault()
-            choisir(filtres[actif])
+            choisir(filtres[actif].value)
           } else if (e.key === 'Escape') {
             setOuvert(false)
           }
@@ -124,17 +135,18 @@ export function Combobox({
             style={{ top: cadre.top, left: cadre.left, width: cadre.width, maxHeight: VISIBLES * 38 }}
           >
             {filtres.map((option, index) => (
-              <li key={option}>
+              <li key={option.value}>
                 <button
                   type="button"
                   className={`combo-option${index === actif ? ' on' : ''}`}
                   // On agit avant la perte de focus, sinon la liste se referme.
                   onPointerDown={(e) => {
                     e.preventDefault()
-                    choisir(option)
+                    choisir(option.value)
                   }}
                 >
-                  {option}
+                  <span className="combo-code">{option.value}</span>
+                  {option.hint && <span className="combo-hint">{option.hint}</span>}
                 </button>
               </li>
             ))}
