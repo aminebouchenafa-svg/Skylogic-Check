@@ -6,21 +6,27 @@
  * À compléter avec les listes officielles du Training Department.
  */
 
-/** Codes OACI proposés à la saisie d'une étape. */
+/**
+ * Codes IATA proposés à la saisie d'une étape.
+ *
+ * Liste provisoire, en attente du relevé officiel du réseau. Elle ne fait que
+ * proposer : un vol charter ou exceptionnel s'écrit directement dans le champ.
+ */
 export const AIRPORTS: string[] = [
-  // Algérie
-  'DAAG', 'DAAE', 'DAAJ', 'DAAP', 'DAAT', 'DAAV', 'DAAY', 'DABB', 'DABC', 'DABS',
-  'DAOB', 'DAOF', 'DAOI', 'DAOL', 'DAON', 'DAOO', 'DAOR', 'DAOV', 'DAUA', 'DAUB',
-  'DAUE', 'DAUG', 'DAUH', 'DAUI', 'DAUK', 'DAUO', 'DAUT', 'DAUU', 'DAUZ', 'DAFH',
+  // Réseau domestique
+  'ALG', 'ORN', 'CZL', 'AAE', 'TLM', 'BJA', 'GJL', 'QSF', 'BLJ', 'TEE',
+  'HME', 'IAM', 'VVZ', 'OGX', 'TGR', 'ELU', 'BSK', 'GHA', 'LOO', 'ELG',
+  'TMX', 'AZR', 'INZ', 'TMR', 'DJG', 'BMW', 'TIN', 'BFW', 'MZW', 'EBH',
+  'CFK', 'TID', 'MUW', 'HRM',
   // Europe
-  'LFPG', 'LFPO', 'LFML', 'LFLL', 'LFBO', 'LFMN', 'LFRS', 'LFSB', 'LFQQ', 'LFRB',
-  'LEMD', 'LEBL', 'LEAL', 'LFBD', 'LSGG', 'LIRF', 'LIMC', 'EGLL', 'EDDF', 'EBBR',
-  'LPPT', 'LTFM', 'LTBA',
+  'CDG', 'ORY', 'MRS', 'LYS', 'TLS', 'NCE', 'BOD', 'LIL', 'NTE', 'MPL',
+  'MLH', 'SXB', 'PGF', 'MAD', 'BCN', 'ALC', 'GVA', 'FCO', 'MXP', 'LHR',
+  'FRA', 'BRU', 'LIS', 'IST',
   // Afrique et Moyen-Orient
-  'GMMN', 'GMMX', 'DTTA', 'DTMB', 'HLLT', 'HECA', 'GOBD', 'GABS', 'DIAP', 'DNMM',
-  'OEJN', 'OEMA', 'OMDB', 'OJAI', 'HAAB',
+  'CMN', 'RAK', 'TUN', 'MIR', 'DJE', 'TIP', 'CAI', 'DSS', 'BKO', 'OUA',
+  'NIM', 'NKC', 'ABJ', 'LOS', 'JED', 'MED', 'DXB', 'AMM', 'BEY', 'DOH',
   // Amérique du Nord
-  'CYUL', 'KJFK',
+  'YUL', 'JFK',
 ]
 
 /**

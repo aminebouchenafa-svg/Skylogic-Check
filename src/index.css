@@ -936,6 +936,42 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 .theme-toggle { margin-bottom: 10px; }
 
+/* ------------------------------------------------------- Saisie assistée */
+
+.combo { position: relative; }
+
+.combo-list {
+  position: fixed;
+  z-index: 60;
+  margin: 0;
+  padding: 5px;
+  list-style: none;
+  overflow-y: auto;
+  background: var(--surface-solid);
+  border: 1px solid var(--stroke-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  -webkit-overflow-scrolling: touch;
+}
+
+.combo-option {
+  display: block;
+  width: 100%;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.combo-option:hover,
+.combo-option.on { background: var(--hud-soft); color: var(--hud); }
+
 /* Cellule de total : calculée, donc affichée et non saisie. */
 .matrix-total {
   text-align: center;

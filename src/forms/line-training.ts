@@ -71,8 +71,8 @@ export const lineTrainingForm: FormDef = {
       matrix: {
         columns: [
           { id: 'flt', label: 'FLT Nbr', type: 'text', prefix: 'AH', keyboard: 'numeric' },
-          { id: 'from', label: 'FROM', type: 'select', options: AIRPORTS, allowOther: true },
-          { id: 'to', label: 'TO', type: 'select', options: AIRPORTS, allowOther: true },
+          { id: 'from', label: 'FROM', type: 'text', suggestions: AIRPORTS, uppercase: true },
+          { id: 'to', label: 'TO', type: 'text', suggestions: AIRPORTS, uppercase: true },
         ],
         rows: [
           { id: 'f1', label: '1' },
