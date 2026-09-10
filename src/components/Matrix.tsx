@@ -1,5 +1,6 @@
 import type { FormValues, MatrixDef } from '../types/form'
 import { cellId } from '../lib/ids'
+import { SignaturePad } from './SignaturePad'
 
 interface Props {
   id: string
@@ -39,8 +40,10 @@ export function Matrix({ id, matrix, values, onChange }: Props) {
                 const key = cellId(id, row.id, column.id)
                 const value = String(values[key] ?? '')
                 return (
-                  <td key={column.id}>
-                    {column.type === 'select' ? (
+                  <td key={column.id} className={column.type === 'signature' ? 'matrix-sign' : undefined}>
+                    {column.type === 'signature' ? (
+                      <SignaturePad value={value} onChange={(data) => onChange(key, data)} compact />
+                    ) : column.type === 'select' ? (
                       <select id={key} className="select input" value={value} onChange={(e) => onChange(key, e.target.value)}>
                         <option value="">—</option>
                         {column.options?.map((option) => (

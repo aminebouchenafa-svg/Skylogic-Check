@@ -200,3 +200,11 @@ export const IconConfidential = ({ size = 26 }: Props) => (
     <path d="M15.8 15v-1.6a1.7 1.7 0 0 1 3.4 0V15" />
   </svg>
 )
+
+export const IconAirfield = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M9.5 21 12 3l2.5 18" />
+    <path d="M10.4 14.5h3.2M10 17.5h4" />
+    <path d="M4 9.5 2.5 21M20 9.5 21.5 21" />
+  </svg>
+)

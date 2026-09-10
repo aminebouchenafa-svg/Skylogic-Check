@@ -79,6 +79,8 @@ export type SectionKind =
   | 'reference'
   /** Grille de réponses numérotées d'un questionnaire. */
   | 'answers'
+  /** Trait de découpe séparant la partie détachable du document. */
+  | 'divider'
   | 'matrix'
   | 'notes'
   /** Bloc de commentaire suivi d'un visa nominatif. */

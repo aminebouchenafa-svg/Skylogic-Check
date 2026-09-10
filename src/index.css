@@ -997,3 +997,23 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 .endorse-note { margin: 0 0 14px; font-size: 13px; line-height: 1.6; color: var(--text-dim); }
+
+.signature-pad.compact canvas { height: 74px; }
+.signature-pad.compact + .btn { padding: 4px 9px; font-size: 11px; margin-top: 6px; }
+.matrix td.matrix-sign { min-width: 190px; }
+
+/* ------------------------------------------------------ Trait de découpe */
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 2px;
+  color: var(--text-faint);
+}
+
+.divider::after {
+  content: '';
+  flex: 1;
+  border-top: 2px dashed var(--stroke-strong);
+}

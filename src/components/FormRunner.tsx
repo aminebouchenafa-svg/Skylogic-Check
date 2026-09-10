@@ -139,6 +139,19 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
   }
 
   const renderSection = (section: SectionDef) => {
+    if (section.kind === 'divider') {
+      return (
+        <div className="divider" key={section.id}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+            <circle cx="6" cy="6" r="3" />
+            <circle cx="6" cy="18" r="3" />
+            <path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12" />
+          </svg>
+          {section.title}
+        </div>
+      )
+    }
+
     const scale = getScale(section.scaleId ?? form.scaleId)
     const graded = (section.items ?? []).filter((i) => i.input !== 'date')
 

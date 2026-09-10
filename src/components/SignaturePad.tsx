@@ -3,13 +3,15 @@ import { useEffect, useRef, useState } from 'react'
 interface Props {
   value: string
   onChange: (dataUrl: string) => void
+  /** Format réduit, pour une cellule de tableau. */
+  compact?: boolean
 }
 
 /**
  * Zone de signature manuscrite (souris, stylet ou doigt sur tablette).
  * La signature est stockée en PNG transparent et reprise telle quelle dans le PDF.
  */
-export function SignaturePad({ value, onChange }: Props) {
+export function SignaturePad({ value, onChange, compact = false }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const drawing = useRef(false)
   const [hasInk, setHasInk] = useState(Boolean(value))
@@ -80,7 +82,7 @@ export function SignaturePad({ value, onChange }: Props) {
 
   return (
     <div>
-      <div className="signature-pad">
+      <div className={`signature-pad${compact ? ' compact' : ''}`}>
         <canvas
           ref={canvasRef}
           onPointerDown={start}

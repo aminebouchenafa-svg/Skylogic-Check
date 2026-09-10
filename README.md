@@ -78,6 +78,11 @@ src/
      se complètent directement dans le texte.
    - `reference` : tableau en lecture seule (barème détaillé, consignes).
    - `answers` : grille de réponses numérotées d'un questionnaire.
+   - `divider` : trait de découpe séparant un volet détachable.
+
+   Une colonne de tableau peut être de type `signature` : chaque ligne porte
+   alors sa propre signature électronique, reprise dans la cellule à
+   l'impression.
 
    Une section `result` porte soit un choix unique mis en avant (`choices`),
    soit plusieurs choix en ligne (`choiceRows`) — Pass/Fail, Completed/Not
@@ -147,6 +152,7 @@ palette, définie une seule fois dans `src/index.css` (jetons `--grade-*`) et
 | Command Upgrade – Assessment Flight | Intégré d'après le formulaire officiel D.O.A | 2 pages |
 | RNAV Approaches – Initial Qualification Training | Intégré d'après le formulaire officiel D.O.A | 1 page |
 | Confidential Report | Intégré d'après le formulaire officiel D.O.A | 1 page |
+| CAT “C” Airfield Training Record | Intégré d'après le formulaire officiel D.O.A | 1 page |
 | Line Form | En attente du modèle | — |
 | Skill Test | En attente du modèle | — |
 | Remedial Training | En attente du modèle | — |

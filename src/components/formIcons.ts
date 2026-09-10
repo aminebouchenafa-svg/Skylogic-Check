@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react'
 import {
+  IconAirfield,
   IconCertificate,
   IconCommand,
   IconConfidential,
@@ -26,4 +27,5 @@ export const FORM_ICONS: Record<string, (props: { size?: number }) => ReactEleme
   command: IconCommand,
   rnav: IconRnav,
   confidential: IconConfidential,
+  airfield: IconAirfield,
 }
