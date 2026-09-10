@@ -176,3 +176,10 @@ export const IconCertificate = ({ size = 26 }: Props) => (
     <path d="m15 19.2-.6 2.8 2.6-1.3 2.6 1.3-.6-2.8" />
   </svg>
 )
+
+export const IconCommand = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M5.5 6.5 12 3l6.5 3.5v3.3c0 4.3-2.6 8.2-6.5 9.7-3.9-1.5-6.5-5.4-6.5-9.7z" />
+    <path d="M9 9h6M9 12h6M9 15h4" />
+  </svg>
+)

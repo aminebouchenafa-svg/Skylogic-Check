@@ -1,4 +1,8 @@
 import type { GradeLevel, GradeScale } from '../types/form'
+import { NA_LEVEL } from './na'
+import { SCALE_COMMAND } from './scales-command'
+
+export { NA_LEVEL }
 
 /**
  * Échelle de notation officielle Air Algérie, reprise telle quelle des
@@ -8,14 +12,6 @@ import type { GradeLevel, GradeScale } from '../types/form'
  *
  * Le code couleur est unique dans toute l'application : écran, indicateurs et PDF.
  */
-
-export const NA_LEVEL: GradeLevel = {
-  value: 'NA',
-  short: '/',
-  label: 'Not Applicable',
-  description: 'Item non applicable à cette séance.',
-  color: '#5B6B85',
-}
 
 export const SCALE_AH: GradeScale = {
   id: 'ah-5-1',
@@ -65,6 +61,7 @@ export const SCALE_AH: GradeScale = {
 
 export const SCALES: Record<string, GradeScale> = {
   [SCALE_AH.id]: SCALE_AH,
+  [SCALE_COMMAND.id]: SCALE_COMMAND,
 }
 
 export function getScale(id: string): GradeScale {
