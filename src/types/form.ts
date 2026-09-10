@@ -110,6 +110,8 @@ export interface SectionDef {
   }[]
   /** Nombre de réponses attendues (sections « answers »). */
   answerCount?: number
+  /** Hauteur minimale du cadre de commentaire à l'impression, en millimètres. */
+  minHeight?: number
   /** Échelle de notation de la section (défaut : celle du formulaire). */
   scaleId?: string
   /** Commentaire libre attaché à la grille. */

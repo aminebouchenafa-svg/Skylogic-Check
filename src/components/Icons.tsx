@@ -191,3 +191,12 @@ export const IconRnav = ({ size = 26 }: Props) => (
     <path d="M3 13.5h3M18 13.5h3" />
   </svg>
 )
+
+export const IconConfidential = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4" />
+    <path d="M14 3v5h5V9M8.5 8h2M8.5 11.5h6M8.5 15h3" />
+    <rect x="14" y="15" width="7" height="5.5" rx="1" />
+    <path d="M15.8 15v-1.6a1.7 1.7 0 0 1 3.4 0V15" />
+  </svg>
+)

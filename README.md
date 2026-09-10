@@ -146,6 +146,7 @@ palette, définie une seule fois dans `src/index.css` (jetons `--grade-*`) et
 | Simulator Console Handling Certificate | Intégré d'après le formulaire officiel D.O.A | 1 page |
 | Command Upgrade – Assessment Flight | Intégré d'après le formulaire officiel D.O.A | 2 pages |
 | RNAV Approaches – Initial Qualification Training | Intégré d'après le formulaire officiel D.O.A | 1 page |
+| Confidential Report | Intégré d'après le formulaire officiel D.O.A | 1 page |
 | Line Form | En attente du modèle | — |
 | Skill Test | En attente du modèle | — |
 | Remedial Training | En attente du modèle | — |
