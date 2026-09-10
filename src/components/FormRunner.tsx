@@ -24,7 +24,7 @@ interface Props {
 
 /** Moteur de saisie : construit l'écran complet à partir de la définition du formulaire. */
 export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
-  const [values, setValues] = useState<FormValues>(record.values)
+  const [stored, setValues] = useState<FormValues>(record.values)
   const [status, setStatus] = useState(record.status)
   const [showErrors, setShowErrors] = useState(false)
   /** Colonne de notation en cours de saisie, pour les grilles à plusieurs colonnes. */
@@ -34,6 +34,9 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
 
   const setValue = (id: string, value: string | boolean) =>
     setValues((prev) => ({ ...prev, [id]: value }))
+
+  /** Item portant la note de synthèse, exclu du calcul dont il découle. */
+  const autoId = form.sections.find((s) => s.autoGrade)?.items?.[0]?.id
 
   const gradedItems = useMemo(
     () =>
@@ -59,7 +62,8 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
     let total = 0
     const failing: string[] = []
     for (const { key, item, scaleId } of gradedItems) {
-      const raw = values[key]
+      if (key === autoId) continue
+      const raw = stored[key]
       if (raw === undefined || raw === null || raw === '' || raw === 'NA') continue
       const level = findLevel(getScale(scaleId), String(raw))
       if (!level) continue
@@ -78,7 +82,17 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
       average: scored ? total / scored : null,
       failing,
     }
-  }, [gradedItems, values])
+  }, [gradedItems, stored, autoId])
+
+  /**
+   * Note de synthèse : tant que l'instructeur n'en a pas posé une, elle vaut
+   * la moyenne arrondie des items notés. Il peut la remplacer d'un doigt, et
+   * la remettre en automatique en la désélectionnant.
+   */
+  const values = useMemo(() => {
+    if (!autoId || summary.average === null || stored[autoId]) return stored
+    return { ...stored, [autoId]: String(Math.round(summary.average)) }
+  }, [stored, autoId, summary.average])
 
   const missing = useMemo(() => {
     // Un passage à compléter dans une attestation vaut un champ obligatoire.
@@ -504,6 +518,9 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
       )}
 
       <div className="actionbar">
+        <button className="btn btn-back" onClick={onExit} title="Revenir au poste de commande">
+          <IconBack size={16} /> Retour
+        </button>
         <button className="btn" onClick={save}>
           <IconSave size={16} /> Enregistrer
         </button>

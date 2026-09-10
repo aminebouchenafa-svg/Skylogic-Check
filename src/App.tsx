@@ -6,8 +6,9 @@ import { Lock } from './components/Lock'
 import { Archive } from './pages/Archive'
 import { Home } from './pages/Home'
 import { Settings } from './pages/Settings'
-import { IconArchive, IconBack, IconGauge, IconSettings } from './components/Icons'
+import { IconArchive, IconBack, IconGauge, IconMoon, IconSettings, IconSun } from './components/Icons'
 import { isUnlocked, lock } from './lib/auth'
+import { applyTheme, loadTheme } from './lib/theme'
 import {
   deleteRecord,
   loadRecords,
@@ -33,6 +34,13 @@ export default function App() {
   const [settings, setSettings] = useState(() => loadSettings())
   const [current, setCurrent] = useState<{ form: FormDef; record: FormRecord } | null>(null)
   const [toast, setToast] = useState('')
+  const [theme, setTheme] = useState(() => loadTheme())
+
+  const switchTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark'
+    applyTheme(next)
+    setTheme(next)
+  }
 
   useEffect(() => {
     if (!toast) return
@@ -105,6 +113,15 @@ export default function App() {
         </nav>
 
         <div className="sidebar-foot">
+          <button
+            className="btn btn-ghost btn-sm theme-toggle"
+            onClick={switchTheme}
+            aria-label={theme === 'dark' ? 'Passer en mode jour' : 'Passer en mode nuit'}
+          >
+            {theme === 'dark' ? <IconSun size={14} /> : <IconMoon size={14} />}
+            {theme === 'dark' ? 'Mode jour' : 'Mode nuit'}
+          </button>
+          <br />
           <button
             className="btn btn-ghost btn-sm"
             style={{ marginBottom: 12 }}

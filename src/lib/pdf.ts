@@ -4,6 +4,7 @@ import type { RowInput } from 'jspdf-autotable'
 import type { FieldDef, FormDef, FormRecord, GradedItemDef, MatrixDef, SectionDef } from '../types/form'
 import { findLevel, getScale, selectableLevels } from '../forms/scales'
 import { answerId, cellId, gradeId, remarkId, tickId } from './ids'
+import { columnTotal } from './totals'
 import type { AppSettings } from './storage'
 
 /**
@@ -32,12 +33,17 @@ function hexToRgb(hex: string): RGB {
   return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)]
 }
 
-function isLight(hex: string): boolean {
+/**
+ * Version pastel d'une couleur du code couleur : la teinte reste
+ * reconnaissable, l'encre reste noire, et le document s'imprime sans écraser
+ * les aplats.
+ */
+function pastel(hex: string): RGB {
   const [r, g, b] = hexToRgb(hex)
-  return (r * 299 + g * 587 + b * 114) / 1000 > 155
+  const melange = (c: number) => Math.round(c + (255 - c) * 0.55)
+  return [melange(r), melange(g), melange(b)]
 }
 
-/** Teinte pâle d'une couleur, pour les bandeaux de rubrique. */
 function tint(hex: string, ratio = 0.14): RGB {
   const [r, g, b] = hexToRgb(hex)
   return [
@@ -146,6 +152,15 @@ function drawLegend(doc: jsPDF, form: FormDef, y: number): number {
 
 function drawIdentification(doc: jsPDF, section: SectionDef, record: FormRecord, y: number): number {
   const fields = (section.fields ?? []).filter((f) => f.type !== 'signature' && f.type !== 'textarea')
+
+  /** Valeur imprimée, préfixe choisi compris (ex. « PP 1124 »). */
+  const valeur = (field: FieldDef) => {
+    const texte = show(record.values[field.id], field.type)
+    const prefixe = field.prefixOptions?.length
+      ? show(record.values[`${field.id}_prefix`])
+      : (field.prefix ?? '')
+    return texte && prefixe ? `${prefixe} ${texte}` : texte
+  }
   const pairs = section.pairsPerRow ?? 2
   const labelW = pairs === 3 ? 28 : 42
   const valueW = (CONTENT_W - labelW * pairs) / pairs
@@ -157,7 +172,7 @@ function drawIdentification(doc: jsPDF, section: SectionDef, record: FormRecord,
     const row: string[] = []
     for (let k = 0; k < pairs; k += 1) {
       const field = buffer[k]
-      row.push(field ? `${field.label} :` : '', field ? show(record.values[field.id], field.type) : '')
+      row.push(field ? `${field.label} :` : '', field ? valeur(field) : '')
     }
     rows.push(row)
     buffer = []
@@ -166,10 +181,7 @@ function drawIdentification(doc: jsPDF, section: SectionDef, record: FormRecord,
     if (field.width === 'full') {
       flush()
       // Un champ pleine largeur occupe sa propre ligne, valeur étirée.
-      rows.push([
-        `${field.label} :`,
-        { content: show(record.values[field.id], field.type), colSpan: pairs * 2 - 1 },
-      ])
+      rows.push([`${field.label} :`, { content: valeur(field), colSpan: pairs * 2 - 1 }])
       continue
     }
     buffer.push(field)
@@ -225,6 +237,8 @@ function drawMatrix(
     ...(matrix.hideRowLabels ? [] : [row.label]),
     ...matrix.columns.map((column) => {
       if (column.type === 'signature') return ''
+      // Une ligne de total porte la somme des lignes saisies au-dessus.
+      if (row.computed) return columnTotal(id, matrix, column.id, record.values)
       const raw = record.values[cellId(id, row.id, column.id)]
       if (column.type === 'checkbox') return raw === 'x' ? 'X' : ''
       const text = show(raw, column.type)
@@ -414,8 +428,8 @@ function drawGrading(
           : undefined
         : findLevel(scale, String(valeur(item, col.id) ?? ''))
       if (!niveau) return
-      data.cell.styles.fillColor = hexToRgb(niveau.color)
-      data.cell.styles.textColor = isLight(niveau.color) ? hexToRgb(INK) : [255, 255, 255]
+      data.cell.styles.fillColor = pastel(niveau.color)
+      data.cell.styles.textColor = hexToRgb(INK)
       data.cell.styles.fontSize = multiple ? 8 : 9
     },
     didDrawCell: (data) => {
@@ -530,8 +544,8 @@ function drawChoiceRows(doc: jsPDF, form: FormDef, section: SectionDef, record: 
       const row = rows[data.row.index]
       const option = row?.options[data.column.index - 1]
       if (!option || record.values[row.id] !== option.value) return
-      data.cell.styles.fillColor = hexToRgb(option.color)
-      data.cell.styles.textColor = isLight(option.color) ? hexToRgb(INK) : [255, 255, 255]
+      data.cell.styles.fillColor = pastel(option.color)
+      data.cell.styles.textColor = hexToRgb(INK)
       data.cell.styles.fontStyle = 'bold'
     },
   })
@@ -567,8 +581,8 @@ function drawReference(doc: jsPDF, form: FormDef, section: SectionDef, y: number
       if (data.section !== 'body' || data.column.index !== 0) return
       const couleur = rows[data.row.index]?.color
       if (!couleur) return
-      data.cell.styles.fillColor = hexToRgb(couleur)
-      data.cell.styles.textColor = isLight(couleur) ? hexToRgb(INK) : [255, 255, 255]
+      data.cell.styles.fillColor = pastel(couleur)
+      data.cell.styles.textColor = hexToRgb(INK)
     },
   })
   return lastY(doc, y) + 3
@@ -690,8 +704,8 @@ function drawChecklist(
       if (data.column.index > columns.length) return
       if (data.cell.raw) {
         const couleur = columns[data.column.index - 1]?.color ?? form.accent
-        data.cell.styles.fillColor = hexToRgb(couleur)
-        data.cell.styles.textColor = isLight(couleur) ? hexToRgb(INK) : [255, 255, 255]
+        data.cell.styles.fillColor = pastel(couleur)
+        data.cell.styles.textColor = hexToRgb(INK)
         data.cell.styles.fontSize = 9
       }
     },
@@ -928,12 +942,12 @@ function drawResult(doc: jsPDF, section: SectionDef, record: FormRecord, y: numb
     const x = M + labelW + index * choiceW
     const picked = record.values.result === choice.value
     if (picked) {
-      doc.setFillColor(...hexToRgb(choice.color))
+      doc.setFillColor(...pastel(choice.color))
       doc.rect(x, y, choiceW, h, 'F')
     }
     doc.setDrawColor(...hexToRgb(INK))
     doc.rect(x, y, choiceW, h)
-    const textRgb: RGB = picked ? [255, 255, 255] : hexToRgb(MUTED)
+    const textRgb: RGB = picked ? hexToRgb(INK) : hexToRgb(MUTED)
     doc.setTextColor(...textRgb)
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(10)

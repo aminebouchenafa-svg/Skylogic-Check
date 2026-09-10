@@ -287,3 +287,16 @@ export const IconDiscussion = ({ size = 26 }: Props) => (
     <path d="M8.5 16.5h5.5l3.5 3.2V16.5h3V8" />
   </svg>
 )
+
+export const IconSun = ({ size = 18 }: Props) => (
+  <svg {...base(size)}>
+    <circle cx="12" cy="12" r="4.2" />
+    <path d="M12 2.5v2.2M12 19.3v2.2M4.2 12H2M22 12h-2.2M5.6 5.6 4 4M18.4 18.4 20 20M18.4 5.6 20 4M5.6 18.4 4 20" />
+  </svg>
+)
+
+export const IconMoon = ({ size = 18 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M20 14.5A8.3 8.3 0 0 1 9.5 4 8.4 8.4 0 1 0 20 14.5z" />
+  </svg>
+)

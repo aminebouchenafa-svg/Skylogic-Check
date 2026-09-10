@@ -34,11 +34,73 @@
   --grade-5: #4e80ed;
   --grade-na: #5b6b85;
 
+  /* Fond des commandes de saisie : il suit le thème */
+  --field: rgba(6, 12, 23, 0.75);
+  --field-solid: rgba(8, 14, 26, 0.93);
+
   --radius: 14px;
   --radius-sm: 9px;
   --shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
   --font-display: 'Rajdhani', 'Barlow Condensed', 'Segoe UI', system-ui, sans-serif;
   --font-body: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* ------------------------------------------------------------ Mode jour */
+
+:root[data-theme='light'] {
+  --bg-deep: #e7edf6;
+  --bg: #f4f7fc;
+  --surface: rgba(255, 255, 255, 0.86);
+  --surface-solid: #ffffff;
+  --surface-high: rgba(255, 255, 255, 0.96);
+  --stroke: rgba(30, 62, 110, 0.14);
+  --stroke-strong: rgba(30, 62, 110, 0.3);
+
+  --text: #12233c;
+  --text-dim: #4a6180;
+  --text-faint: #7c8ea8;
+
+  --brand-soft: rgba(216, 30, 51, 0.1);
+  --hud: #0b7cc4;
+  --hud-soft: rgba(11, 124, 196, 0.12);
+
+  --shadow: 0 14px 32px rgba(24, 52, 92, 0.12);
+
+  --field: rgba(255, 255, 255, 0.92);
+  --field-solid: #ffffff;
+}
+
+:root[data-theme='light'] body {
+  background:
+    radial-gradient(1100px 620px at 12% -10%, rgba(14, 155, 240, 0.1), transparent 60%),
+    radial-gradient(900px 520px at 100% 0%, rgba(216, 30, 51, 0.07), transparent 55%),
+    linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
+}
+
+:root[data-theme='light'] .sidebar .wm-sky,
+:root[data-theme='light'] .sidebar .brand-name .wm-sky {
+  color: var(--text);
+}
+
+:root[data-theme='light'] .sidebar {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(238, 243, 250, 0.96));
+}
+
+/* La roue reste sombre dans les deux thèmes : son texte aussi. */
+:root[data-theme='light'] .hub-label,
+:root[data-theme='light'] .hub-center-title {
+  color: #e8f0fb;
+}
+
+:root[data-theme='light'] .hub-label span,
+:root[data-theme='light'] .hub-center-sub {
+  color: #9db0cb;
+}
+
+:root[data-theme='light'] body::before {
+  background-image:
+    linear-gradient(rgba(40, 80, 130, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(40, 80, 130, 0.06) 1px, transparent 1px);
 }
 
 * { box-sizing: border-box; }
@@ -263,7 +325,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .field-hint { font-size: 11px; color: var(--text-faint); }
 
 .input, .select, .textarea {
-  background: rgba(6, 12, 23, 0.75);
+  background: var(--field);
   border: 1px solid var(--stroke);
   border-radius: var(--radius-sm);
   padding: 10px 12px;
@@ -308,7 +370,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   width: 44px; height: 40px;
   border-radius: 11px;
   border: 2px solid rgba(120, 165, 220, 0.2);
-  background: rgba(8, 14, 26, 0.7);
+  background: var(--field);
   color: var(--text-faint);
   cursor: pointer;
   font-family: var(--font-display);
@@ -325,7 +387,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .grade-btn.on {
   border-color: var(--btn-color);
   color: var(--btn-color);
-  background: color-mix(in srgb, var(--btn-color) 15%, rgba(8, 14, 26, 0.9));
+  background: color-mix(in srgb, var(--btn-color) 15%, var(--field-solid));
   box-shadow: 0 0 18px color-mix(in srgb, var(--btn-color) 32%, transparent);
 }
 
@@ -340,7 +402,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   border-radius: 8px;
   border: 2px solid var(--dot);
   color: var(--dot);
-  background: rgba(8, 14, 26, 0.6);
+  background: var(--field);
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 14px;
@@ -351,7 +413,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .signature-pad {
   border: 1px dashed var(--stroke-strong);
   border-radius: var(--radius-sm);
-  background: rgba(6, 12, 23, 0.6);
+  background: var(--field);
   position: relative;
   overflow: hidden;
 }
@@ -368,7 +430,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   flex-wrap: wrap;
   align-items: center;
   padding: 14px 18px;
-  background: rgba(8, 14, 26, 0.93);
+  background: var(--field-solid);
   border: 1px solid var(--stroke-strong);
   border-radius: var(--radius);
   backdrop-filter: blur(14px);
@@ -376,6 +438,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 .actionbar .spacer { flex: 1; }
+/* Le retour reste sous le pouce : il ne dépend pas du défilement. */
+.actionbar .btn-back { border-color: var(--stroke-strong); }
 
 .table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .table th { text-align: left; font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-faint); padding: 10px 12px; border-bottom: 1px solid var(--stroke); font-weight: 600; }
@@ -571,7 +635,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   padding: 16px 20px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--stroke);
-  background: rgba(6, 12, 23, 0.6);
+  background: var(--field);
   color: var(--text-dim);
   cursor: pointer;
   font-family: var(--font-display);
@@ -681,7 +745,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   display: grid; place-items: center;
   border-radius: 9px;
   border: 2px solid rgba(120, 165, 220, 0.22);
-  background: rgba(8, 14, 26, 0.7);
+  background: var(--field);
   color: transparent;
   cursor: pointer;
   transition: all 0.14s ease;
@@ -692,7 +756,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .tick-box.on {
   border-color: var(--tick);
   color: var(--tick);
-  background: color-mix(in srgb, var(--tick) 16%, rgba(8, 14, 26, 0.9));
+  background: color-mix(in srgb, var(--tick) 16%, var(--field-solid));
   box-shadow: 0 0 16px color-mix(in srgb, var(--tick) 30%, transparent);
 }
 
@@ -870,6 +934,32 @@ button, input, select, textarea { font: inherit; color: inherit; }
   font-size: 13px;
 }
 
+.theme-toggle { margin-bottom: 10px; }
+
+/* Cellule de total : calculée, donc affichée et non saisie. */
+.matrix-total {
+  text-align: center;
+  font-weight: 700;
+  color: var(--hud);
+  font-variant-numeric: tabular-nums;
+}
+
+.prefix-select {
+  border: none;
+  background: transparent;
+  padding-right: 4px;
+  font-weight: 700;
+  color: var(--hud);
+  cursor: pointer;
+}
+
+.scale-tile {
+  border: 1px solid var(--stroke);
+  background: var(--surface-high);
+  border-radius: 11px;
+  padding: 14px 16px;
+}
+
 .matrix-tick { width: 20px; height: 20px; accent-color: var(--hud); cursor: pointer; }
 
 .blank::placeholder { color: var(--text-faint); font-weight: 400; font-size: 13px; }
@@ -904,7 +994,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   padding: 8px 12px;
   border-radius: 10px;
   border: 2px solid rgba(120, 165, 220, 0.2);
-  background: rgba(8, 14, 26, 0.7);
+  background: var(--field);
   color: var(--text-dim);
   cursor: pointer;
   font-family: var(--font-display);
@@ -918,7 +1008,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .column-tab.on {
   border-color: var(--hud);
   color: var(--hud);
-  background: color-mix(in srgb, var(--hud) 15%, rgba(8, 14, 26, 0.9));
+  background: color-mix(in srgb, var(--hud) 15%, var(--field-solid));
 }
 
 .column-tab-count {
@@ -960,7 +1050,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   border-radius: 8px;
   border: 2px solid var(--dot);
   color: var(--dot);
-  background: rgba(8, 14, 26, 0.6);
+  background: var(--field);
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 15px;
@@ -1009,7 +1099,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   padding: 9px 16px;
   border-radius: 10px;
   border: 2px solid rgba(120, 165, 220, 0.2);
-  background: rgba(8, 14, 26, 0.7);
+  background: var(--field);
   color: var(--text-dim);
   cursor: pointer;
   font-size: 13px;
@@ -1023,7 +1113,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .choice-btn.on {
   border-color: var(--choice);
   color: var(--choice);
-  background: color-mix(in srgb, var(--choice) 15%, rgba(8, 14, 26, 0.9));
+  background: color-mix(in srgb, var(--choice) 15%, var(--field-solid));
   box-shadow: 0 0 16px color-mix(in srgb, var(--choice) 30%, transparent);
 }
 
