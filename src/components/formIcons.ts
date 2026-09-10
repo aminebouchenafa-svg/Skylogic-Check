@@ -6,6 +6,7 @@ import {
   IconConfidential,
   IconLineCheck,
   IconNotification,
+  IconProgress,
   IconRemedial,
   IconReport,
   IconRnav,
@@ -28,6 +29,7 @@ export const FORM_ICONS: Record<string, (props: { size?: number }) => ReactEleme
   command: IconCommand,
   rnav: IconRnav,
   confidential: IconConfidential,
+  progress: IconProgress,
   airfield: IconAirfield,
   syllabus: IconSyllabus,
 }

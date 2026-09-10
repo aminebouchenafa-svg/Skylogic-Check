@@ -2,7 +2,7 @@ import { jsPDF } from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import type { RowInput } from 'jspdf-autotable'
 import type { FieldDef, FormDef, FormRecord, GradedItemDef, MatrixDef, SectionDef } from '../types/form'
-import { findLevel, getScale } from '../forms/scales'
+import { findLevel, getScale, selectableLevels } from '../forms/scales'
 import { answerId, cellId, gradeId, tickId } from './ids'
 import type { AppSettings } from './storage'
 
@@ -267,10 +267,15 @@ function drawGrading(
 ): number {
   const scale = getScale(section.scaleId ?? form.scaleId)
   const items = section.items ?? []
-  const colonnes = section.gradeColumns ?? [{ id: '', label: 'Grading' }]
-  const multiple = Boolean(section.gradeColumns)
+  // En présentation « grid », chaque niveau de l'échelle occupe sa colonne.
+  const grille = section.gradeLayout === 'grid'
+  const niveaux = grille ? selectableLevels(scale) : []
+  const colonnes = grille
+    ? niveaux.map((n) => ({ id: n.value, label: n.short }))
+    : (section.gradeColumns ?? [{ id: '', label: 'Grading' }])
+  const multiple = grille || Boolean(section.gradeColumns)
   const numbered = items.some((item) => item.code)
-  const gradeW = multiple ? 10 : 17
+  const gradeW = grille ? 11 : multiple ? 10 : 17
   const codeW = numbered ? 7 : 0
   const pad = multiple ? 1 : 0.7
   const textW = width - codeW - gradeW * colonnes.length
@@ -291,6 +296,10 @@ function drawGrading(
     const notes = item.heading
       ? colonnes.map(() => '')
       : colonnes.map((col) => {
+          if (grille) {
+            // La case n'est remplie que si elle correspond à la note retenue.
+            return String(record.values[item.id] ?? '') === col.id ? col.label : ''
+          }
           const brut = valeur(item, col.id)
           if (item.input === 'date') return show(brut, 'date') || '/    /'
           const niveau = brut ? findLevel(scale, String(brut)) : undefined
@@ -364,7 +373,11 @@ function drawGrading(
       if (item.input === 'date') return
 
       const col = colonnes[data.column.index - premiereNote]
-      const niveau = findLevel(scale, String(valeur(item, col.id) ?? ''))
+      const niveau = grille
+        ? String(record.values[item.id] ?? '') === col.id
+          ? findLevel(scale, col.id)
+          : undefined
+        : findLevel(scale, String(valeur(item, col.id) ?? ''))
       if (!niveau) return
       data.cell.styles.fillColor = hexToRgb(niveau.color)
       data.cell.styles.textColor = isLight(niveau.color) ? hexToRgb(INK) : [255, 255, 255]

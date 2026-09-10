@@ -134,6 +134,12 @@ export interface SectionDef {
   gradeColumns?: { id: string; label: string }[]
   /** Lignes d'un tableau de référence (sections « reference »). */
   referenceRows?: { label: string; description: string; color?: string }[]
+  /**
+   * Présentation des notes à l'impression :
+   * « cell » une colonne portant la note, « grid » une colonne par niveau
+   * de l'échelle, la case du niveau retenu étant remplie.
+   */
+  gradeLayout?: 'cell' | 'grid'
   /** Mention imprimée sous la section. */
   note?: string
   /** Nombre de couples libellé/valeur par ligne à l'impression (défaut : 2). */

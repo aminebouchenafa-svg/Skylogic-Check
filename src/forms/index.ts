@@ -2,6 +2,7 @@ import type { FormDef } from '../types/form'
 import { catCAirfieldForm } from './cat-c-airfield'
 import { checkFailureForm } from './check-failure'
 import { commandUpgradeForm } from './command-upgrade'
+import { confidentialAssessmentForm } from './confidential-assessment'
 import { confidentialReportForm } from './confidential-report'
 import { lineControlForm } from './line-control'
 import { lineTrainingForm } from './line-training'
@@ -48,6 +49,7 @@ export const FORMS: FormDef[] = [
   commandUpgradeForm,
   rnavQualificationForm,
   confidentialReportForm,
+  confidentialAssessmentForm,
   catCAirfieldForm,
   trainingRequirementForm,
   placeholder('line-form', 'D.O.A — LINE FORM', 'Line Form', 'Suivi de vol en ligne', 'Ligne', '#17AE96', 'report'),
