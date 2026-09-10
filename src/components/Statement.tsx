@@ -14,7 +14,7 @@ export function Statement({ statement, values, onChange }: Props) {
   const parts = statement.template.split(/(\{[a-z_]+\})/i)
 
   return (
-    <p className="statement">
+    <p className={`statement${statement.framed ? ' framed' : ''}`}>
       {parts.map((part, index) => {
         const match = /^\{([a-z_]+)\}$/i.exec(part)
         if (!match) return <span key={index}>{part}</span>

@@ -5,6 +5,7 @@ import { commandUpgradeForm } from './command-upgrade'
 import { confidentialAssessmentForm } from './confidential-assessment'
 import { confidentialReportForm } from './confidential-report'
 import { lineControlForm } from './line-control'
+import { lowVisibilityForm } from './low-visibility'
 import { lineTrainingForm } from './line-training'
 import { proficiencyCheckForm } from './proficiency-check'
 import { rnavQualificationForm } from './rnav-qualification'
@@ -46,6 +47,7 @@ export const FORMS: FormDef[] = [
   proficiencyCheckForm,
   checkFailureForm,
   simConsoleForm,
+  lowVisibilityForm,
   commandUpgradeForm,
   rnavQualificationForm,
   confidentialReportForm,

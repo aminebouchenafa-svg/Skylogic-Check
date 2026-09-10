@@ -226,3 +226,11 @@ export const IconProgress = ({ size = 26 }: Props) => (
     <path d="M4 9.5 9 6l3.5 2.5L20 3" />
   </svg>
 )
+
+export const IconLowVis = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M12 3v6" />
+    <path d="M8.5 6.2 12 3l3.5 3.2" />
+    <path d="M4 12.5h16M3 16h13M6 19.5h15" />
+  </svg>
+)

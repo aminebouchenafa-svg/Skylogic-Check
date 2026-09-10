@@ -70,7 +70,13 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
   }, [gradedItems, values])
 
   const missing = useMemo(() => {
-    const required = form.sections.flatMap((s) => (s.fields ?? []).filter((f) => f.required))
+    // Un passage à compléter dans une attestation vaut un champ obligatoire.
+    const required = form.sections.flatMap((s) => [
+      ...(s.fields ?? []).filter((f) => f.required).map((f) => ({ id: f.id, label: f.label })),
+      ...(s.statement?.blanks ?? [])
+        .filter((b) => b.required)
+        .map((b) => ({ id: b.id, label: b.label })),
+    ])
     return required.filter((f) => {
       const value = values[f.id]
       return value === undefined || value === null || value === ''
@@ -362,6 +368,7 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
                 <Field key={field.id} field={field} values={values} onChange={setValue} />
               ))}
             </div>
+            {section.note && <p className="endorse-note">{section.note}</p>}
           </div>
         )}
       </section>

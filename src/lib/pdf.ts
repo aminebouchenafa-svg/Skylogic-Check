@@ -808,13 +808,25 @@ function drawStatement(doc: jsPDF, section: SectionDef, record: FormRecord, y: n
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(12)
   doc.setTextColor(...hexToRgb(INK))
-  const lignes = doc.splitTextToSize(texte, CONTENT_W - 14) as string[]
-  const hauteur = lignes.length * 7 + 10
+  const cadre = Boolean(statement.framed)
+  const marge = cadre ? 20 : 14
+  const lignes = doc.splitTextToSize(texte, CONTENT_W - marge) as string[]
+  const hauteur = lignes.length * 7 + (cadre ? 22 : 10)
 
   if (y + hauteur > bottomLimit) {
     doc.addPage()
     y = M
   }
+
+  if (cadre) {
+    // Certificat : texte centré dans un encadré, comme le document papier.
+    doc.setDrawColor(...hexToRgb(INK))
+    doc.setLineWidth(0.7)
+    doc.rect(M, y, CONTENT_W, hauteur)
+    doc.text(lignes, M + CONTENT_W / 2, y + 14, { align: 'center', lineHeightFactor: 1.6 })
+    return y + hauteur + 6
+  }
+
   doc.text(lignes, M + 7, y + 8, { lineHeightFactor: 1.6 })
   return y + hauteur + 6
 }
@@ -930,6 +942,17 @@ function drawSignatures(doc: jsPDF, section: SectionDef, record: FormRecord, for
       doc.text(name, x + 3, y + headH + boxH - 2.5)
     }
   })
+
+  // Mention portée sous le visa : la qualité du signataire, par exemple.
+  if (section.note) {
+    const largeur = signatures.length > 1 ? CONTENT_W : COL_W
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(8)
+    doc.setTextColor(...hexToRgb(INK))
+    const lignes = doc.splitTextToSize(section.note, largeur) as string[]
+    doc.text(lignes, M + largeur / 2, y + headH + boxH + 4.5, { align: 'center' })
+    return y + headH + boxH + 5 + lignes.length * 3.6
+  }
   return y + headH + boxH + 3
 }
 

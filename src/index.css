@@ -827,6 +827,17 @@ button, input, select, textarea { font: inherit; color: inherit; }
   max-width: 62ch;
 }
 
+/* Certificat : le texte garde ses retours à la ligne et son cadre. */
+.statement.framed {
+  max-width: none;
+  white-space: pre-line;
+  text-align: center;
+  padding: 26px 22px;
+  border: 2px solid var(--stroke-strong);
+  border-radius: 12px;
+  font-weight: 600;
+}
+
 .blank {
   display: inline-block;
   margin: 0 4px;

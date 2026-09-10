@@ -53,7 +53,9 @@ export interface GradedItemDef {
 export interface StatementDef {
   /** Texte où chaque {identifiant} marque un passage à compléter. */
   template: string
-  blanks: { id: string; label: string; size?: number }[]
+  blanks: { id: string; label: string; size?: number; required?: boolean }[]
+  /** Encadre l'attestation et centre son texte, comme un certificat papier. */
+  framed?: boolean
 }
 
 /** Tableau à cellules libres (étapes, secteurs, temps de vol…). */
