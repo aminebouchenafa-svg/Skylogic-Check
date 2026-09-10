@@ -1,5 +1,5 @@
 import type { FieldDef, SectionDef } from '../types/form'
-import { FLEET } from './network'
+import { AIRCRAFT_REGISTRATIONS, FLEET } from './network'
 
 /** Blocs communs aux formulaires du Training Department. */
 
@@ -51,4 +51,14 @@ export const aircraftField: FieldDef = {
   width: 'quarter',
   options: FLEET,
   required: true,
+}
+
+/** Immatriculation : choisie dans la flotte, ou saisie si l'appareil manque. */
+export const aircraftRegField: FieldDef = {
+  id: 'aircraft_reg',
+  label: 'A/C REG',
+  type: 'select',
+  width: 'quarter',
+  options: AIRCRAFT_REGISTRATIONS,
+  allowOther: true,
 }

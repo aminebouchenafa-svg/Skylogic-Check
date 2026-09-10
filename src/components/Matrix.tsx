@@ -1,6 +1,7 @@
 import type { FormValues, MatrixDef } from '../types/form'
 import { cellId } from '../lib/ids'
 import { columnTotal } from '../lib/totals'
+import { Choice } from './Choice'
 import { SignaturePad } from './SignaturePad'
 
 interface Props {
@@ -61,14 +62,15 @@ export function Matrix({ id, matrix, values, onChange }: Props) {
                         onChange={(e) => onChange(key, e.target.checked ? 'x' : '')}
                       />
                     ) : column.type === 'select' ? (
-                      <select id={key} className="select input" value={value} onChange={(e) => onChange(key, e.target.value)}>
-                        <option value="">—</option>
-                        {column.options?.map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
+                      <Choice
+                        id={key}
+                        className="select input"
+                        value={value}
+                        options={column.options ?? []}
+                        allowOther={column.allowOther}
+                        ariaLabel={`${row.label || column.label} — ${column.label}`}
+                        onChange={(v) => onChange(key, v)}
+                      />
                     ) : column.prefix ? (
                       <div className="prefix-input">
                         <span className="prefix">{column.prefix}</span>
