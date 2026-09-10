@@ -41,7 +41,9 @@ export const FLEET: string[] = [
 
 /**
  * Immatriculations de la flotte, proposées à la saisie.
- * Relevé OMD ED 03 – REV 17 JUL 2026.
+ *
+ * 7T-VJJ à 7T-VKT : B737 NG et MAX 8, relevé OMD ED 03 – REV 17 JUL 2026.
+ * 7T-VLQ, 7T-VLR, 7T-VLS s'y ajoutent.
  */
 export const AIRCRAFT_REGISTRATIONS: string[] = [
   '7T-VJJ', '7T-VJK', '7T-VJL', '7T-VJM', '7T-VJN', '7T-VJO',
@@ -50,4 +52,5 @@ export const AIRCRAFT_REGISTRATIONS: string[] = [
   '7T-VKG', '7T-VKH', '7T-VKI', '7T-VKJ', '7T-VKK', '7T-VKL',
   '7T-VKM', '7T-VKN', '7T-VKO', '7T-VKP', '7T-VKQ', '7T-VKR',
   '7T-VKS', '7T-VKT',
+  '7T-VLQ', '7T-VLR', '7T-VLS',
 ]
