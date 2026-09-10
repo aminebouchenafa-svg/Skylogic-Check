@@ -4,12 +4,21 @@ import { checkFailureForm } from './check-failure'
 import { commandUpgradeForm } from './command-upgrade'
 import { confidentialAssessmentForm } from './confidential-assessment'
 import { confidentialReportForm } from './confidential-report'
+import { discussionSubjectsForm } from './discussion-subjects'
+import { englishCertificateForm } from './english-certificate'
+import { etopsRecordForm } from './etops-record'
+import { instructorFlightForm } from './instructor-flight'
+import { instructorSimulatorForm } from './instructor-simulator'
 import { lineControlForm } from './line-control'
+import { longAbsenceForm } from './long-absence'
+import { lineReleaseForm } from './line-release'
+import { lowVisibilityForm } from './low-visibility'
 import { lineTrainingForm } from './line-training'
 import { proficiencyCheckForm } from './proficiency-check'
 import { rnavQualificationForm } from './rnav-qualification'
 import { simConsoleForm } from './sim-console'
 import { trainingRequirementForm } from './training-requirement'
+import { uprtQualificationForm } from './uprt-qualification'
 
 /**
  * Catalogue des formulaires.
@@ -46,12 +55,21 @@ export const FORMS: FormDef[] = [
   proficiencyCheckForm,
   checkFailureForm,
   simConsoleForm,
+  lowVisibilityForm,
   commandUpgradeForm,
   rnavQualificationForm,
   confidentialReportForm,
   confidentialAssessmentForm,
   catCAirfieldForm,
   trainingRequirementForm,
+  etopsRecordForm,
+  lineReleaseForm,
+  instructorSimulatorForm,
+  instructorFlightForm,
+  longAbsenceForm,
+  uprtQualificationForm,
+  englishCertificateForm,
+  discussionSubjectsForm,
   placeholder('line-form', 'D.O.A — LINE FORM', 'Line Form', 'Suivi de vol en ligne', 'Ligne', '#17AE96', 'report'),
   placeholder('skill-test', 'D.O.A — SKILL TEST', 'Skill Test', 'Épreuve pratique de qualification de type', 'Examen', '#2F63D8', 'skill'),
   placeholder('remedial', 'D.O.A — REMEDIAL', 'Remedial Training', 'Entraînement de remédiation', 'Remédiation', '#C93FAE', 'remedial'),

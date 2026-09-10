@@ -3,7 +3,7 @@ import autoTable from 'jspdf-autotable'
 import type { RowInput } from 'jspdf-autotable'
 import type { FieldDef, FormDef, FormRecord, GradedItemDef, MatrixDef, SectionDef } from '../types/form'
 import { findLevel, getScale, selectableLevels } from '../forms/scales'
-import { answerId, cellId, gradeId, tickId } from './ids'
+import { answerId, cellId, gradeId, remarkId, tickId } from './ids'
 import type { AppSettings } from './storage'
 
 /**
@@ -87,11 +87,22 @@ function drawTitle(doc: jsPDF, form: FormDef, settings: AppSettings, y: number):
   doc.rect(M + CONTENT_W - logoW, y, logoW, h)
 
   doc.setFont('helvetica', 'bold')
-  doc.setFontSize(16)
   doc.setTextColor(...hexToRgb(INK))
   const heading = (form.printTitle ?? form.title).toUpperCase()
-  doc.setFontSize(heading.length > 34 ? 13 : 16)
-  doc.text(heading, M + (CONTENT_W - logoW) / 2, y + 8.6, { align: 'center' })
+  const titreW = CONTENT_W - logoW - 6
+  // On réduit la taille tant que le titre déborde du cadre, puis on le passe
+  // sur deux lignes : un intitulé long ne doit jamais mordre sur le logo.
+  let taille = 16
+  while (taille > 10 && doc.getStringUnitWidth(heading) * taille * 0.352778 > titreW) taille -= 0.5
+  doc.setFontSize(taille)
+  const lignes = doc.splitTextToSize(heading, titreW) as string[]
+  const centre = M + (CONTENT_W - logoW) / 2
+  if (lignes.length > 1) {
+    doc.setFontSize(Math.min(taille, 11))
+    doc.text(lignes.slice(0, 2), centre, y + 5.6, { align: 'center', lineHeightFactor: 1.3 })
+  } else {
+    doc.text(heading, centre, y + 8.6, { align: 'center' })
+  }
 
   if (settings.logo) {
     try {
@@ -188,9 +199,20 @@ function drawIdentification(doc: jsPDF, section: SectionDef, record: FormRecord,
   return lastY(doc, y) + 3
 }
 
-function drawMatrix(doc: jsPDF, id: string, matrix: MatrixDef, record: FormRecord, y: number): number {
+function drawMatrix(
+  doc: jsPDF,
+  id: string,
+  matrix: MatrixDef,
+  record: FormRecord,
+  y: number,
+  title?: string,
+): number {
   const lead = matrix.hideRowLabels ? [] : ['']
   const head: RowInput[] = []
+  const largeur = matrix.columns.length + lead.length
+  if (title) {
+    head.push([{ content: title, colSpan: largeur, styles: { halign: 'center' } }])
+  }
   if (matrix.groups) {
     head.push([...lead, ...matrix.groups.map((g) => ({ content: g.label, colSpan: g.span }))])
   }
@@ -204,6 +226,7 @@ function drawMatrix(doc: jsPDF, id: string, matrix: MatrixDef, record: FormRecor
     ...matrix.columns.map((column) => {
       if (column.type === 'signature') return ''
       const raw = record.values[cellId(id, row.id, column.id)]
+      if (column.type === 'checkbox') return raw === 'x' ? 'X' : ''
       const text = show(raw, column.type)
       return text && column.prefix ? `${column.prefix} ${text}` : text
     }),
@@ -222,9 +245,18 @@ function drawMatrix(doc: jsPDF, id: string, matrix: MatrixDef, record: FormRecor
       lineWidth: 0.3,
       textColor: hexToRgb(INK),
       halign: 'center',
-      minCellHeight: signatures ? 14 : undefined,
+      // La hauteur n'est imposée que si une case doit recevoir une signature :
+      // passer « undefined » ici écrase le défaut et aplatit les lignes.
+      ...(signatures ? { minCellHeight: 14 } : {}),
     },
-    headStyles: { fillColor: [238, 241, 232], textColor: hexToRgb(INK), fontStyle: 'bold', fontSize: 7.5 },
+    headStyles: {
+      fillColor: [238, 241, 232],
+      textColor: hexToRgb(INK),
+      fontStyle: 'bold',
+      fontSize: 7.5,
+      // La hauteur réservée aux signatures ne concerne que le corps du tableau.
+      minCellHeight: 0,
+    },
     columnStyles: matrix.hideRowLabels ? {} : { 0: { halign: 'left', fontStyle: 'bold', cellWidth: 34 } },
     didDrawCell: (data) => {
       if (data.section !== 'body') return
@@ -278,7 +310,10 @@ function drawGrading(
   const gradeW = grille ? 11 : multiple ? 10 : 17
   const codeW = numbered ? 7 : 0
   const pad = multiple ? 1 : 0.7
-  const textW = width - codeW - gradeW * colonnes.length
+  // Colonne de remarque propre à chaque item, quand le document en prévoit une.
+  const remarques = section.itemRemarks
+  const remarkW = remarques ? width * 0.36 : 0
+  const textW = width - codeW - remarkW - gradeW * colonnes.length
 
   const valeur = (item: GradedItemDef, colId: string) =>
     record.values[colId ? gradeId(item.id, colId) : item.id]
@@ -305,14 +340,12 @@ function drawGrading(
           const niveau = brut ? findLevel(scale, String(brut)) : undefined
           return niveau ? niveau.short : ''
         })
-    return numbered ? [item.code ?? '', libelle, ...notes] : [libelle, ...notes]
+    const suite = remarques && !item.heading ? [show(record.values[remarkId(item.id)])] : remarques ? [''] : []
+    return numbered ? [item.code ?? '', libelle, ...notes, ...suite] : [libelle, ...notes, ...suite]
   })
 
-  const head: RowInput[] = [
-    numbered
-      ? ['', section.title, ...colonnes.map((c) => c.label)]
-      : [section.title, ...colonnes.map((c) => c.label)],
-  ]
+  const entete = [...colonnes.map((c) => c.label), ...(remarques ? [remarques.label] : [])]
+  const head: RowInput[] = [numbered ? ['', section.title, ...entete] : [section.title, ...entete]]
 
   const labelCol = numbered ? 1 : 0
   const premiereNote = labelCol + 1
@@ -323,6 +356,7 @@ function drawGrading(
   colonnes.forEach((_, i) => {
     columnStyles[premiereNote + i] = { cellWidth: gradeW, halign: 'center', fontStyle: 'bold' }
   })
+  if (remarques) columnStyles[premiereNote + colonnes.length] = { cellWidth: remarkW, halign: 'left' }
 
   autoTable(doc, {
     startY: y,
@@ -371,6 +405,7 @@ function drawGrading(
         return
       }
       if (item.input === 'date') return
+      if (data.column.index >= premiereNote + colonnes.length) return
 
       const col = colonnes[data.column.index - premiereNote]
       const niveau = grille
@@ -606,7 +641,7 @@ function drawChecklist(
   autoTable(doc, {
     startY: y,
     margin: { left: M, right: M, top: M, bottom: PAGE_H - bottomLimit },
-    head: [['', ...columns.map((c) => c.label), ...suite.map((c) => c.label)]],
+    head: [[section.title, ...columns.map((c) => c.label), ...suite.map((c) => c.label)]],
     body,
     theme: 'grid',
     styles: {
@@ -808,13 +843,29 @@ function drawStatement(doc: jsPDF, section: SectionDef, record: FormRecord, y: n
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(12)
   doc.setTextColor(...hexToRgb(INK))
-  const lignes = doc.splitTextToSize(texte, CONTENT_W - 14) as string[]
-  const hauteur = lignes.length * 7 + 10
+  const cadre = Boolean(statement.framed)
+  const marge = cadre ? 20 : 14
+  const lignes = doc.splitTextToSize(texte, CONTENT_W - marge) as string[]
+  const hauteur = lignes.length * 7 + (cadre ? 22 : 10)
 
   if (y + hauteur > bottomLimit) {
     doc.addPage()
     y = M
   }
+
+  if (cadre) {
+    // Certificat : texte encadré, centré ou aligné à gauche selon le document.
+    const gauche = statement.align === 'left'
+    doc.setDrawColor(...hexToRgb(INK))
+    doc.setLineWidth(0.7)
+    doc.rect(M, y, CONTENT_W, hauteur)
+    doc.text(lignes, gauche ? M + 8 : M + CONTENT_W / 2, y + 14, {
+      align: gauche ? 'left' : 'center',
+      lineHeightFactor: 1.6,
+    })
+    return y + hauteur + 6
+  }
+
   doc.text(lignes, M + 7, y + 8, { lineHeightFactor: 1.6 })
   return y + hauteur + 6
 }
@@ -900,22 +951,25 @@ function drawSignatures(doc: jsPDF, section: SectionDef, record: FormRecord, for
     y = M
   }
 
-  signatures.slice(0, 2).forEach((field, index) => {
-    const x = M + index * (COL_W + GUTTER)
+  const visas = signatures.slice(0, 3)
+  const caseW = (CONTENT_W - GUTTER * (visas.length - 1)) / Math.max(1, visas.length)
+  visas.forEach((field, index) => {
+    const x = M + index * (caseW + GUTTER)
     doc.setDrawColor(...hexToRgb(INK))
     doc.setLineWidth(0.35)
     doc.setFillColor(...tint(form.accent))
-    doc.rect(x, y, COL_W, headH, 'FD')
+    doc.rect(x, y, caseW, headH, 'FD')
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(8)
     doc.setTextColor(...hexToRgb(INK))
-    doc.text(field.label, x + COL_W / 2, y + 4.2, { align: 'center' })
-    doc.rect(x, y + headH, COL_W, boxH)
+    const intitule = doc.splitTextToSize(field.label, caseW - 4) as string[]
+    doc.text(intitule[0], x + caseW / 2, y + 4.2, { align: 'center' })
+    doc.rect(x, y + headH, caseW, boxH)
 
     const data = record.values[field.id]
     if (typeof data === 'string' && data.startsWith('data:image')) {
       try {
-        doc.addImage(data, 'PNG', x + 3, y + headH + 2, COL_W - 6, boxH - 8)
+        doc.addImage(data, 'PNG', x + 3, y + headH + 2, caseW - 6, boxH - 8)
       } catch {
         /* signature illisible : la case reste vide */
       }
@@ -930,6 +984,17 @@ function drawSignatures(doc: jsPDF, section: SectionDef, record: FormRecord, for
       doc.text(name, x + 3, y + headH + boxH - 2.5)
     }
   })
+
+  // Mention portée sous le visa : la qualité du signataire, par exemple.
+  if (section.note) {
+    const largeur = visas.length > 1 ? CONTENT_W : COL_W
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(8)
+    doc.setTextColor(...hexToRgb(INK))
+    const lignes = doc.splitTextToSize(section.note, largeur) as string[]
+    doc.text(lignes, M + largeur / 2, y + headH + boxH + 4.5, { align: 'center' })
+    return y + headH + boxH + 5 + lignes.length * 3.6
+  }
   return y + headH + boxH + 3
 }
 
@@ -1019,7 +1084,7 @@ export function buildPdf(form: FormDef, record: FormRecord, settings: AppSetting
         y = drawIdentification(doc, section, record, y)
         break
       case 'matrix':
-        if (section.matrix) y = drawMatrix(doc, section.id, section.matrix, record, y)
+        if (section.matrix) y = drawMatrix(doc, section.id, section.matrix, record, y, section.title)
         break
       case 'grading': {
         // On ne rejette la grille sur la page suivante que si l'espace restant

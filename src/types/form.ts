@@ -53,7 +53,18 @@ export interface GradedItemDef {
 export interface StatementDef {
   /** Texte où chaque {identifiant} marque un passage à compléter. */
   template: string
-  blanks: { id: string; label: string; size?: number }[]
+  blanks: {
+    id: string
+    label: string
+    size?: number
+    required?: boolean
+    /** Passage repris d'une saisie faite ailleurs : affiché, non modifiable ici. */
+    readOnly?: boolean
+  }[]
+  /** Encadre l'attestation, comme un certificat papier. */
+  framed?: boolean
+  /** Alignement du texte encadré (défaut : centré). */
+  align?: 'left' | 'center'
 }
 
 /** Tableau à cellules libres (étapes, secteurs, temps de vol…). */
@@ -132,6 +143,8 @@ export interface SectionDef {
    * colonne (ex. un secteur de vol) au lieu d'une note unique.
    */
   gradeColumns?: { id: string; label: string }[]
+  /** Colonne de remarque propre à chaque item noté (ex. « Remarks »). */
+  itemRemarks?: { label: string; placeholder?: string }
   /** Lignes d'un tableau de référence (sections « reference »). */
   referenceRows?: { label: string; description: string; color?: string }[]
   /**

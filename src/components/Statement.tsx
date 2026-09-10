@@ -14,13 +14,22 @@ export function Statement({ statement, values, onChange }: Props) {
   const parts = statement.template.split(/(\{[a-z_]+\})/i)
 
   return (
-    <p className="statement">
+    <p className={`statement${statement.framed ? ' framed' : ''}${statement.align === 'left' ? ' left' : ''}`}>
       {parts.map((part, index) => {
         const match = /^\{([a-z_]+)\}$/i.exec(part)
         if (!match) return <span key={index}>{part}</span>
 
         const blank = statement.blanks.find((b) => b.id === match[1])
         if (!blank) return <span key={index}>{part}</span>
+
+        const value = String(values[blank.id] ?? '')
+        if (blank.readOnly) {
+          return (
+            <span className="blank filled" key={index} style={{ minWidth: `${blank.size ?? 14}ch` }}>
+              {value || blank.label}
+            </span>
+          )
+        }
 
         return (
           <input
@@ -29,7 +38,7 @@ export function Statement({ statement, values, onChange }: Props) {
             style={{ width: `${blank.size ?? 14}ch` }}
             aria-label={blank.label}
             placeholder={blank.label}
-            value={String(values[blank.id] ?? '')}
+            value={value}
             onChange={(e) => onChange(blank.id, e.target.value)}
           />
         )

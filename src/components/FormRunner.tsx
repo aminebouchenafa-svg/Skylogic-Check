@@ -3,7 +3,7 @@ import type { FormDef, FormRecord, FormValues, SectionDef } from '../types/form'
 import { findLevel, getScale, selectableLevels } from '../forms/scales'
 import { buildPdfFile } from '../lib/pdf'
 import { downloadBlob, canShareFiles, mailtoLink, shareFile, whatsappLink } from '../lib/share'
-import { gradeId } from '../lib/ids'
+import { gradeId, remarkId } from '../lib/ids'
 import { upsertRecord } from '../lib/storage'
 import type { AppSettings } from '../lib/storage'
 import { Answers } from './Answers'
@@ -54,6 +54,7 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
   )
 
   const summary = useMemo(() => {
+    let filled = 0
     let scored = 0
     let total = 0
     const failing: string[] = []
@@ -62,15 +63,31 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
       if (raw === undefined || raw === null || raw === '' || raw === 'NA') continue
       const level = findLevel(getScale(scaleId), String(raw))
       if (!level) continue
-      scored += 1
-      total += Number(level.value)
+      filled += 1
+      // Certaines échelles ne portent pas de note chiffrée (S / U) : pas de moyenne.
+      const valeur = Number(level.value)
+      if (Number.isFinite(valeur)) {
+        scored += 1
+        total += valeur
+      }
       if (level.failing) failing.push(item.label)
     }
-    return { scored, count: gradedItems.length, average: scored ? total / scored : null, failing }
+    return {
+      scored: filled,
+      count: gradedItems.length,
+      average: scored ? total / scored : null,
+      failing,
+    }
   }, [gradedItems, values])
 
   const missing = useMemo(() => {
-    const required = form.sections.flatMap((s) => (s.fields ?? []).filter((f) => f.required))
+    // Un passage à compléter dans une attestation vaut un champ obligatoire.
+    const required = form.sections.flatMap((s) => [
+      ...(s.fields ?? []).filter((f) => f.required).map((f) => ({ id: f.id, label: f.label })),
+      ...(s.statement?.blanks ?? [])
+        .filter((b) => b.required)
+        .map((b) => ({ id: b.id, label: b.label })),
+    ])
     return required.filter((f) => {
       const value = values[f.id]
       return value === undefined || value === null || value === ''
@@ -85,6 +102,10 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
     summary.failing.length > 0 && !String(values.remarks ?? '').trim() && remarksRequired
 
   const isGraded = form.sections.some((s) => s.kind === 'grading')
+  /** Une échelle S / U ne se moyenne pas : l'indicateur n'a alors pas de sens. */
+  const hasAverage =
+    isGraded &&
+    selectableLevels(getScale(form.scaleId)).some((level) => Number.isFinite(Number(level.value)))
   const subject = String(values.name ?? '').trim()
 
   const persist = (nextStatus: FormRecord['status']) => {
@@ -212,6 +233,14 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
                     scale={scale}
                     value={String(values[key] ?? '')}
                     onChange={(value) => setValue(key, value)}
+                    remark={
+                      section.itemRemarks && {
+                        label: section.itemRemarks.label,
+                        placeholder: section.itemRemarks.placeholder,
+                        value: String(values[remarkId(item.id)] ?? ''),
+                        onChange: (value) => setValue(remarkId(item.id), value),
+                      }
+                    }
                   />
                 )
               })}
@@ -362,6 +391,7 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
                 <Field key={field.id} field={field} values={values} onChange={setValue} />
               ))}
             </div>
+            {section.note && <p className="endorse-note">{section.note}</p>}
           </div>
         )}
       </section>
@@ -414,7 +444,7 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
           <p className="page-sub">{form.subtitle}</p>
         </div>
 
-        {isGraded && (
+        {hasAverage && (
           <div className="panel kpi" style={{ minWidth: 200 }}>
             <div className="kpi-label">Moyenne</div>
             <div className="kpi-value" style={{ color: form.accent }}>

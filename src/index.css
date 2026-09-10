@@ -827,6 +827,17 @@ button, input, select, textarea { font: inherit; color: inherit; }
   max-width: 62ch;
 }
 
+/* Certificat : le texte garde ses retours à la ligne et son cadre. */
+.statement.framed {
+  max-width: none;
+  white-space: pre-line;
+  text-align: center;
+  padding: 26px 22px;
+  border: 2px solid var(--stroke-strong);
+  border-radius: 12px;
+  font-weight: 600;
+}
+
 .blank {
   display: inline-block;
   margin: 0 4px;
@@ -841,6 +852,25 @@ button, input, select, textarea { font: inherit; color: inherit; }
   outline: none;
   transition: border-color 0.15s ease;
 }
+
+.statement.framed.left { text-align: left; }
+
+.blank.filled {
+  padding: 2px 8px 4px;
+  border-bottom: 2px solid var(--stroke-strong);
+  color: var(--hud);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Remarque propre à un item noté : elle occupe la largeur sous la ligne. */
+.grade-remark {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.matrix-tick { width: 20px; height: 20px; accent-color: var(--hud); cursor: pointer; }
 
 .blank::placeholder { color: var(--text-faint); font-weight: 400; font-size: 13px; }
 .blank:focus { border-color: var(--hud); }

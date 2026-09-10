@@ -226,3 +226,64 @@ export const IconProgress = ({ size = 26 }: Props) => (
     <path d="M4 9.5 9 6l3.5 2.5L20 3" />
   </svg>
 )
+
+export const IconLowVis = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M12 3v6" />
+    <path d="M8.5 6.2 12 3l3.5 3.2" />
+    <path d="M4 12.5h16M3 16h13M6 19.5h15" />
+  </svg>
+)
+
+export const IconEtops = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M3.5 12h17M12 3.5c2.4 2.4 2.4 14.1 0 17M12 3.5c-2.4 2.4-2.4 14.1 0 17" />
+  </svg>
+)
+
+export const IconRelease = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M3 20.5h18" />
+    <path d="M5.5 17.5 9 8.5a3 3 0 0 1 5.6 0l3.4 9" />
+    <path d="M8.2 14.5h7.6" />
+    <path d="M12 5.5V3" />
+  </svg>
+)
+
+export const IconInstructor = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <circle cx="9" cy="7.5" r="3" />
+    <path d="M3.5 20.5v-1.6A4.4 4.4 0 0 1 7.9 14.5h2.2a4.4 4.4 0 0 1 4.4 4.4v1.6" />
+    <path d="M15.5 5.5h5.5v7h-3l-2.5 2.2V12.5h-.5" />
+  </svg>
+)
+
+export const IconAbsence = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <circle cx="12" cy="12" r="8.5" />
+    <path d="M12 7v5.4l3.4 2" />
+    <path d="M3.2 5.2 6 3.4M20.8 5.2 18 3.4" />
+  </svg>
+)
+
+export const IconUprt = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M3.5 18.5c3-8.5 6.5-12 9.2-12a3.6 3.6 0 0 1 1 7.1c-2.6.6-4.6-1.5-4.6-4" />
+    <path d="M14.5 20.5 21 17l-2.6-2.4" />
+  </svg>
+)
+
+export const IconEnglish = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M4 5h16v11H12l-4.5 4v-4H4z" />
+    <path d="M9 12.5 11.6 8l2.6 4.5M9.9 11h3.4" />
+  </svg>
+)
+
+export const IconDiscussion = ({ size = 26 }: Props) => (
+  <svg {...base(size)}>
+    <path d="M3.5 4.5h13v9h-7l-3.5 3.2V13.5h-2.5z" />
+    <path d="M8.5 16.5h5.5l3.5 3.2V16.5h3V8" />
+  </svg>
+)
