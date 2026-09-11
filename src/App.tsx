@@ -173,6 +173,10 @@ export default function App() {
         )}
         {view === 'settings' && (
           <Settings
+            onLock={() => {
+              lock()
+              setUnlocked(false)
+            }}
             settings={settings}
             onSave={(next) => {
               saveSettings(next)
