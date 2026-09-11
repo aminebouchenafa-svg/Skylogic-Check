@@ -37,6 +37,8 @@
   /* Fond des commandes de saisie : il suit le thème */
   --field: rgba(6, 12, 23, 0.75);
   --field-solid: rgba(8, 14, 26, 0.93);
+  /* Texte des bandeaux d'alerte et de rappel, sur fond rouge pâle */
+  --alert-text: #ffd9de;
 
   --radius: 14px;
   --radius-sm: 9px;
@@ -68,6 +70,7 @@
 
   --field: rgba(255, 255, 255, 0.92);
   --field-solid: #ffffff;
+  --alert-text: #8b1b26;
 }
 
 :root[data-theme='light'] body {
@@ -75,11 +78,6 @@
     radial-gradient(1100px 620px at 12% -10%, rgba(14, 155, 240, 0.1), transparent 60%),
     radial-gradient(900px 520px at 100% 0%, rgba(216, 30, 51, 0.07), transparent 55%),
     linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
-}
-
-:root[data-theme='light'] .sidebar .wm-sky,
-:root[data-theme='light'] .sidebar .brand-name .wm-sky {
-  color: var(--text);
 }
 
 :root[data-theme='light'] .sidebar {
@@ -465,7 +463,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   display: flex; gap: 11px; align-items: flex-start;
   padding: 12px 14px; border-radius: var(--radius-sm);
   background: var(--brand-soft); border: 1px solid rgba(216, 30, 51, 0.4);
-  font-size: 12.5px; line-height: 1.55; color: #ffd9de;
+  font-size: 12.5px; line-height: 1.55; color: var(--alert-text);
 }
 
 .stack { display: flex; flex-direction: column; gap: 16px; }
@@ -679,7 +677,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   font-size: 11.5px;
   line-height: 1.6;
-  color: #ffd9de;
+  color: var(--alert-text);
 }
 
 .logo-slot { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
@@ -850,7 +848,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   white-space: nowrap;
 }
 
-.wm-sky { color: #f2f7ff; }
+.wm-sky { color: var(--text); }
 
 .wm-logic {
   background: linear-gradient(96deg, #3aa0ff 0%, #6f5cf0 45%, #c93fae 100%);
@@ -868,7 +866,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   font-weight: 600;
   letter-spacing: 0.42em;
   text-indent: 0.42em;
-  color: #dce6f5;
+  color: var(--text-dim);
 }
 
 .wm-rule {
