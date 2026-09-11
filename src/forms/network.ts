@@ -149,11 +149,12 @@ export const FLEET_BY_TYPE: Record<string, string[]> = {
     '7T-VKO', '7T-VKP', '7T-VKQ', '7T-VKR',
   ],
   'B737 MAX 8': ['7T-VLQ', '7T-VLR', '7T-VLS'],
+  // Pas encore réceptionnés : le type existe, sans appareil à proposer.
   'B737 MAX 9': [],
   'A330-200': [
     '7T-VJA', '7T-VJB', '7T-VJC', '7T-VJV', '7T-VJW', '7T-VJX', '7T-VJY', '7T-VJZ',
   ],
-  'A330-900neo': ['7T-VJD', '7T-VJE', '7T-VJF', '7T-VLA', '7T-VLB'],
+  'A330-900 neo': ['7T-VJD', '7T-VJE', '7T-VJF', '7T-VLA', '7T-VLB'],
 }
 
 /** Types exploités, proposés partout où un formulaire demande le type avion. */

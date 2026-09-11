@@ -73,8 +73,11 @@ export function Field({ field, values, onChange }: Props) {
       const prefixId = `${field.id}_prefix`
       // Les propositions peuvent dépendre d'un autre champ (type → immatriculation).
       const depend = field.suggestionsFrom
-      const groupe = depend ? depend.groups[String(values[depend.field] ?? '')] : undefined
-      const propositions = groupe?.length ? groupe : field.suggestions
+      const choisi = depend ? String(values[depend.field] ?? '') : ''
+      // Un type connu commande la liste, même vide : un appareil non encore
+      // réceptionné ne doit pas faire réapparaître toute la flotte.
+      const propositions =
+        depend && choisi in depend.groups ? depend.groups[choisi] : field.suggestions
       const input = propositions?.length ? (
         <Combobox
           id={field.id}
