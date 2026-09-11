@@ -10,7 +10,9 @@ interface Props {
 export function Lock({ onUnlock }: Props) {
   const [user, setUser] = useState('')
   const [password, setPassword] = useState('')
-  const [remember, setRemember] = useState(true)
+  // Par défaut l'accès ne vaut que pour la session en cours : le mot de passe
+  // est redemandé à la prochaine ouverture.
+  const [remember, setRemember] = useState(false)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
 
