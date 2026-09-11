@@ -942,6 +942,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 .combo-list {
   position: fixed;
+  /* Le défilement du doigt reste au menu, il ne file pas à la page. */
+  overscroll-behavior: contain;
   z-index: 60;
   margin: 0;
   padding: 5px;
@@ -959,7 +961,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   align-items: baseline;
   gap: 10px;
   width: 100%;
-  padding: 9px 12px;
+  padding: 11px 12px;
   border: none;
   border-radius: 7px;
   background: transparent;
