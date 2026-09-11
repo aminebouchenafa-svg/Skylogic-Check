@@ -41,6 +41,12 @@ export interface FieldDef {
   keyboard?: 'numeric' | 'decimal'
   /** Valeurs proposées à la saisie, sans interdire une autre valeur. */
   suggestions?: Suggestion[]
+  /**
+   * Propositions restreintes par la valeur d'un autre champ : l'immatriculation
+   * suit le type avion choisi. Un groupe vide ou inconnu laisse la liste
+   * complète.
+   */
+  suggestionsFrom?: { field: string; groups: Record<string, string[]> }
   /** Sur une liste : autorise une valeur hors liste, saisie à la main. */
   allowOther?: boolean
   /** Saisie mise en majuscules (codes d'aéroport, immatriculations). */
