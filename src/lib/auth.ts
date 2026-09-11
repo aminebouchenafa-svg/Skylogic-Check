@@ -9,7 +9,14 @@
  * Une vraie fermeture se fait devant le site, pas à l'intérieur.
  */
 
-const KEY = 'skylogic:unlocked:v1'
+/**
+ * La clé porte un numéro : le changer redemande le mot de passe à tout le
+ * monde, une fois, sans avoir à toucher aux appareils.
+ */
+const KEY = 'skylogic:unlocked:v2'
+
+/** Ancienne clé, effacée au passage pour ne rien laisser traîner. */
+const ANCIENNE = 'skylogic:unlocked:v1'
 
 /**
  * Comptes acceptés. Le mot de passe n'apparaît jamais en clair : seule son
@@ -42,6 +49,8 @@ export async function checkCredentials(user: string, password: string): Promise<
 
 export function isUnlocked(): boolean {
   try {
+    localStorage.removeItem(ANCIENNE)
+    sessionStorage.removeItem(ANCIENNE)
     return localStorage.getItem(KEY) === '1' || sessionStorage.getItem(KEY) === '1'
   } catch {
     return false
@@ -61,6 +70,8 @@ export function lock(): void {
   try {
     localStorage.removeItem(KEY)
     sessionStorage.removeItem(KEY)
+    localStorage.removeItem(ANCIENNE)
+    sessionStorage.removeItem(ANCIENNE)
   } catch {
     /* rien à faire */
   }
