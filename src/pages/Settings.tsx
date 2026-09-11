@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { AppSettings } from '../lib/storage'
-import { IconSave } from '../components/Icons'
+import { IconBack, IconSave } from '../components/Icons'
 
 /** Le logo est stocké en data URL et imprimé en tête de chaque PDF. */
 function readLogo(file: File): Promise<string> {
@@ -15,9 +15,10 @@ function readLogo(file: File): Promise<string> {
 interface Props {
   settings: AppSettings
   onSave: (settings: AppSettings) => void
+  onLock: () => void
 }
 
-export function Settings({ settings, onSave }: Props) {
+export function Settings({ settings, onSave, onLock }: Props) {
   const [draft, setDraft] = useState(settings)
   const set = (key: keyof AppSettings, value: string) => setDraft({ ...draft, [key]: value })
 
@@ -32,6 +33,23 @@ export function Settings({ settings, onSave }: Props) {
           </p>
         </div>
       </div>
+
+      <section className="panel">
+        <div className="panel-head">
+          <div className="panel-title">Accès</div>
+        </div>
+        <div className="panel-body">
+          <p className="page-sub" style={{ margin: '0 0 14px' }}>
+            L’identifiant est retenu sur cet appareil tant qu’on ne se déconnecte pas : l’écran du
+            mot de passe ne réapparaît donc pas à chaque ouverture. Se déconnecter le fait revenir —
+            pour prêter la tablette, ou simplement le revoir. Décocher « Rester connecté » à la
+            reconnexion le fera redemander à chaque fois.
+          </p>
+          <button className="btn" onClick={onLock}>
+            <IconBack size={16} /> Se déconnecter
+          </button>
+        </div>
+      </section>
 
       <section className="panel">
         <div className="panel-head">
