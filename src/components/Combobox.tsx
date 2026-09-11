@@ -42,6 +42,9 @@ export function Combobox({
 }: Props) {
   const champ = useRef<HTMLInputElement>(null)
   const liste = useRef<HTMLUListElement>(null)
+  /** Position du doigt à la pose : au-delà de quelques pixels, c'est un geste. */
+  const depart = useRef<{ x: number; y: number } | null>(null)
+  const glisse = useRef(false)
   const [ouvert, setOuvert] = useState(false)
   const [actif, setActif] = useState(0)
   const [cadre, setCadre] = useState<{ top: number; left: number; width: number; max: number } | null>(
@@ -114,6 +117,20 @@ export function Combobox({
     champ.current?.blur()
   }
 
+  /** Tolérance entre la pose et le relâchement du doigt, en pixels. */
+  const SEUIL = 8
+
+  const poser = (x: number, y: number) => {
+    depart.current = { x, y }
+    glisse.current = false
+  }
+
+  const bouger = (x: number, y: number) => {
+    const d = depart.current
+    if (!d) return
+    if (Math.abs(x - d.x) > SEUIL || Math.abs(y - d.y) > SEUIL) glisse.current = true
+  }
+
   return (
     <div className="combo">
       <input
@@ -162,15 +179,25 @@ export function Combobox({
             ref={liste}
             className="combo-list"
             style={{ top: cadre.top, left: cadre.left, width: cadre.width, maxHeight: cadre.max }}
+            onPointerDown={(e) => poser(e.clientX, e.clientY)}
+            onPointerMove={(e) => bouger(e.clientX, e.clientY)}
+            onTouchStart={(e) => poser(e.touches[0].clientX, e.touches[0].clientY)}
+            onTouchMove={(e) => bouger(e.touches[0].clientX, e.touches[0].clientY)}
           >
             {filtres.map((option, index) => (
               <li key={option.value}>
                 <button
                   type="button"
                   className={`combo-option${index === actif ? ' on' : ''}`}
-                  // Au clic, donc au relâchement : faire défiler la liste du
-                  // doigt ne choisit rien.
-                  onClick={() => choisir(option.value)}
+                  // Un doigt qui a glissé faisait défiler la liste : il ne
+                  // choisit pas. Seule une pose franche retient l'entrée.
+                  onClick={() => {
+                    if (glisse.current) {
+                      glisse.current = false
+                      return
+                    }
+                    choisir(option.value)
+                  }}
                 >
                   <span className="combo-code">{option.value}</span>
                   {option.hint && <span className="combo-hint">{option.hint}</span>}
