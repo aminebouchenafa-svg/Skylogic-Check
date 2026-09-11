@@ -128,33 +128,41 @@ export const AIRPORTS: Airport[] = [
 ]
 
 /**
- * Types exploités par la compagnie, proposés partout où un formulaire
- * demande le type avion.
+ * Flotte, par type exploité.
+ *
+ * L'immatriculation proposée découle du type choisi : demander un B737-800
+ * ne doit pas faire défiler les ATR. Un type sans appareil relevé laisse la
+ * liste complète.
  */
-export const FLEET: string[] = [
-  'ATR 72-500',
-  'ATR 72-600',
-  'B737-600 NG',
-  'B737-700 NG',
-  'B737-800 NG',
-  'B737 MAX 8',
-  'B737 MAX 9',
-  'A330-200',
-  'A330neo',
-]
+export const FLEET_BY_TYPE: Record<string, string[]> = {
+  'ATR 72-500': [
+    '7T-VUI', '7T-VUJ', '7T-VUK', '7T-VUL', '7T-VUM', '7T-VUN',
+    '7T-VUO', '7T-VUP', '7T-VUQ', '7T-VUS', '7T-VVQ', '7T-VVR',
+  ],
+  'ATR 72-600': ['7T-VUA', '7T-VUT', '7T-VUV', '7T-VUW'],
+  'B737-600 NG': ['7T-VJQ', '7T-VJR', '7T-VJS', '7T-VJT', '7T-VJU'],
+  'B737-700 NG': ['7T-VKS', '7T-VKT'],
+  'B737-800 NG': [
+    '7T-VJJ', '7T-VJK', '7T-VJL', '7T-VJM', '7T-VJN', '7T-VJO', '7T-VJP',
+    '7T-VKA', '7T-VKB', '7T-VKC', '7T-VKD', '7T-VKE', '7T-VKF', '7T-VKG',
+    '7T-VKH', '7T-VKI', '7T-VKJ', '7T-VKK', '7T-VKL', '7T-VKM', '7T-VKN',
+    '7T-VKO', '7T-VKP', '7T-VKQ', '7T-VKR',
+  ],
+  'B737 MAX 8': ['7T-VLQ', '7T-VLR', '7T-VLS'],
+  'B737 MAX 9': [],
+  'A330-200': [
+    '7T-VJA', '7T-VJB', '7T-VJC', '7T-VJV', '7T-VJW', '7T-VJX', '7T-VJY', '7T-VJZ',
+  ],
+  'A330-900neo': ['7T-VJD', '7T-VJE', '7T-VJF', '7T-VLA', '7T-VLB'],
+}
+
+/** Types exploités, proposés partout où un formulaire demande le type avion. */
+export const FLEET: string[] = Object.keys(FLEET_BY_TYPE)
 
 /**
- * Immatriculations de la flotte, proposées à la saisie.
- *
- * 7T-VJJ à 7T-VKT : B737 NG et MAX 8, relevé OMD ED 03 – REV 17 JUL 2026.
- * 7T-VLQ, 7T-VLR, 7T-VLS s'y ajoutent.
+ * Toute la flotte, chaque immatriculation accompagnée de son type : c'est ce
+ * qui est proposé tant qu'aucun type n'a été choisi.
  */
-export const AIRCRAFT_REGISTRATIONS: string[] = [
-  '7T-VJJ', '7T-VJK', '7T-VJL', '7T-VJM', '7T-VJN', '7T-VJO',
-  '7T-VJP', '7T-VJQ', '7T-VJR', '7T-VJS', '7T-VJT', '7T-VJU',
-  '7T-VKA', '7T-VKB', '7T-VKC', '7T-VKD', '7T-VKE', '7T-VKF',
-  '7T-VKG', '7T-VKH', '7T-VKI', '7T-VKJ', '7T-VKK', '7T-VKL',
-  '7T-VKM', '7T-VKN', '7T-VKO', '7T-VKP', '7T-VKQ', '7T-VKR',
-  '7T-VKS', '7T-VKT',
-  '7T-VLQ', '7T-VLR', '7T-VLS',
-]
+export const AIRCRAFT_REGISTRATIONS: Airport[] = Object.entries(FLEET_BY_TYPE).flatMap(
+  ([type, immatriculations]) => immatriculations.map((value) => ({ value, hint: type })),
+)

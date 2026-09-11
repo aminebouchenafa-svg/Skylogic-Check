@@ -71,11 +71,15 @@ export function Field({ field, values, onChange }: Props) {
     default: {
       // Un préfixe à choisir occupe sa propre valeur : « <champ>_prefix ».
       const prefixId = `${field.id}_prefix`
-      const input = field.suggestions?.length ? (
+      // Les propositions peuvent dépendre d'un autre champ (type → immatriculation).
+      const depend = field.suggestionsFrom
+      const groupe = depend ? depend.groups[String(values[depend.field] ?? '')] : undefined
+      const propositions = groupe?.length ? groupe : field.suggestions
+      const input = propositions?.length ? (
         <Combobox
           id={field.id}
           value={text}
-          options={field.suggestions}
+          options={propositions}
           ariaLabel={field.label}
           placeholder={field.placeholder}
           uppercase={field.uppercase}

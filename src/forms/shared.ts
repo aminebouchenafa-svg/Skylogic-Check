@@ -1,5 +1,5 @@
 import type { FieldDef, SectionDef } from '../types/form'
-import { AIRCRAFT_REGISTRATIONS, FLEET } from './network'
+import { AIRCRAFT_REGISTRATIONS, FLEET, FLEET_BY_TYPE } from './network'
 
 /** Blocs communs aux formulaires du Training Department. */
 
@@ -60,5 +60,6 @@ export const aircraftRegField: FieldDef = {
   type: 'text',
   width: 'quarter',
   suggestions: AIRCRAFT_REGISTRATIONS,
+  suggestionsFrom: { field: 'aircraft_type', groups: FLEET_BY_TYPE },
   uppercase: true,
 }
