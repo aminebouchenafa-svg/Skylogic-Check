@@ -35,6 +35,21 @@ export function Settings({ settings, onSave }: Props) {
 
       <section className="panel">
         <div className="panel-head">
+          <div className="panel-title">Hors ligne</div>
+        </div>
+        <div className="panel-body">
+          <p className="page-sub" style={{ margin: 0 }}>
+            L’application s’installe sur l’appareil à la première ouverture : formulaires, notation,
+            signatures et export PDF fonctionnent ensuite sans réseau, en vol comme au simulateur.
+            Seuls l’envoi par e-mail ou WhatsApp et la mise à jour demandent une connexion.
+            Pour l’avoir sous la main comme une application : <strong>Partager</strong> puis
+            <strong> Sur l’écran d’accueil</strong>.
+          </p>
+        </div>
+      </section>
+
+      <section className="panel">
+        <div className="panel-head">
           <div className="panel-title">Entité</div>
         </div>
         <div className="panel-body">
