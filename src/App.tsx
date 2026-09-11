@@ -105,39 +105,47 @@ export default function App() {
               key={item.id}
               className={`nav-item${view === item.id ? ' active' : ''}`}
               onClick={() => navigate(item.id)}
+              aria-label={item.label}
+              title={item.label}
             >
               {item.icon}
-              {item.label}
+              <span className="nav-text">{item.label}</span>
             </button>
           ))}
         </nav>
 
         <div className="sidebar-foot">
-          <button
-            className="btn btn-ghost btn-sm theme-toggle"
-            onClick={switchTheme}
-            aria-label={theme === 'dark' ? 'Passer en mode jour' : 'Passer en mode nuit'}
-          >
-            {theme === 'dark' ? <IconSun size={14} /> : <IconMoon size={14} />}
-            {theme === 'dark' ? 'Mode jour' : 'Mode nuit'}
-          </button>
-          <br />
-          <button
-            className="btn btn-ghost btn-sm"
-            style={{ marginBottom: 12 }}
-            onClick={() => {
-              lock()
-              setUnlocked(false)
-            }}
-          >
-            <IconBack size={14} /> Se déconnecter
-          </button>
-          <br />
-          {settings.operator}
-          <br />
-          {settings.department}
-          <br />
-          <span style={{ opacity: 0.6 }}>Données stockées sur cet appareil</span>
+          {/* Les deux commandes restent atteignables sur téléphone : seul le
+              pavé d'information disparaît quand la place manque. */}
+          <div className="sidebar-actions">
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={switchTheme}
+              aria-label={theme === 'dark' ? 'Passer en mode jour' : 'Passer en mode nuit'}
+            >
+              {theme === 'dark' ? <IconSun size={14} /> : <IconMoon size={14} />}
+              <span className="btn-text">{theme === 'dark' ? 'Mode jour' : 'Mode nuit'}</span>
+            </button>
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={() => {
+                lock()
+                setUnlocked(false)
+              }}
+              aria-label="Se déconnecter"
+            >
+              <IconBack size={14} />
+              <span className="btn-text">Se déconnecter</span>
+            </button>
+          </div>
+
+          <div className="sidebar-about">
+            {settings.operator}
+            <br />
+            {settings.department}
+            <br />
+            <span style={{ opacity: 0.6 }}>Données stockées sur cet appareil</span>
+          </div>
         </div>
       </aside>
 

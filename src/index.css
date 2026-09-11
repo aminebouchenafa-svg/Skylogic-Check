@@ -218,6 +218,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 .sidebar-foot { margin-top: auto; font-size: 10.5px; color: var(--text-faint); line-height: 1.6; }
+.sidebar-actions { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.sidebar-about { line-height: 1.6; }
 
 .main { padding: 26px 30px 70px; max-width: 1240px; width: 100%; min-width: 0; }
 
@@ -473,7 +475,12 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .app { grid-template-columns: 1fr; }
   .sidebar { position: static; height: auto; flex-direction: row; align-items: center; gap: 16px; overflow-x: auto; padding: 14px; }
   .sidebar .nav { flex-direction: row; flex: 1; }
-  .nav-label, .sidebar-foot, .sidebar .brand-sub { display: none; }
+  .nav-label, .sidebar-about, .sidebar .brand-sub { display: none; }
+  /* Le mode jour et la déconnexion restent sous la main, en pictogrammes. */
+  .sidebar-foot { margin-top: 0; }
+  .sidebar-actions { flex-direction: row; gap: 8px; margin-bottom: 0; }
+  .sidebar-actions .btn-text { display: none; }
+  .sidebar-actions .btn { padding: 9px 11px; }
   .sidebar .brand-name { font-size: 16px; }
   .sidebar .brand-mark { width: 34px; height: 34px; border-radius: 9px; }
   .nav-item { padding: 8px 10px; font-size: 12.5px; white-space: nowrap; }
@@ -481,6 +488,17 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .field-half, .field-third, .field-quarter { grid-column: span 12; }
   .grade-row { grid-template-columns: 1fr; gap: 10px; }
   .grade-buttons { flex-wrap: wrap; }
+}
+
+/* Téléphone : la barre du haut tient sans défilement — pictogrammes seuls,
+   pour que le mode jour et la déconnexion restent visibles. */
+@media (max-width: 620px) {
+  .sidebar { gap: 10px; padding: 12px 10px; overflow-x: visible; }
+  .sidebar .nav { gap: 4px; justify-content: center; }
+  .nav-text { display: none; }
+  .nav-item { padding: 9px 11px; }
+  .sidebar .brand-name { font-size: 14px; }
+  .sidebar .brand-mark { width: 30px; height: 30px; }
 }
 
 /* ------------------------------------------------------- Accueil radial */

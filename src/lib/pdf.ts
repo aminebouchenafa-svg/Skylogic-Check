@@ -6,6 +6,8 @@ import { findLevel, getScale, selectableLevels } from '../forms/scales'
 import { answerId, cellId, gradeId, remarkId, tickId } from './ids'
 import { columnTotal } from './totals'
 import type { AppSettings } from './storage'
+// Le logo voyage avec l'application : le PDF s'imprime sans rien télécharger.
+import logoAirAlgerie from '../assets/air-algerie.png?inline'
 
 /**
  * Rendu PDF des formulaires.
@@ -84,9 +86,12 @@ function lastY(doc: jsPDF, fallback: number): number {
 }
 
 /** Bandeau de titre : intitulé du formulaire et bloc compagnie. */
+/** Rouge de la charte, pour le nom de la compagnie à défaut du logo. */
+const BRAND = '#C62A28'
+
 function drawTitle(doc: jsPDF, form: FormDef, settings: AppSettings, y: number): number {
-  const h = 12
-  const logoW = 52
+  const h = 14
+  const logoW = 58
   doc.setDrawColor(...hexToRgb(INK))
   doc.setLineWidth(0.5)
   doc.rect(M, y, CONTENT_W - logoW, h)
@@ -110,20 +115,30 @@ function drawTitle(doc: jsPDF, form: FormDef, settings: AppSettings, y: number):
     doc.text(heading, centre, y + 8.6, { align: 'center' })
   }
 
-  if (settings.logo) {
-    try {
-      doc.addImage(settings.logo, 'PNG', M + CONTENT_W - logoW + 3, y + 2, logoW - 6, h - 4, undefined, 'FAST')
-    } catch {
-      /* logo illisible : on retombe sur le texte */
-    }
-  } else {
-    doc.setFontSize(10)
-    doc.text(settings.operator.toUpperCase(), M + CONTENT_W - logoW / 2, y + 6.5, { align: 'center' })
-    doc.setFont('helvetica', 'normal')
-    doc.setFontSize(6.5)
-    doc.setTextColor(...hexToRgb(MUTED))
-    doc.text(settings.department, M + CONTENT_W - logoW / 2, y + 10, { align: 'center' })
+  // Bloc compagnie : le logo officiel, et le département en dessous.
+  const centreLogo = M + CONTENT_W - logoW / 2
+  const image = settings.logo || logoAirAlgerie
+  let logoPose = false
+  try {
+    const largeur = logoW - 14
+    // Le lockup fait 760 × 143 : on garde ses proportions.
+    const hauteur = (largeur * 143) / 760
+    doc.addImage(image, 'PNG', centreLogo - largeur / 2, y + 1.6, largeur, hauteur, undefined, 'FAST')
+    logoPose = true
+  } catch {
+    /* logo illisible : le nom de la compagnie prend sa place, en rouge */
   }
+
+  if (!logoPose) {
+    doc.setFontSize(10)
+    doc.setTextColor(...hexToRgb(BRAND))
+    doc.text(settings.operator.toUpperCase(), centreLogo, y + 7, { align: 'center' })
+  }
+
+  doc.setFont('helvetica', 'normal')
+  doc.setFontSize(6.2)
+  doc.setTextColor(...hexToRgb(MUTED))
+  doc.text(settings.department, centreLogo, y + h - 1.8, { align: 'center' })
 
   // Filet d'accent : rappel de la couleur du formulaire.
   doc.setFillColor(...hexToRgb(form.accent))
