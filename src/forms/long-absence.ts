@@ -1,5 +1,6 @@
 import type { FormDef } from '../types/form'
 import { aircraftField, POSITION_OPTIONS } from './shared'
+import { AIRPORTS } from './network'
 
 const row = (id: string, label: string) => ({ id, label })
 
@@ -83,7 +84,8 @@ export const longAbsenceForm: FormDef = {
         columns: [
           { id: 'date', label: 'Date', type: 'date' },
           { id: 'reg', label: 'A/C REG', type: 'text' },
-          { id: 'dep_arr', label: 'DEP / ARR', type: 'text' },
+          { id: 'dep', label: 'DEP', type: 'text', suggestions: AIRPORTS, uppercase: true },
+          { id: 'arr', label: 'ARR', type: 'text', suggestions: AIRPORTS, uppercase: true },
           { id: 'instructor', label: 'Instructor Name & Comments', type: 'text' },
         ],
         rows: [

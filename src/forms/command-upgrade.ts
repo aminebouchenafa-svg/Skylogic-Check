@@ -1,7 +1,7 @@
 import type { FormDef, GradedItemDef } from '../types/form'
 import { REMINDER_LINE } from './scales'
 import { SCALE_COMMAND } from './scales-command'
-import { FLEET } from './network'
+import { AIRPORTS, FLEET } from './network'
 
 /**
  * COMMAND UPGRADE – ASSESSMENT FLIGHT — REF. D.O.A, Training Department.
@@ -174,8 +174,8 @@ export const commandUpgradeForm: FormDef = {
       matrix: {
         columns: [
           { id: 'duty', label: 'Duty', type: 'select', options: ['PF', 'PM'] },
-          { id: 'from', label: 'From', type: 'text' },
-          { id: 'to', label: 'To', type: 'text' },
+          { id: 'from', label: 'From', type: 'text', suggestions: AIRPORTS, uppercase: true },
+          { id: 'to', label: 'To', type: 'text', suggestions: AIRPORTS, uppercase: true },
           { id: 'approach', label: 'Types of Approach', type: 'text' },
         ],
         rows: [

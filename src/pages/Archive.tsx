@@ -16,6 +16,16 @@ interface Props {
 
 export function Archive({ records, settings, onOpen, onDelete, onToast }: Props) {
   const [query, setQuery] = useState('')
+  /** Dossiers cochés en vue d'une suppression groupée. */
+  const [choisis, setChoisis] = useState<Set<string>>(new Set())
+
+  const basculer = (id: string) =>
+    setChoisis((prev) => {
+      const suite = new Set(prev)
+      if (suite.has(id)) suite.delete(id)
+      else suite.add(id)
+      return suite
+    })
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -27,6 +37,31 @@ export function Archive({ records, settings, onOpen, onDelete, onToast }: Props)
         .includes(q),
     )
   }, [records, query])
+
+  /** Sélection limitée aux dossiers visibles : filtrer puis tout cocher. */
+  const visiblesChoisis = filtered.filter((r) => choisis.has(r.id))
+  const toutCoche = filtered.length > 0 && visiblesChoisis.length === filtered.length
+
+  const basculerTout = () =>
+    setChoisis((prev) => {
+      const suite = new Set(prev)
+      if (toutCoche) filtered.forEach((r) => suite.delete(r.id))
+      else filtered.forEach((r) => suite.add(r.id))
+      return suite
+    })
+
+  const supprimerLot = () => {
+    const nombre = visiblesChoisis.length
+    if (!nombre) return
+    const message =
+      nombre === 1
+        ? 'Supprimer définitivement ce dossier ?'
+        : `Supprimer définitivement ces ${nombre} dossiers ?`
+    if (!confirm(message)) return
+    visiblesChoisis.forEach((r) => onDelete(r.id))
+    setChoisis(new Set())
+    onToast(nombre === 1 ? 'Dossier supprimé' : `${nombre} dossiers supprimés`)
+  }
 
   const exportPdf = (record: FormRecord) => {
     const form = getForm(record.formId)
@@ -55,6 +90,22 @@ export function Archive({ records, settings, onOpen, onDelete, onToast }: Props)
         />
       </div>
 
+      {visiblesChoisis.length > 0 && (
+        <div className="panel select-bar">
+          <span>
+            <strong>{visiblesChoisis.length}</strong>{' '}
+            {visiblesChoisis.length === 1 ? 'dossier sélectionné' : 'dossiers sélectionnés'}
+          </span>
+          <span className="spacer" />
+          <button className="btn btn-ghost btn-sm" onClick={() => setChoisis(new Set())}>
+            Tout décocher
+          </button>
+          <button className="btn btn-primary btn-sm" onClick={supprimerLot}>
+            <IconTrash size={15} /> Supprimer
+          </button>
+        </div>
+      )}
+
       <section className="panel">
         {filtered.length === 0 ? (
           <div className="empty">Aucun dossier ne correspond.</div>
@@ -62,6 +113,15 @@ export function Archive({ records, settings, onOpen, onDelete, onToast }: Props)
           <table className="table">
             <thead>
               <tr>
+                <th style={{ width: 36 }}>
+                  <input
+                    type="checkbox"
+                    className="matrix-tick"
+                    aria-label="Tout sélectionner"
+                    checked={toutCoche}
+                    onChange={basculerTout}
+                  />
+                </th>
                 <th>Candidat</th>
                 <th>Formulaire</th>
                 <th>Date</th>
@@ -73,7 +133,16 @@ export function Archive({ records, settings, onOpen, onDelete, onToast }: Props)
               {filtered.map((record) => {
                 const form = getForm(record.formId)
                 return (
-                  <tr key={record.id}>
+                  <tr key={record.id} className={choisis.has(record.id) ? 'row-on' : undefined}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        className="matrix-tick"
+                        aria-label={`Sélectionner ${record.subject || 'ce dossier'}`}
+                        checked={choisis.has(record.id)}
+                        onChange={() => basculer(record.id)}
+                      />
+                    </td>
                     <td style={{ cursor: 'pointer' }} onClick={() => onOpen(record)}>
                       {record.subject || <span style={{ color: 'var(--text-faint)' }}>Sans nom</span>}
                     </td>

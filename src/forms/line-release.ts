@@ -1,6 +1,7 @@
 import type { FormDef } from '../types/form'
 import { REMINDER_LINE } from './scales'
 import { aircraftField, aircraftRegField, remarksSection } from './shared'
+import { AIRPORTS } from './network'
 
 /**
  * LINE RELEASE FORM — REF. D.O.A, § 13.1.15.
@@ -69,9 +70,9 @@ export const lineReleaseForm: FormDef = {
         hideRowLabels: true,
         columns: [
           { id: 'duty', label: '* DUTY', type: 'select', options: ['PF', 'PM'] },
-          { id: 'flight', label: 'FLT Number', type: 'text', prefix: 'AH' },
-          { id: 'from', label: 'FROM', type: 'text' },
-          { id: 'to', label: 'TO', type: 'text' },
+          { id: 'flight', label: 'FLT Number', type: 'text', prefix: 'AH', keyboard: 'numeric' },
+          { id: 'from', label: 'FROM', type: 'text', suggestions: AIRPORTS, uppercase: true },
+          { id: 'to', label: 'TO', type: 'text', suggestions: AIRPORTS, uppercase: true },
         ],
         rows: [
           { id: 'leg_1', label: '' },
