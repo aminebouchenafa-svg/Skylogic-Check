@@ -1,4 +1,5 @@
 import type { FormDef } from '../types/form'
+import { AIRPORTS } from './network'
 
 /**
  * MANDATORY CHECK FAILURE NOTIFICATION FORM — REF. D.O.A, Training Department.
@@ -44,8 +45,8 @@ export const checkFailureForm: FormDef = {
         ],
         columns: [
           { id: 'pf', label: '', type: 'select', options: ['CM-1', 'CM-2'] },
-          { id: 'from', label: 'From', type: 'text' },
-          { id: 'to', label: 'To', type: 'text' },
+          { id: 'from', label: 'From', type: 'text', suggestions: AIRPORTS, uppercase: true },
+          { id: 'to', label: 'To', type: 'text', suggestions: AIRPORTS, uppercase: true },
           { id: 'approach', label: '', type: 'text' },
           { id: 'cm1', label: 'CM 1', type: 'text' },
           { id: 'cm2', label: 'CM 2', type: 'text' },

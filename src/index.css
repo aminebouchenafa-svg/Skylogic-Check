@@ -1019,6 +1019,20 @@ button, input, select, textarea { font: inherit; color: inherit; }
   padding: 14px 16px;
 }
 
+/* Suppression groupée : la barre n'apparaît qu'une fois un dossier coché. */
+.select-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.select-bar .spacer { flex: 1; }
+.table tr.row-on td { background: var(--hud-soft); }
+
 .matrix-tick { width: 20px; height: 20px; accent-color: var(--hud); cursor: pointer; }
 
 .blank::placeholder { color: var(--text-faint); font-weight: 400; font-size: 13px; }

@@ -3,17 +3,18 @@ import { instructorClosing } from './instructor-common'
 import { REMINDER_LINE } from './scales'
 import { SCALE_SU } from './scales-instructor'
 import { aircraftField, aircraftRegField } from './shared'
+import { AIRPORTS } from './network'
 
 const item = (code: string, label: string) => ({ id: `i${code}`, code, label })
 
 /** Une étape de qualification : n° de vol, provenance, destination. */
 const legColumns = [
-  { id: 'flt_a', label: 'FLT Nbr', type: 'text' as const, prefix: 'AH' },
-  { id: 'from_a', label: 'FROM', type: 'text' as const },
-  { id: 'to_a', label: 'TO', type: 'text' as const },
-  { id: 'flt_b', label: 'FLT Nbr', type: 'text' as const, prefix: 'AH' },
-  { id: 'from_b', label: 'FROM', type: 'text' as const },
-  { id: 'to_b', label: 'TO', type: 'text' as const },
+  { id: 'flt_a', label: 'FLT Nbr', type: 'text' as const, prefix: 'AH', keyboard: 'numeric' as const },
+  { id: 'from_a', label: 'FROM', type: 'text' as const, suggestions: AIRPORTS, uppercase: true },
+  { id: 'to_a', label: 'TO', type: 'text' as const, suggestions: AIRPORTS, uppercase: true },
+  { id: 'flt_b', label: 'FLT Nbr', type: 'text' as const, prefix: 'AH', keyboard: 'numeric' as const },
+  { id: 'from_b', label: 'FROM', type: 'text' as const, suggestions: AIRPORTS, uppercase: true },
+  { id: 'to_b', label: 'TO', type: 'text' as const, suggestions: AIRPORTS, uppercase: true },
 ]
 
 /**
