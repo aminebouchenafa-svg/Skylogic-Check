@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { AppSettings } from '../lib/storage'
 import { IconBack, IconSave } from '../components/Icons'
+import { normalizePhone } from '../lib/share'
 
 /** Le logo est stocké en data URL et imprimé en tête de chaque PDF. */
 function readLogo(file: File): Promise<string> {
@@ -122,7 +123,7 @@ export function Settings({ settings, onSave, onLock }: Props) {
         <div className="panel-head">
           <div>
             <div className="panel-title">Destinataires par défaut</div>
-            <div className="panel-sub">Utilisés par les boutons E-mail et WhatsApp des formulaires</div>
+            <div className="panel-sub">Utilisés par les boutons E-mail et WhatsApp sur poste fixe</div>
           </div>
         </div>
         <div className="panel-body">
@@ -131,14 +132,18 @@ export function Settings({ settings, onSave, onLock }: Props) {
               <label className="field-label" htmlFor="email">Adresse e-mail de destination</label>
               <input id="email" className="input" type="email" value={draft.defaultEmail} onChange={(e) => set('defaultEmail', e.target.value)} placeholder="training.records@exemple.dz" />
               <span className="field-hint">
-                Le PDF est téléchargé puis à joindre au message ; sur téléphone, le bouton « Partager »
-                le joint directement.
+                Sur téléphone et tablette, « Envoyer le PDF » ouvre la feuille de partage et joint
+                le fichier lui-même : ces deux champs ne servent alors pas.
               </span>
             </div>
             <div className="field field-half">
               <label className="field-label" htmlFor="whatsapp">Numéro WhatsApp</label>
               <input id="whatsapp" className="input" value={draft.defaultWhatsapp} onChange={(e) => set('defaultWhatsapp', e.target.value)} placeholder="213661000000" />
-              <span className="field-hint">Format international, sans « + » ni espaces.</span>
+              <span className="field-hint">
+                Format international : indicatif pays puis le numéro sans son 0. Un numéro saisi
+                « 0661 00 00 00 » est corrigé en {normalizePhone(draft.defaultWhatsapp) || '213661000000'}.
+                Sans indicatif, WhatsApp répond que le profil n’existe pas.
+              </span>
             </div>
           </div>
         </div>
