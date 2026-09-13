@@ -2,9 +2,12 @@ import { useMemo, useState } from 'react'
 import type { FormRecord } from '../types/form'
 import { getForm } from '../forms'
 import { buildPdfFile, pdfFileName } from '../lib/pdf'
-import { downloadBlob } from '../lib/share'
+import { downloadBlob, shareFile, supportsFileShare } from '../lib/share'
 import type { AppSettings } from '../lib/storage'
-import { IconPdf, IconTrash } from '../components/Icons'
+import { IconPdf, IconShare, IconTrash } from '../components/Icons'
+
+/** La feuille de partage du système sait-elle joindre un fichier ? */
+const partageNatif = supportsFileShare()
 
 interface Props {
   records: FormRecord[]
@@ -71,6 +74,18 @@ export function Archive({ records, settings, onOpen, onDelete, onToast }: Props)
     onToast(`PDF généré : ${file.name}`)
   }
 
+  /** Renvoyer un dossier archivé, PDF joint, par la feuille de partage du système. */
+  const envoyer = async (record: FormRecord) => {
+    const form = getForm(record.formId)
+    if (!form) return
+    const file = buildPdfFile(form, record, settings)
+    const texte = `${record.formTitle} — ${record.subject || 'candidat'} — ${String(record.values.date ?? record.createdAt.slice(0, 10))}`
+    const issue = await shareFile(file, file.name, texte)
+    if (issue === 'shared' || issue === 'cancelled') return
+    downloadBlob(file, file.name)
+    onToast('Partage indisponible sur cet appareil : le PDF a été téléchargé')
+  }
+
   return (
     <div className="stack">
       <div className="page-head">
@@ -110,7 +125,7 @@ export function Archive({ records, settings, onOpen, onDelete, onToast }: Props)
         {filtered.length === 0 ? (
           <div className="empty">Aucun dossier ne correspond.</div>
         ) : (
-          <table className="table">
+          <table className="table table-archive">
             <thead>
               <tr>
                 <th style={{ width: 36 }}>
@@ -134,7 +149,7 @@ export function Archive({ records, settings, onOpen, onDelete, onToast }: Props)
                 const form = getForm(record.formId)
                 return (
                   <tr key={record.id} className={choisis.has(record.id) ? 'row-on' : undefined}>
-                    <td>
+                    <td data-col="tick">
                       <input
                         type="checkbox"
                         className="matrix-tick"
@@ -143,22 +158,31 @@ export function Archive({ records, settings, onOpen, onDelete, onToast }: Props)
                         onChange={() => basculer(record.id)}
                       />
                     </td>
-                    <td style={{ cursor: 'pointer' }} onClick={() => onOpen(record)}>
+                    <td data-col="subject" style={{ cursor: 'pointer' }} onClick={() => onOpen(record)}>
                       {record.subject || <span style={{ color: 'var(--text-faint)' }}>Sans nom</span>}
                     </td>
-                    <td style={{ cursor: 'pointer' }} onClick={() => onOpen(record)}>
+                    <td data-col="form" style={{ cursor: 'pointer' }} onClick={() => onOpen(record)}>
                       <span style={{ color: form?.accent }}>{record.formCode}</span> · {record.formTitle}
                     </td>
-                    <td>{String(record.values.date ?? record.createdAt.slice(0, 10))}</td>
-                    <td>
+                    <td data-col="date">{String(record.values.date ?? record.createdAt.slice(0, 10))}</td>
+                    <td data-col="status">
                       <span className={`status-dot status-${record.status}`} />
                       {record.status === 'draft' ? 'Brouillon' : 'Terminé'}
                     </td>
-                    <td>
-                      <div className="row" style={{ gap: 6, justifyContent: 'flex-end' }}>
+                    <td data-col="actions">
+                      <div className="row" style={{ gap: 6, justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
                         <button className="btn btn-ghost btn-sm" title="Exporter en PDF" onClick={() => exportPdf(record)}>
                           <IconPdf size={15} />
                         </button>
+                        {partageNatif && (
+                          <button
+                            className="btn btn-ghost btn-sm"
+                            title="Envoyer le PDF (WhatsApp, e-mail…)"
+                            onClick={() => envoyer(record)}
+                          >
+                            <IconShare size={15} />
+                          </button>
+                        )}
                         <button
                           className="btn btn-ghost btn-sm"
                           title="Supprimer"

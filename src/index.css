@@ -1238,3 +1238,38 @@ button, input, select, textarea { font: inherit; color: inherit; }
   }
   .tick-extra { flex: 1 1 140px; }
 }
+
+/*
+ * Archive sur téléphone : le tableau déborderait de l'écran et les boutons
+ * d'action se retrouveraient hors du champ, donc inatteignables au doigt.
+ * Chaque dossier devient une fiche, tout reste sous le pouce.
+ */
+@media (max-width: 760px) {
+  .table-archive thead th { display: none; }
+  .table-archive thead th:first-child {
+    display: flex; align-items: center; gap: 10px;
+    width: auto !important; padding: 12px 14px;
+  }
+  .table-archive thead th:first-child::after { content: 'Tout sélectionner'; }
+
+  .table-archive tbody tr {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'tick subject actions'
+      'tick form    form'
+      'tick date    status';
+    gap: 3px 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--stroke);
+  }
+  .table-archive tbody tr:last-child { border-bottom: none; }
+  .table-archive tbody td { border-bottom: none; padding: 0; }
+
+  .table-archive td[data-col='tick'] { grid-area: tick; align-self: start; padding-top: 2px; }
+  .table-archive td[data-col='subject'] { grid-area: subject; font-size: 14px; font-weight: 600; }
+  .table-archive td[data-col='form'] { grid-area: form; font-size: 12.5px; line-height: 1.45; }
+  .table-archive td[data-col='date'] { grid-area: date; font-size: 12.5px; color: var(--text-dim); }
+  .table-archive td[data-col='status'] { grid-area: status; font-size: 12.5px; justify-self: end; }
+  .table-archive td[data-col='actions'] { grid-area: actions; align-self: start; }
+}

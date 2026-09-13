@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import type { FormDef, FormRecord, FormValues, SectionDef } from '../types/form'
 import { findLevel, getScale, selectableLevels } from '../forms/scales'
 import { buildPdfFile } from '../lib/pdf'
-import { downloadBlob, canShareFiles, mailtoLink, shareFile, whatsappLink } from '../lib/share'
+import { downloadBlob, mailtoLink, shareFile, supportsFileShare, whatsappLink } from '../lib/share'
 import { gradeId, remarkId } from '../lib/ids'
 import { upsertRecord } from '../lib/storage'
 import type { AppSettings } from '../lib/storage'
@@ -13,6 +13,12 @@ import { GradeRow } from './GradeRow'
 import { Matrix } from './Matrix'
 import { Statement } from './Statement'
 import { IconAlert, IconBack, IconMail, IconPdf, IconSave, IconShare, IconWhatsapp } from './Icons'
+
+/**
+ * Téléphone ou tablette : la feuille de partage du système sait joindre le PDF.
+ * Constant pour la durée de la session, donc évalué une seule fois.
+ */
+const partageNatif = supportsFileShare()
 
 interface Props {
   form: FormDef
@@ -157,23 +163,33 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
     `${form.title} — ${subject || 'candidat'} — ${String(values.date ?? '')}\n` +
     `${settings.operator} · ${settings.department}\n${form.code}`
 
+  /**
+   * Seule la feuille de partage de l'appareil sait joindre le PDF à un message :
+   * ni `mailto:` ni `wa.me` ne portent de pièce jointe. Sur iPhone / iPad on
+   * l'ouvre donc directement, et l'utilisateur y choisit WhatsApp, Mail, Gmail
+   * ou AirDrop — le PDF part avec.
+   */
   const share = async () => {
     const file = makeFile()
-    if (await shareFile(file, form.title, message())) return
+    const issue = await shareFile(file, file.name, message())
+    if (issue === 'shared' || issue === 'cancelled') return
     downloadBlob(file, file.name)
-    onToast('Partage natif indisponible : le PDF a été téléchargé, joignez-le à votre message')
+    onToast('Partage indisponible sur cet appareil : le PDF a été téléchargé, joignez-le à votre message')
   }
 
+  // Poste fixe uniquement : le PDF est téléchargé, puis le brouillon s'ouvre.
   const sendMail = () => {
     const file = makeFile()
     downloadBlob(file, file.name)
     window.location.href = mailtoLink(settings, `${form.title} — ${subject || 'Rapport'}`, message())
+    onToast(`${file.name} téléchargé : joignez-le au brouillon d’e-mail`)
   }
 
   const sendWhatsapp = () => {
     const file = makeFile()
     downloadBlob(file, file.name)
     window.open(whatsappLink(settings, message()), '_blank', 'noopener')
+    onToast(`${file.name} téléchargé : joignez-le à la conversation WhatsApp`)
   }
 
   const renderSection = (section: SectionDef) => {
@@ -531,22 +547,24 @@ export function FormRunner({ form, record, settings, onExit, onToast }: Props) {
         <button className="btn" onClick={exportPdf}>
           <IconPdf size={16} /> PDF
         </button>
-        <button className="btn" onClick={sendMail} title={settings.defaultEmail || 'Adresse à définir dans les réglages'}>
-          <IconMail size={16} /> E-mail
-        </button>
-        <button className="btn" onClick={sendWhatsapp}>
-          <IconWhatsapp size={16} /> WhatsApp
-        </button>
-        <button className="btn btn-primary" onClick={share}>
-          <IconShare size={16} /> {shareLabel()}
+        {!partageNatif && (
+          <>
+            <button className="btn" onClick={sendMail} title={settings.defaultEmail || 'Adresse à définir dans les réglages'}>
+              <IconMail size={16} /> E-mail
+            </button>
+            <button className="btn" onClick={sendWhatsapp}>
+              <IconWhatsapp size={16} /> WhatsApp
+            </button>
+          </>
+        )}
+        <button
+          className="btn btn-primary"
+          onClick={share}
+          title={partageNatif ? 'Ouvre la feuille de partage avec le PDF en pièce jointe' : undefined}
+        >
+          <IconShare size={16} /> {partageNatif ? 'Envoyer le PDF' : 'Envoyer'}
         </button>
       </div>
     </div>
   )
-}
-
-/** Sur mobile le partage joint directement le PDF ; sur poste fixe il est téléchargé. */
-function shareLabel(): string {
-  const probe = new File([new Blob()], 'probe.pdf', { type: 'application/pdf' })
-  return canShareFiles(probe) ? 'Partager le PDF' : 'Envoyer'
 }
