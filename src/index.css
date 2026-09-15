@@ -1275,15 +1275,13 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 /*
- * Mention d'auteur, au pied de l'écran de connexion.
+ * Signature, au pied de l'écran de connexion.
  */
 .credit {
-  display: flex; flex-direction: column; gap: 3px;
   font-size: 11.5px; line-height: 1.5; color: var(--text-faint);
   text-align: center;
 }
 .credit strong { color: var(--text-dim); font-weight: 600; letter-spacing: 0.02em; }
-.credit-rights { opacity: 0.72; font-size: 11px; }
 
 /* La mention n'apparaît que sur l'écran de connexion. */
 .credit-lock { margin-top: 6px; padding-top: 16px; border-top: 1px solid var(--stroke); }

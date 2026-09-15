@@ -166,12 +166,10 @@ compagnie, tableaux à deux colonnes, *Remarks*, résultat, signatures, mention
 *Reminder* et pied de page `REF. D.O.A – TRAINING DEPARTMENT`. Le logo de la
 compagnie se charge dans **Réglages** et remplace le bloc texte en haut à droite.
 
-## Auteur et droits
+## Auteur
 
 Application conçue et développée par **CPT BOUCHENAFA M.A**, Fleet Training
 Manager, Air Algérie.
-
-© 2026 CPT BOUCHENAFA M.A — Tous droits réservés.
 
 Les formulaires reproduits sont les documents officiels du Fleet Training
 Department d'Air Algérie et restent la propriété de la compagnie.
