@@ -149,19 +149,67 @@ export function RadialHub({
   }, [forms, family, twoLevel, onSelect])
 
   const c = size / 2
-  const innerR = size * 0.163
+  /*
+   * Le puits central porte deux lignes de texte qui, elles, ne rétrécissent
+   * plus avec la roue : sur un téléphone il s'élargit pour les contenir, sans
+   * jamais venir toucher les pastilles.
+   */
+  const innerR = Math.max(size * 0.163, Math.min(68, size * 0.325 - 34))
+  /**
+   * Rayon de la couronne. Sur un petit écran les libellés gardent leur taille
+   * alors que la roue rétrécit : on rapproche les pictogrammes du centre pour
+   * que le texte posé au-dessus et en dessous reste dans le cadre.
+   */
   const ringR = size * 0.325
   const beamR = size * 0.8
   const gap = 0.02 * TAU
   const step = TAU / segments.length
   const scale = size / 560
+  /**
+   * La géométrie de la roue suit la largeur disponible, mais le texte et les
+   * pictogrammes, eux, ne descendent pas en dessous d'une taille lisible :
+   * sur un écran de téléphone la roue se resserre, les libellés non.
+   */
+  const lisible = Math.max(scale, 1)
+
+  /*
+   * Ce qui tient autour de la couronne se déduit d'une seule mesure : la
+   * corde, distance en ligne droite entre deux pastilles voisines. Pastille
+   * et libellé doivent y tenir côte à côte, sinon ils se recouvrent — c'est
+   * exactement ce qui arrivait aux roues chargées sur petit écran.
+   */
+  const corde = 2 * ringR * Math.sin(Math.PI / segments.length)
+  const pastille = Math.max(38, Math.min(62 * lisible, corde - 10))
+  /*
+   * Largeur du libellé, bornée par trois contraintes : sa taille de confort,
+   * l'écart avec le voisin, et la place restante entre la pastille et le bord
+   * du cadre pour les secteurs de gauche et de droite.
+   */
+  const largeurLibelle = Math.max(
+    66,
+    Math.min(126 * lisible, corde - 10, 2 * (size / 2 - ringR - 4)),
+  )
+  /**
+   * Hauteur réservée au libellé au-dessus et en dessous de sa pastille. Le
+   * cadre est plus haut que large d'autant : le texte garde sa taille, il
+   * déborde simplement le cercle au lieu d'être rogné.
+   */
+  const hauteurLibelle = 3 * Math.ceil(15 * lisible) + 12
+  const marge = Math.max(0, pastille / 2 + hauteurLibelle + 6 - size / 2 + ringR)
+  const hauteur = size + 2 * marge
 
   const active = hover !== null ? segments[hover] : null
   const retour = twoLevel && family !== null
+  /**
+   * La famille sous chaque pastille n'apprend rien quand on est déjà entré
+   * dedans — elle est au centre de la roue. On la garde au premier niveau,
+   * où elle compte les formulaires.
+   */
+  const sousTitres = !retour
 
   return (
     <div className="hub" ref={boxRef}>
-      <div className="hub-stage" style={{ width: size, height: size }}>
+      <div className="hub-stage" style={{ width: size, height: hauteur, paddingBlock: marge }}>
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="hub-svg">
           <defs>
             <filter id="hub-lift" x="-40%" y="-40%" width="180%" height="180%">
@@ -285,10 +333,18 @@ export function RadialHub({
           onClick={() => retour && setFamily(null)}
           disabled={!retour}
         >
-          <div className="hub-center-title" style={{ fontSize: 15 * scale }}>
+          <div
+            className="hub-center-title"
+            style={{ fontSize: Math.min(16 * lisible, innerR * 0.28), maxWidth: innerR * 1.6 }}
+          >
             {active ? active.title : retour ? family : centerLabel}
           </div>
-          <div className="hub-center-sub" style={{ fontSize: 9.5 * scale }}>
+          <div
+            className="hub-center-sub"
+            /* Le puits central ne grandit pas avec le texte : la ligne du bas
+               s'ajuste à son diamètre, sinon un mot long sort du disque. */
+            style={{ fontSize: Math.min(10.5 * lisible, innerR * 0.17), maxWidth: innerR * 1.6 }}
+          >
             {active ? active.sub : retour ? 'Toutes les familles' : centerSub}
           </div>
         </button>
@@ -299,10 +355,13 @@ export function RadialHub({
           // Le libellé se pose juste au-dessus du pictogramme dans la moitié
           // haute, juste en dessous dans la moitié basse : il reste toujours
           // dans le cadre, quelle que soit sa longueur.
-          const labelW = 132 * scale
+          // Le libellé se pose juste au-dessus de sa pastille dans la moitié
+          // haute, juste en dessous dans la moitié basse : il ne traverse
+          // jamais un pictogramme. Sa largeur suit l'écart entre voisins.
+          const labelW = largeurLibelle
           const above = Math.sin(mid) < 0
-          const labelX = Math.min(Math.max(iconPos.x, labelW / 2 + 8), size - labelW / 2 - 8)
-          const labelY = iconPos.y + (above ? -1 : 1) * (34 * scale + 9)
+          const labelX = Math.min(Math.max(iconPos.x, labelW / 2 + 2), size - labelW / 2 - 2)
+          const labelY = iconPos.y + marge + (above ? -1 : 1) * (pastille / 2 + 8)
           const Icon = FORM_ICONS[segment.icon] ?? FORM_ICONS.report
           return (
             <div key={segment.key} className="hub-item">
@@ -311,9 +370,9 @@ export function RadialHub({
                 className={`hub-badge${segment.pending ? ' pending' : ''}${hover === index ? ' lit' : ''}`}
                 style={{
                   left: iconPos.x,
-                  top: iconPos.y,
-                  width: 60 * scale,
-                  height: 60 * scale,
+                  top: iconPos.y + marge,
+                  width: pastille,
+                  height: pastille,
                   ['--seg' as string]: segment.accent,
                   ['--seg-light' as string]: lighten(segment.accent, 0.45),
                   ['--seg-dark' as string]: darken(segment.accent, 0.4),
@@ -324,14 +383,14 @@ export function RadialHub({
                 disabled={segment.pending}
                 aria-label={segment.title}
               >
-                <Icon size={27 * scale} />
+                <Icon size={Math.round(pastille * 0.45)} />
               </button>
               <div
                 className={`hub-label ${above ? 'above' : 'below'}${segment.pending ? ' pending' : ''}`}
-                style={{ left: labelX, top: labelY, width: labelW, fontSize: 12.5 * scale }}
+                style={{ left: labelX, top: labelY, width: labelW, fontSize: 13.5 * lisible }}
               >
                 {segment.title}
-                <span style={{ fontSize: 9 * scale }}>{segment.sub}</span>
+                {!sousTitres ? null : <span style={{ fontSize: 10.5 * lisible }}>{segment.sub}</span>}
               </div>
             </div>
           )
