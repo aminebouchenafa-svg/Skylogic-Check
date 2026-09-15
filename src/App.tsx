@@ -17,6 +17,7 @@ import {
   saveSettings,
   upsertRecord,
 } from './lib/storage'
+import { Credit } from './components/Credit'
 
 type View = 'home' | 'archive' | 'settings' | 'runner'
 
@@ -195,6 +196,7 @@ export default function App() {
             onToast={setToast}
           />
         )}
+        <Credit className="credit-main" />
       </main>
 
       {toast && <div className="toast">{toast}</div>}
