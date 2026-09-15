@@ -4,7 +4,7 @@ const tick = (id: string, label: string) => ({ id, label })
 
 /** Colonnes communes aux trois blocs de formation du document. */
 const sessionColumns = [
-  { id: 'hours', label: 'Hours', type: 'text' as const },
+  { id: 'hours', label: 'Hours', type: 'duration' as const },
   { id: 'date', label: 'Date', type: 'date' as const },
   { id: 'location', label: 'Location', type: 'text' as const },
   { id: 'tri_name', label: 'TRI Name', type: 'text' as const },

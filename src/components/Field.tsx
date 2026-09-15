@@ -2,6 +2,7 @@ import type { FieldDef, FormValues } from '../types/form'
 import { Choice } from './Choice'
 import { Combobox } from './Combobox'
 import { SignaturePad } from './SignaturePad'
+import { DurationPicker } from './DurationPicker'
 
 interface Props {
   field: FieldDef
@@ -59,6 +60,19 @@ export function Field({ field, values, onChange }: Props) {
             />
             {field.label}
           </label>
+        </div>
+      )
+    case 'duration':
+      return (
+        <div className={`field field-${field.width ?? 'quarter'}`}>
+          {label}
+          <DurationPicker
+            id={field.id}
+            value={text}
+            ariaLabel={field.label}
+            onChange={(value) => onChange(field.id, value)}
+          />
+          {field.hint && <span className="field-hint">{field.hint}</span>}
         </div>
       )
     case 'signature':

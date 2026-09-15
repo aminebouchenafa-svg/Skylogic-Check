@@ -11,6 +11,8 @@ export type FieldType =
   | 'textarea'
   | 'date'
   | 'time'
+  /** Durée h:mm saisie à la molette (heures / minutes). */
+  | 'duration'
   | 'number'
   | 'select'
   | 'checkbox'

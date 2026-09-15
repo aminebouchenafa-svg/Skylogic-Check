@@ -1285,3 +1285,77 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* La mention n'apparaît que sur l'écran de connexion. */
 .credit-lock { margin-top: 6px; padding-top: 16px; border-top: 1px solid var(--stroke); }
+
+/*
+ * Saisie d'une durée à la molette : le champ n'appelle pas le clavier, il
+ * ouvre deux roues — heures et minutes — que l'on fait défiler au doigt.
+ */
+.duration-field {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; cursor: pointer; font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.duration-empty { color: var(--text-faint); letter-spacing: 0.06em; }
+
+.wheel-backdrop {
+  position: fixed; inset: 0; z-index: 80;
+  display: flex; align-items: flex-end; justify-content: center;
+  background: rgba(3, 7, 15, 0.62); backdrop-filter: blur(3px);
+}
+.wheel-sheet {
+  width: min(360px, 100%);
+  margin: 0 auto env(safe-area-inset-bottom);
+  /* Fond opaque : la page ne doit pas transparaître derrière les graduations. */
+  background: var(--bg);
+  background-image: linear-gradient(var(--surface-high), var(--surface-high));
+  border: 1px solid var(--stroke-strong);
+  border-radius: var(--radius) var(--radius) 0 0;
+  box-shadow: var(--shadow);
+  padding: 16px 16px 14px;
+}
+@media (min-width: 640px) {
+  .wheel-backdrop { align-items: center; }
+  .wheel-sheet { border-radius: var(--radius); margin: 0; }
+}
+
+.wheel-head {
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-faint); text-align: center; margin-bottom: 12px;
+}
+.wheel-row { display: flex; align-items: flex-end; justify-content: center; gap: 6px; }
+.wheel-colon {
+  font-size: 20px; color: var(--text-dim); padding-bottom: 62px;
+  font-variant-numeric: tabular-nums;
+}
+
+.wheel { flex: 1; max-width: 132px; }
+.wheel-legend {
+  font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-faint); text-align: center; margin-bottom: 6px;
+}
+.wheel-window { position: relative; }
+/* Le bandeau marque la graduation retenue, celle qui s'arrête au centre. */
+.wheel-band {
+  position: absolute; left: 0; right: 0; pointer-events: none;
+  border-top: 1px solid var(--stroke-strong);
+  border-bottom: 1px solid var(--stroke-strong);
+  background: var(--hud-soft);
+  border-radius: var(--radius-sm);
+}
+.wheel-track {
+  height: 100%; margin: 0; list-style: none; overflow-y: auto;
+  scroll-snap-type: y mandatory; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+}
+.wheel-track::-webkit-scrollbar { display: none; }
+.wheel-track:focus-visible { outline: 2px solid var(--hud); outline-offset: 2px; border-radius: var(--radius-sm); }
+.wheel-item {
+  display: flex; align-items: center; justify-content: center;
+  scroll-snap-align: center; cursor: pointer;
+  font-size: 19px; font-variant-numeric: tabular-nums;
+  color: var(--text-faint); opacity: 0.55; transition: color 0.12s, opacity 0.12s;
+}
+.wheel-item.on { color: var(--text); opacity: 1; font-weight: 600; }
+
+.wheel-foot { display: flex; align-items: center; gap: 10px; margin-top: 14px; }
+.wheel-foot .spacer { flex: 1; }
