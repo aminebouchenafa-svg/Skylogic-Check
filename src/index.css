@@ -1273,3 +1273,21 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .table-archive td[data-col='status'] { grid-area: status; font-size: 12.5px; justify-self: end; }
   .table-archive td[data-col='actions'] { grid-area: actions; align-self: start; }
 }
+
+/*
+ * Mention d'auteur. Au pied de chaque page et sur l'écran de connexion :
+ * le pavé latéral est masqué sur téléphone, celle-ci reste toujours visible.
+ */
+.credit {
+  display: flex; flex-direction: column; gap: 3px;
+  font-size: 11.5px; line-height: 1.5; color: var(--text-faint);
+  text-align: center;
+}
+.credit strong { color: var(--text-dim); font-weight: 600; letter-spacing: 0.02em; }
+.credit-rights { opacity: 0.72; font-size: 11px; }
+
+.credit-main {
+  margin-top: 34px; padding-top: 18px;
+  border-top: 1px solid var(--stroke);
+}
+.credit-lock { margin-top: 4px; }

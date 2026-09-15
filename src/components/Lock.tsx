@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { checkCredentials, unlock } from '../lib/auth'
 import { Wordmark } from './Wordmark'
+import { Credit } from './Credit'
 
 interface Props {
   onUnlock: () => void
@@ -78,6 +79,8 @@ export function Lock({ onUnlock }: Props) {
         <button className="btn btn-primary" type="submit" disabled={busy || !user || !password}>
           {busy ? 'Vérification…' : 'Entrer'}
         </button>
+
+        <Credit className="credit-lock" />
       </form>
     </div>
   )
