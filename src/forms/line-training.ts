@@ -53,15 +53,15 @@ export const lineTrainingForm: FormDef = {
         columns: [
           { id: 'sect_pf', label: 'PF', type: 'number', keyboard: 'numeric' },
           { id: 'sect_pm', label: 'PM', type: 'number', keyboard: 'numeric' },
-          { id: 'time_pf', label: 'PF', type: 'text', keyboard: 'numeric' },
-          { id: 'time_pm', label: 'PM', type: 'text', keyboard: 'numeric' },
+          { id: 'time_pf', label: 'PF', type: 'duration' },
+          { id: 'time_pm', label: 'PM', type: 'duration' },
         ],
         rows: [
           { id: 'previous', label: 'Previous' },
           { id: 'present', label: 'Present' },
           { id: 'total', label: 'Total', computed: true },
         ],
-        note: 'Temps au format h:mm — le total se calcule tout seul.',
+        note: 'Les temps se choisissent à la molette — le total se calcule tout seul.',
       },
     },
     {

@@ -3,6 +3,7 @@ import { cellId } from '../lib/ids'
 import { columnTotal } from '../lib/totals'
 import { Choice } from './Choice'
 import { Combobox } from './Combobox'
+import { DurationPicker } from './DurationPicker'
 import { SignaturePad } from './SignaturePad'
 
 interface Props {
@@ -52,7 +53,14 @@ export function Matrix({ id, matrix, values, onChange }: Props) {
                 }
                 return (
                   <td key={column.id} className={column.type === 'signature' ? 'matrix-sign' : undefined}>
-                    {column.type === 'signature' ? (
+                    {column.type === 'duration' ? (
+                      <DurationPicker
+                        id={key}
+                        value={value}
+                        ariaLabel={`${row.label || column.label} — ${column.label}`}
+                        onChange={(v) => onChange(key, v)}
+                      />
+                    ) : column.type === 'signature' ? (
                       <SignaturePad value={value} onChange={(data) => onChange(key, data)} compact />
                     ) : column.type === 'checkbox' ? (
                       <input
