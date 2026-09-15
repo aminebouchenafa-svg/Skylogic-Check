@@ -1275,8 +1275,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 /*
- * Mention d'auteur. Au pied de chaque page et sur l'écran de connexion :
- * le pavé latéral est masqué sur téléphone, celle-ci reste toujours visible.
+ * Mention d'auteur, au pied de l'écran de connexion.
  */
 .credit {
   display: flex; flex-direction: column; gap: 3px;
@@ -1286,8 +1285,5 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .credit strong { color: var(--text-dim); font-weight: 600; letter-spacing: 0.02em; }
 .credit-rights { opacity: 0.72; font-size: 11px; }
 
-.credit-main {
-  margin-top: 34px; padding-top: 18px;
-  border-top: 1px solid var(--stroke);
-}
-.credit-lock { margin-top: 4px; }
+/* La mention n'apparaît que sur l'écran de connexion. */
+.credit-lock { margin-top: 6px; padding-top: 16px; border-top: 1px solid var(--stroke); }
