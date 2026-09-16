@@ -1,6 +1,7 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { FormDef } from '../types/form'
 import { FORM_ICONS } from './formIcons'
+import { tailleQuiTient } from '../lib/textFit'
 
 interface Props {
   forms: FormDef[]
@@ -155,13 +156,50 @@ export function RadialHub({
   const gap = 0.02 * TAU
   const step = TAU / segments.length
   const scale = size / 560
+  /**
+   * Place d'une case de libellé : l'écart en ligne droite entre deux pastilles
+   * voisines, borné par le bord du cadre pour les secteurs de gauche et de
+   * droite. C'est cette largeur qui décide de la taille du texte.
+   */
+  const corde = 2 * ringR * Math.sin(Math.PI / segments.length)
+  const caseLibelle = Math.max(
+    88 * scale,
+    Math.min(corde - 12, 2 * (size / 2 - ringR - 4), 190),
+  )
+  /**
+   * Une seule taille pour toute la roue, celle que commande le nom le plus
+   * long : des libellés de tailles différentes côte à côte feraient désordre.
+   * Chacun tient sur une ligne, sans coupure.
+   */
+  const policeTitre = Math.min(
+    ...segments.map((seg) =>
+      tailleQuiTient(seg.title, caseLibelle - 4, { max: 14, plancher: 12.5 * scale, espace: 0.06 }),
+    ),
+  )
+  const policeSous = Math.min(
+    ...segments.map((seg) =>
+      tailleQuiTient(seg.sub, caseLibelle - 4, {
+        max: Math.max(9, policeTitre * 0.72),
+        plancher: 9 * scale,
+        espace: 0.18,
+      }),
+    ),
+  )
+
+  /**
+   * Un libellé plus grand est aussi plus haut : le cadre gagne juste ce qu'il
+   * faut en hauteur pour que les noms du haut et du bas restent dedans. La
+   * roue, elle, garde sa taille et sa place.
+   */
+  const hauteurLibelle = policeTitre * 1.25 + 3 + policeSous * 1.25
+  const marge = Math.max(0, ringR + 34 * scale + 9 + hauteurLibelle - size / 2 + 8)
 
   const active = hover !== null ? segments[hover] : null
   const retour = twoLevel && family !== null
 
   return (
     <div className="hub" ref={boxRef}>
-      <div className="hub-stage" style={{ width: size, height: size }}>
+      <div className="hub-stage" style={{ width: size, height: size + 2 * marge, paddingBlock: marge }}>
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="hub-svg">
           <defs>
             <filter id="hub-lift" x="-40%" y="-40%" width="180%" height="180%">
@@ -299,10 +337,10 @@ export function RadialHub({
           // Le libellé se pose juste au-dessus du pictogramme dans la moitié
           // haute, juste en dessous dans la moitié basse : il reste toujours
           // dans le cadre, quelle que soit sa longueur.
-          const labelW = 132 * scale
+          const labelW = caseLibelle
           const above = Math.sin(mid) < 0
-          const labelX = Math.min(Math.max(iconPos.x, labelW / 2 + 8), size - labelW / 2 - 8)
-          const labelY = iconPos.y + (above ? -1 : 1) * (34 * scale + 9)
+          const labelX = Math.min(Math.max(iconPos.x, labelW / 2 + 4), size - labelW / 2 - 4)
+          const labelY = iconPos.y + marge + (above ? -1 : 1) * (34 * scale + 9)
           const Icon = FORM_ICONS[segment.icon] ?? FORM_ICONS.report
           return (
             <div key={segment.key} className="hub-item">
@@ -311,7 +349,7 @@ export function RadialHub({
                 className={`hub-badge${segment.pending ? ' pending' : ''}${hover === index ? ' lit' : ''}`}
                 style={{
                   left: iconPos.x,
-                  top: iconPos.y,
+                  top: iconPos.y + marge,
                   width: 60 * scale,
                   height: 60 * scale,
                   ['--seg' as string]: segment.accent,
@@ -328,10 +366,10 @@ export function RadialHub({
               </button>
               <div
                 className={`hub-label ${above ? 'above' : 'below'}${segment.pending ? ' pending' : ''}`}
-                style={{ left: labelX, top: labelY, width: labelW, fontSize: 12.5 * scale }}
+                style={{ left: labelX, top: labelY, width: labelW, fontSize: policeTitre }}
               >
                 {segment.title}
-                <span style={{ fontSize: 9 * scale }}>{segment.sub}</span>
+                <span style={{ fontSize: policeSous }}>{segment.sub}</span>
               </div>
             </div>
           )
